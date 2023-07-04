@@ -9,7 +9,7 @@ import os
 from PIL import Image
 # Criar a janela
 
-local  = r'C:\Users\Luluca\OneDrive\Documentos\MeusProjetos\Sys_Comercial\liftam.JSON'
+local  = r'liftam.JSON'
 ctk.set_default_color_theme(local)
 
 
@@ -67,43 +67,43 @@ class icone_empresa:
     def __init__(self):
         super().__init__()
        # Função para recuperar a imagem do banco de dados
-        servidor = 'localhost'
-        database = "BD_Teste"
-        loginsql = 'sa'
-        senhasql = 'Lhgdfluis45'
+        # servidor = 'localhost'
+        # database = "BD_Teste"
+        # loginsql = 'sa'
+        # senhasql = 'Lhgdfluis45'
 
-        dados_conexao = ("Driver={ODBC Driver 18 for SQL Server};"
-                        f"Server={servidor};"
-                        f"Database={database};"
-                        f"UID={loginsql};"
-                        f"PWD={senhasql};"
-                        "TrustServerCertificate=Yes")
+        # dados_conexao = ("Driver={ODBC Driver 18 for SQL Server};"
+        #                 f"Server={servidor};"
+        #                 f"Database={database};"
+        #                 f"UID={loginsql};"
+        #                 f"PWD={senhasql};"
+        #                 "TrustServerCertificate=Yes")
 
-        conexao = pyodbc.connect(dados_conexao)
-        cursor = conexao.cursor()
+        # conexao = pyodbc.connect(dados_conexao)
+        # cursor = conexao.cursor()
 
-        # Buscar a imagem no banco de dados
-        cursor.execute("SELECT image FROM imagens WHERE id = 1")
-        result = cursor.fetchone()
+        # # Buscar a imagem no banco de dados
+        # cursor.execute("SELECT image FROM imagens WHERE id = 1")
+        # result = cursor.fetchone()
 
-        if result:
-            # Converter o valor binário para imagem
-            image_binary = result[0]
-            image = Image.open(io.BytesIO(image_binary))
+        # if result:
+        #     # Converter o valor binário para imagem
+        #     image_binary = result[0]
+        #     image = Image.open(io.BytesIO(image_binary))
 
-            # Redimensionar a imagem se necessário
-            image = image.resize((100, 100))
+        #     # Redimensionar a imagem se necessário
+        #     image = image.resize((100, 100))
 
-            # Converter a imagem para o formato suportado pelo Tkinter
-            photo = ctk.CTkImage(image)
+        #     # Converter a imagem para o formato suportado pelo Tkinter
+        #     photo = ctk.CTkImage(image)
 
-            # Atualizar o widget Label com a nova imagem
-            # label.configure(image=photo)
-            # label.image = photo
-            # root.state('zoomed') 
+        #     # Atualizar o widget Label com a nova imagem
+        #     # label.configure(image=photo)
+        #     # label.image = photo
+        #     # root.state('zoomed') 
 
-        # Fechar a conexão com o banco de dados
-        conexao.close()
+        # # Fechar a conexão com o banco de dados
+        # conexao.close()
     
     def select_image(self): # Função para selecionar a imagem
         # Abrir o diálogo de seleção de arquivo
