@@ -16,7 +16,7 @@
     "corner_radius": 6,
     "border_width": 0,
     "fg_color": ["#C41616", "#C41616"],
-    "hover_color": ["#A11919", "#A11919"],
+    "hover_color": ["#880016", "#880016"],
     "border_color": ["#3E454A", "#949A9F"],
     "text_color": ["white", "white"],
     "text_color_disabled": ["gray74", "gray60"]
