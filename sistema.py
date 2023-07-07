@@ -32,13 +32,16 @@ HomeIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "home_bl
                         dark_image=Image.open(os.path.join(image_path, "home_light.png")),  size=(17, 17))
 
 
+FotoPerfil = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "perfil.jpg")),
+                       dark_image=Image.open(os.path.join(image_path, "perfil.jpg")), size=(100, 100))
+
+
 SeuLogo = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "logo1.png")),
                        dark_image=Image.open(os.path.join(image_path, "logo1.png")), size=(100, 100))
 
 
 SeuLogo2 = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "logo2.png")),
                        dark_image=Image.open(os.path.join(image_path, "logo2.png")), size=(200, 200))
-
 
 
 EstoqueIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "estoque_black.png")),
@@ -52,7 +55,7 @@ AgendaIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "agend
                        dark_image=Image.open(os.path.join(image_path, "agenda_light.png")), size=(17, 17))
 
 
-MedicaoIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "carteira_black.png")),
+carteiraIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "carteira_black.png")),
                        dark_image=Image.open(os.path.join(image_path, "carteira_light.png")),  size=(17, 17))
 
 
@@ -62,6 +65,63 @@ UsuarioIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "usua
 
 ConfiguracoesIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "configuracoes_black.png")),
                        dark_image=Image.open(os.path.join(image_path, "configuracoes_light.png")), size=(17, 17))
+
+
+EntradaIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "entrada_black.png")),
+                       dark_image=Image.open(os.path.join(image_path, "entrada_light.png")), size=(17, 17))
+
+
+SaidaIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "saida_black.png")),
+                       dark_image=Image.open(os.path.join(image_path, "saida_light.png")), size=(17, 17))
+
+
+InventarioIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "inventario_black.png")),
+                       dark_image=Image.open(os.path.join(image_path, "inventario_light.png")), size=(17, 17))
+
+
+
+AdicionarIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "adicionar_black.png")),
+                       dark_image=Image.open(os.path.join(image_path, "adicionar_light.png")), size=(17, 17))
+
+
+EditarIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "editar_black.png")),
+                       dark_image=Image.open(os.path.join(image_path, "editar_light.png")), size=(17, 17))
+
+
+ItemIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "item_black.png")),
+                       dark_image=Image.open(os.path.join(image_path, "item_light.png")), size=(17, 17))
+
+
+
+VisualizarIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "visualizar_black.png")),
+                       dark_image=Image.open(os.path.join(image_path, "visualizar_light.png")), size=(17, 17))
+
+
+VoltarIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "voltar_black.png")),
+                       dark_image=Image.open(os.path.join(image_path, "voltar_light.png")), size=(17, 17))
+
+
+FinancasIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "financas_black.png")),
+                       dark_image=Image.open(os.path.join(image_path, "financas_light.png")), size=(17, 17))
+
+
+VendasIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "vendas_black.png")),
+                       dark_image=Image.open(os.path.join(image_path, "vendas_light.png")), size=(17, 17))
+
+
+DespesaIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "despesa_black.png")),
+                       dark_image=Image.open(os.path.join(image_path, "despesa_light.png")), size=(17, 17))
+
+
+
+ReceitaIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "receita_black.png")),
+                       dark_image=Image.open(os.path.join(image_path, "receita_light.png")), size=(17, 17))
+
+
+FaturamentoIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "faturamento_black.png")),
+                       dark_image=Image.open(os.path.join(image_path, "faturamento_light.png")), size=(17, 17))
+
+
 
 
 def msgbox(title, text, style):
@@ -75,15 +135,12 @@ def msgbox(title, text, style):
     #  6 : Cancel | Try Again | Continue
     return ctypes.windll.user32.MessageBoxW(0, text, title, style)
 
-
-
 def fecharSistemaa():
     resp = msgbox("Confirmação",
                 "Deseja Encerrar O Programa?", 4)
     if resp==6:
         
         sys.exit()
-
 
 class icone_empresa:
     def __init__(self):
@@ -195,8 +252,7 @@ class icone_empresa:
         conexao.commit()
         conexao.close()
 
-
-class Menu(icone_empresa):
+class Menu(icone_empresa):  
     def __init__(self):
         super().__init__()
         # tela de login
@@ -259,27 +315,53 @@ class Menu(icone_empresa):
         self.BtOcultar = ctk.CTkButton(self.frame_OcultarMenu,text="", image=MenuIcon, anchor="w", width=23, height=23,  fg_color="transparent", text_color=("black","white"), command=self.ocultarJanela)
         self.BtOcultar.place(x=0,y=1)
 
-        self.BtHome = ctk.CTkButton(self.frame_MenuLateralEsq, text="Home", image=HomeIcon, anchor="w", width=176, corner_radius=0, fg_color="transparent", text_color=("black","white"), command=self.Frame_Home)
-        self.BtHome.place(x=0, y=80)
 
-        self.BtEstoque = ctk.CTkButton(self.frame_MenuLateralEsq, text="Estoque ", image=EstoqueIcon, anchor="w", width=176, corner_radius=0, fg_color="transparent", text_color=("black","white"))
-        self.BtEstoque.place(x=0, y=120)
-        
-        self.BtCadastros = ctk.CTkButton(self.frame_MenuLateralEsq, text="Cadastro", image=CadastroIcon, anchor="w", width=176, corner_radius=0, fg_color="transparent", text_color=("black","white"))
-        self.BtCadastros.place(x=0, y=160)        
+        self.BtHome = ctk.CTkButton(self.frame_MenuLateralEsq, text="Home", image=HomeIcon, anchor="w", 
+                                    width=176, corner_radius=0, fg_color="transparent", text_color=("black","white"), command=self.Frame_Home)
+        self.BtHome.place(x=0, y=120)
 
-        self.BtAgenda = ctk.CTkButton(self.frame_MenuLateralEsq, text="Agenda", image=AgendaIcon, anchor="w", width=176, corner_radius=0, fg_color="transparent", text_color=("black","white"))
-        self.BtAgenda.place(x=0, y=200)
 
-        self.BtMedicao = ctk.CTkButton(self.frame_MenuLateralEsq, text="Medição", image=MedicaoIcon, anchor="w", width=176, corner_radius=0, fg_color="transparent",  text_color=("black","white"))
-        self.BtMedicao.place(x=0, y=240)
+        self.BtEstoque = ctk.CTkButton(self.frame_MenuLateralEsq, text="Estoque ", image=EstoqueIcon, anchor="w", 
+                                       width=176, corner_radius=0, fg_color="transparent", text_color=("black","white"), command=self.Frame_Estoque)
+        self.BtEstoque.place(x=0, y=160)
         
 
-        self.BtUsuario = ctk.CTkButton(self.frame_MenuLateralEsq, text="Usuario", image=UsuarioIcon, anchor="w", width=176, corner_radius=0, fg_color="transparent", text_color=("black","white"), command=self.Frame_Usuario)
-        self.BtUsuario.place(x=0, y=280)  
+        self.BtCadastros = ctk.CTkButton(self.frame_MenuLateralEsq, text="Cadastro", image=CadastroIcon, anchor="w", 
+                                         width=176, corner_radius=0, fg_color="transparent", text_color=("black","white"), command=self.Frame_Cadastro)
+        self.BtCadastros.place(x=0, y=200)        
 
-        self.BtConfiguracoes = ctk.CTkButton(self.frame_MenuLateralEsq, text="Configuracoes", image=ConfiguracoesIcon, anchor="w", width=176, corner_radius=0,  text_color=("black","white"), fg_color="transparent", command=self.Frame_Configuracoes)
-        self.BtConfiguracoes.place(x=0, y=320)    
+
+        self.BtAgenda = ctk.CTkButton(self.frame_MenuLateralEsq, text="Agenda", image=AgendaIcon, anchor="w", 
+                                      width=176, corner_radius=0, fg_color="transparent", text_color=("black","white"), command=self.Frame_Agenda)
+        self.BtAgenda.place(x=0, y=240)
+
+
+        self.Btcarteira = ctk.CTkButton(self.frame_MenuLateralEsq, text="Carteira", image=carteiraIcon, anchor="w", 
+                                       width=176, corner_radius=0, fg_color="transparent",  text_color=("black","white"), command=self.Frame_carteira)
+        self.Btcarteira.place(x=0, y=280)
+        
+
+
+        self.BtFinancas = ctk.CTkButton(self.frame_MenuLateralEsq, text="Finanças", image=FinancasIcon, anchor="w", 
+                                       width=176, corner_radius=0, fg_color="transparent", text_color=("black","white"), command=self.Frame_financas)
+        self.BtFinancas.place(x=0, y=320)  
+
+
+        self.BtUsuario = ctk.CTkButton(self.frame_MenuLateralEsq, text="Usuario", image=UsuarioIcon, anchor="w", 
+                                       width=176, corner_radius=0, fg_color="transparent", text_color=("black","white"), command=self.Frame_Usuario)
+        self.BtUsuario.place(x=0, y=360)  
+
+
+
+
+        self.BtConfiguracoes = ctk.CTkButton(self.frame_MenuLateralEsq, text="Configuracoes", image=ConfiguracoesIcon, anchor="w",
+                                             width=176, corner_radius=0,  text_color=("black","white"), fg_color="transparent", command=self.Frame_Configuracoes)
+        self.BtConfiguracoes.place(x=0, y=400)    
+
+
+
+        foto_perfil = ctk.CTkLabel(self.frame_MenuLateralEsq, text="", image=FotoPerfil)
+        foto_perfil.place(relx=0.5, rely=0.07, anchor="center")
 
 
         LabelLogo = ctk.CTkLabel(self.frame_MenuLateralEsq, text="", image=SeuLogo2)
@@ -300,22 +382,16 @@ class Menu(icone_empresa):
         # função que altera o modo de aparencia da janela entre ligth e dark
         ctk.set_appearance_mode(new_appearance_mode) 
 
-
     def ocultarJanela(self):
         larguraJanelaAtual = self.frame_MenuLateralEsq.winfo_width()
+        print(larguraJanelaAtual)
         
-        if larguraJanelaAtual > 28:
-
+        if larguraJanelaAtual > 35:
             self.frame_MenuLateralEsq.configure(width=28)
 
         else:
             self.frame_MenuLateralEsq.configure(width=176)
 
-
-
-            print("ocultando")
-
-    
     def Frame_Home(self):
         self.FrameLateralAtual.destroy()
         self.frameRespostaAtual.destroy()
@@ -335,7 +411,8 @@ class Menu(icone_empresa):
         self.BtEstoque.configure(fg_color="transparent")
         self.BtCadastros.configure(fg_color="transparent")
         self.BtAgenda.configure(fg_color="transparent")
-        self.BtMedicao.configure(fg_color="transparent")
+        self.Btcarteira.configure(fg_color="transparent")
+        self.BtFinancas.configure(fg_color="transparent")
         self.BtUsuario.configure(fg_color="transparent")
         self.BtConfiguracoes.configure(fg_color="transparent")
 
@@ -346,41 +423,205 @@ class Menu(icone_empresa):
         self.BtOcultar = ctk.CTkButton(self.frame_OcultarMenu,text="", image=MenuIcon, anchor="w", width=23, height=23,  fg_color="transparent", text_color=("black","white"), command=self.ocultarJanela)
         self.BtOcultar.place(x=0,y=1)
 
-    def Frame_Usuario(self):
+    def Frame_Estoque(self):
+
+        self.BtHome.configure(fg_color="transparent")
+        self.BtEstoque.configure(fg_color="#880016")
+        self.BtCadastros.configure(fg_color="transparent")
+        self.BtAgenda.configure(fg_color="transparent")
+        self.Btcarteira.configure(fg_color="transparent")
+        self.BtFinancas.configure(fg_color="transparent")
+        self.BtUsuario.configure(fg_color="transparent")
+        self.BtConfiguracoes.configure(fg_color="transparent")
+
         self.FrameLateralAtual.destroy()
                 
-        self.FrameUsuarioLateral = ctk.CTkFrame(self.rootHome, width=176, height=self.screen_height, fg_color=("#880016", "#880016"), corner_radius=0)
-        self.FrameUsuarioLateral.grid(row=0,column=1)
-        self.FrameLateralAtual = self.FrameUsuarioLateral
+                
+        self.FrameEstoqueLateral = ctk.CTkFrame(self.rootHome, width=176, height=self.screen_height, fg_color=("#880016", "#880016"), corner_radius=0)
+        self.FrameEstoqueLateral.grid(row=0,column=1)
+        self.FrameLateralAtual = self.FrameEstoqueLateral
 
+
+        
+
+        
+        self.BtOcultar = ctk.CTkButton(self.FrameLateralAtual,text="", image=MenuIcon, anchor="w", width=23, height=23,  fg_color="transparent", command=self.ocultarJanela)
+        self.BtOcultar.place(x=138,y=1)
+
+        self.op1 = ctk.CTkButton(self.FrameLateralAtual, text="Entrada", image=EntradaIcon,anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
+                                 hover_color= ("#ff9ea2", "black"))
+        self.op1.place(x=10, y=120)
+        
+        self.op2 = ctk.CTkButton(self.FrameLateralAtual, text="Saida", image=SaidaIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
+                                 hover_color= ("#ff9ea2", "black"))
+        self.op2.place(x=10, y=160)  
+
+        self.op3 = ctk.CTkButton(self.FrameLateralAtual, text="Inventario", image=InventarioIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
+                                 hover_color= ("#ff9ea2", "black"))
+        self.op3.place(x=10, y=200)  
+
+    def Frame_Cadastro(self):
+
+        self.BtHome.configure(fg_color="transparent")
+        self.BtEstoque.configure(fg_color="transparent")
+        self.BtCadastros.configure(fg_color="#880016")
+        self.BtAgenda.configure(fg_color="transparent")
+        self.Btcarteira.configure(fg_color="transparent")
+        self.BtFinancas.configure(fg_color="transparent")
+        self.BtUsuario.configure(fg_color="transparent")
+        self.BtConfiguracoes.configure(fg_color="transparent")
+
+        self.FrameLateralAtual.destroy()
+                
+                
+        self.FrameCadastroLateral = ctk.CTkFrame(self.rootHome, width=176, height=self.screen_height, fg_color=("#880016", "#880016"), corner_radius=0)
+        self.FrameCadastroLateral.grid(row=0,column=1)
+        self.FrameLateralAtual = self.FrameCadastroLateral
+
+
+        
+        self.BtOcultar = ctk.CTkButton(self.FrameLateralAtual,text="", image=MenuIcon, anchor="w", width=23, height=23,  fg_color="transparent", command=self.ocultarJanela)
+        self.BtOcultar.place(x=138,y=1)
+
+        self.op1 = ctk.CTkButton(self.FrameLateralAtual, text="Cadastrar Itens", image=EstoqueIcon,anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
+                                 hover_color= ("#ff9ea2", "black"))
+        self.op1.place(x=10, y=160)
+        
+        self.op2 = ctk.CTkButton(self.FrameLateralAtual, text="Cadastrar Clientes", image=CadastroIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
+                                 hover_color= ("#ff9ea2", "black"))
+        self.op2.place(x=10, y=200)  
+
+        self.op3 = ctk.CTkButton(self.FrameLateralAtual, text="Novo Usuario", image=UsuarioIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
+                                 hover_color= ("#ff9ea2", "black"))
+        self.op3.place(x=10, y=240)  
+
+    def Frame_Agenda(self):
+
+        self.BtHome.configure(fg_color="transparent")
+        self.BtEstoque.configure(fg_color="transparent")
+        self.BtCadastros.configure(fg_color="transparent")
+        self.BtAgenda.configure(fg_color="#880016")
+        self.Btcarteira.configure(fg_color="transparent")
+        self.BtFinancas.configure(fg_color="transparent")
+        self.BtUsuario.configure(fg_color="transparent")
+        self.BtConfiguracoes.configure(fg_color="transparent")
+
+
+
+        self.FrameLateralAtual.destroy()
+        self.frameRespostaAtual.destroy()
+                
+
+        self.FrameAgendaLateral = ctk.CTkFrame(self.rootHome, width=34, height=self.screen_height, fg_color=("#880016", "#880016"), corner_radius=0)
+        self.FrameAgendaLateral.grid(row=0,column=1)
+        self.FrameLateralAtual = self.FrameAgendaLateral
+
+        self.FrameAgendaResposta = ctk.CTkFrame(self.rootHome, fg_color="transparent", width=(self.screen_wedth), height=self.screen_height, corner_radius=0)
+        self.FrameAgendaResposta.grid(row=0,column=2)
+        self.frameRespostaAtual = self.FrameAgendaResposta
+
+        self.BtOcultar = ctk.CTkButton(self.FrameLateralAtual,text="", image=MenuIcon, anchor="w", width=23, height=23,  fg_color="transparent", command=self.ocultarJanela)
+        self.BtOcultar.place(x=0,y=1)
+          
+    def Frame_carteira(self):
 
         self.BtHome.configure(fg_color="transparent")
         self.BtEstoque.configure(fg_color="transparent")
         self.BtCadastros.configure(fg_color="transparent")
         self.BtAgenda.configure(fg_color="transparent")
-        self.BtMedicao.configure(fg_color="transparent")
-        self.BtUsuario.configure(fg_color="#880016")
+        self.Btcarteira.configure(fg_color="#880016")
+        self.BtFinancas.configure(fg_color="transparent")
+        self.BtUsuario.configure(fg_color="transparent")
         self.BtConfiguracoes.configure(fg_color="transparent")
+
+        self.FrameLateralAtual.destroy()
+                
+                
+        self.FramecarteiraLateral = ctk.CTkFrame(self.rootHome, width=176, height=self.screen_height, fg_color=("#880016", "#880016"), corner_radius=0)
+        self.FramecarteiraLateral.grid(row=0,column=1)
+        self.FrameLateralAtual = self.FramecarteiraLateral
+
+
         
 
         
-        self.BtOcultar = ctk.CTkButton(self.FrameUsuarioLateral,text="", image=MenuIcon, anchor="w", width=23, height=23,  fg_color="transparent", command=self.ocultarJanela)
+        self.BtOcultar = ctk.CTkButton(self.FrameLateralAtual,text="", image=MenuIcon, anchor="w", width=23, height=23,  fg_color="transparent", command=self.ocultarJanela)
         self.BtOcultar.place(x=138,y=1)
 
-        self.op1 = ctk.CTkButton(self.FrameLateralAtual, text="opção1", image=MedicaoIcon,anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
-                                 hover_color= ("#ff9ea2", "black"))
+        self.op1 = ctk.CTkButton(self.FrameLateralAtual, text="Registrar Venda", image=VendasIcon,anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
+                                    hover_color= ("#ff9ea2", "black"))
         self.op1.place(x=10, y=280)
         
-        self.op2 = ctk.CTkButton(self.FrameLateralAtual, text="opção2", image=UsuarioIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
-                                 hover_color= ("#ff9ea2", "black"))
-        self.op2.place(x=10, y=320)  
+        self.op2 = ctk.CTkButton(self.FrameLateralAtual, text="Faturamento", image=FaturamentoIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
+                                    hover_color= ("#ff9ea2", "black"))
+        self.op2.place(x=10, y=320)   
+    
+    def Frame_financas(self):
 
+        self.BtHome.configure(fg_color="transparent")
+        self.BtEstoque.configure(fg_color="transparent")
+        self.BtCadastros.configure(fg_color="transparent")
+        self.BtAgenda.configure(fg_color="transparent")
+        self.Btcarteira.configure(fg_color="transparent")
+        self.BtFinancas.configure(fg_color="#880016")
+        self.BtUsuario.configure(fg_color="transparent")
+        self.BtConfiguracoes.configure(fg_color="transparent")
+
+        self.FrameLateralAtual.destroy()
+                
+                
+        self.FramefinancasLateral = ctk.CTkFrame(self.rootHome, width=176, height=self.screen_height, fg_color=("#880016", "#880016"), corner_radius=0)
+        self.FramefinancasLateral.grid(row=0,column=1)
+        self.FrameLateralAtual = self.FramefinancasLateral
+
+
+        
+
+        
+        self.BtOcultar = ctk.CTkButton(self.FrameLateralAtual,text="", image=MenuIcon, anchor="w", width=23, height=23,  fg_color="transparent", command=self.ocultarJanela)
+        self.BtOcultar.place(x=138,y=1)
+
+        self.op1 = ctk.CTkButton(self.FrameLateralAtual, text="Registrar Despesas", image=DespesaIcon,anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
+                                    hover_color= ("#ff9ea2", "black"))
+        self.op1.place(x=10, y=320)
+        
+        self.op2 = ctk.CTkButton(self.FrameLateralAtual, text="Outras Rendas +", image=ReceitaIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
+                                    hover_color= ("#ff9ea2", "black"))
+        self.op2.place(x=10, y=360)      
+   
+    def Frame_Usuario(self):
+
+        self.BtHome.configure(fg_color="transparent")
+        self.BtEstoque.configure(fg_color="transparent")
+        self.BtCadastros.configure(fg_color="transparent")
+        self.BtAgenda.configure(fg_color="transparent")
+        self.Btcarteira.configure(fg_color="transparent")
+        self.BtFinancas.configure(fg_color="transparent")
+        self.BtUsuario.configure(fg_color="#880016")
+        self.BtConfiguracoes.configure(fg_color="transparent")
+
+        self.FrameLateralAtual.destroy()
+        self.frameRespostaAtual.destroy()
+                
+
+        self.FrameUsuarioLateral = ctk.CTkFrame(self.rootHome, width=34, height=self.screen_height, fg_color=("#880016", "#880016"), corner_radius=0)
+        self.FrameUsuarioLateral.grid(row=0,column=1)
+        self.FrameLateralAtual = self.FrameUsuarioLateral
+
+        self.FrameUsuarioesposta = ctk.CTkFrame(self.rootHome, fg_color="transparent", width=(self.screen_wedth), height=self.screen_height, corner_radius=0)
+        self.FrameUsuarioesposta.grid(row=0,column=2)
+        self.frameRespostaAtual = self.FrameUsuarioesposta
+
+        self.BtOcultar = ctk.CTkButton(self.FrameLateralAtual,text="", image=MenuIcon, anchor="w", width=23, height=23,  fg_color="transparent", command=self.ocultarJanela)
+        self.BtOcultar.place(x=0,y=1)   
+    
     def Frame_Configuracoes(self):
         self.BtHome.configure(fg_color="transparent")
         self.BtEstoque.configure(fg_color="transparent")
         self.BtCadastros.configure(fg_color="transparent")
         self.BtAgenda.configure(fg_color="transparent")
-        self.BtMedicao.configure(fg_color="transparent")
+        self.Btcarteira.configure(fg_color="transparent")
+        self.BtFinancas.configure(fg_color="transparent")
         self.BtUsuario.configure(fg_color="transparent")
         self.BtConfiguracoes.configure(fg_color="#880016")
 
@@ -397,15 +638,9 @@ class Menu(icone_empresa):
         self.FrameConfigResposta.grid(row=0,column=2)
         self.frameRespostaAtual = self.FrameConfigResposta
 
-        self.BtOcultar = ctk.CTkButton(self.FrameConfigLateral,text="", image=MenuIcon, anchor="w", width=23, height=23,  fg_color="transparent", command=self.ocultarJanela)
+        self.BtOcultar = ctk.CTkButton(self.FrameLateralAtual,text="", image=MenuIcon, anchor="w", width=23, height=23,  fg_color="transparent", command=self.ocultarJanela)
         self.BtOcultar.place(x=0,y=1)
 
-
-        scrollable_frame = ctk.CTkScrollableFrame(self.frameRespostaAtual, width=1000, height=600, corner_radius=1, border_width=1, fg_color=("#FBECEC", "gray14"))
-        scrollable_frame.place(relx=0.42,rely=0.45, anchor="center")
-
-        bt = ctk.CTkButton(scrollable_frame, text='', width=300, height=50)
-        bt.place(x=100, y=200)
 
 
 Menu()
