@@ -33,7 +33,7 @@ def msgbox(title, text, style):
 
 def fecharSistemaa():
     resp = msgbox("Confirmação",
-                "Deseja Encerrar O Programa?", 4)
+                "Deseja encerrar o sistema?", 4)
     if resp==6:
         
         sys.exit()
@@ -71,7 +71,10 @@ class validar_acesso(mysql_bd):
             cursor.execute(f"SELECT * FROM Usuarios WHERE usuario = '{self.usuario_logado}' AND senha = '{self.senha_logado}' ")
             resultado = cursor.fetchall()
             if resultado:
-                msgbox("Login", "BEM VINDO",0)
+                cursor.execute(f"SELECT acesso FROM Usuarios where usuario = '{self.usuario_logado}' ")
+
+                self.acesso_usuario = str(cursor.fetchall()[0][0])
+                msgbox("Login", f"Bem vindo(a) {self.usuario_logado}",0)
                 self.desconeta_bd
                 self.frame_Inicial()
                 
@@ -86,7 +89,7 @@ class validar_acesso(mysql_bd):
 
     
 
-class icone_empresa(mysql_bd):
+class trocar_imgORlogo(mysql_bd):
 
     def verificar_foto(self, label_img, usuario):
         
@@ -206,12 +209,12 @@ class icone_empresa(mysql_bd):
         conexao.commit()
         conexao.close()
 
-class usuario_conf(icone_empresa):
+class usuario_conf(trocar_imgORlogo):
     def iniciar_img_perfil(self, labelIMG):
 
         imagem = labelIMG
 
-        self.verificar_foto(imagem, usuario="anubis")
+        self.verificar_foto(imagem, usuario=self.usuario_logado)
 
     def usuario_funcs(self, frame_resp, labelIMG):
         
@@ -220,10 +223,10 @@ class usuario_conf(icone_empresa):
         
         def Trocar_img():
             imagem = labelIMG
-            self.select_image(imagem, usuario="anubis")
+            self.select_image(imagem, usuario=self.usuario_logado)
 
-        painel_bt = ctk.CTkButton(frame_resp, text="", width=1200, height=90, border_width=1, fg_color="transparent", hover_color=("#FBECEC", "gray14"))
-        painel_bt.place(relx=0.4, rely=0.1, anchor="center")
+        painel_bt = ctk.CTkButton(frame_resp, text="", width=1000, height=90, border_width=1, fg_color="transparent", hover_color=("#FBECEC", "gray14"))
+        painel_bt.place(relx=0.02, rely=0.1, anchor="w")
         label = ctk.CTkLabel(painel_bt, text="Foto de perfil", font=titulo, fg_color="transparent")
         label.place(x=10,y=5)
         bt = ctk.CTkButton(painel_bt, text="Alterar", command=Trocar_img, fg_color=("#323232"), hover_color='#191919')
@@ -234,29 +237,106 @@ class usuario_conf(icone_empresa):
             dialog = ctk.CTkInputDialog(text="Informe seu novo Usuario:", title="Editar",button_fg_color=("#323232"), button_hover_color='#191919')
             resp = dialog.get_input()
             if resp:
+                conexao = self.conecta_bd()
+                cursor = conexao.cursor()
+                cursor.execute(f"UPDATE Usuarios SET usuario = '{resp}' WHERE usuario = '{self.usuario_logado}'")
+                self.usuario_logado = str(resp)
+                conexao.commit()
+                conexao.close()
                 label22.configure(text=resp)
 
-        painel_bt2 = ctk.CTkButton(frame_resp, text="", width=1200, height=90, border_width=1, fg_color="transparent", hover_color=("#FBECEC", "gray14"))
-        painel_bt2.place(relx=0.4, rely=0.25, anchor="center")
+        painel_bt2 = ctk.CTkButton(frame_resp, text="", width=1000, height=90, border_width=1, fg_color="transparent", hover_color=("#FBECEC", "gray14"))
+        painel_bt2.place(relx=0.02, rely=0.25, anchor="w")
         label2 = ctk.CTkLabel(painel_bt2, text="Usuario", font=titulo, fg_color="transparent")
         label2.place(x=10,y=5)
         label22 = ctk.CTkLabel(painel_bt2, text=f"{self.usuario_logado}", font=corpo, fg_color="transparent")
         label22.place(x=10,y=50)
+
+        label2 = ctk.CTkLabel(painel_bt2, text="Acesso", font=titulo, fg_color="transparent")
+        label2.place(x=100,y=5)
+        label22 = ctk.CTkLabel(painel_bt2, text=f"{self.acesso_usuario.upper()}", font=corpo, fg_color="transparent")
+        label22.place(x=100,y=50)
+
+
         bt2 = ctk.CTkButton(painel_bt2, text="Editar", fg_color=("#323232"), hover_color='#191919', command=Editar_Usuario)
-        bt2.place(x=120,y=30)
+        bt2.place(x=165,y=28)
 
 
-        painel_bt3 = ctk.CTkButton(frame_resp, text="", width=1200, height=90, border_width=1, fg_color="transparent", hover_color=("#FBECEC", "gray14"))
-        painel_bt3.place(relx=0.4, rely=0.4, anchor="center")
+
+
+        def Trocar_senha():
+         
+            dialog = ctk.CTkToplevel()
+            dialog.geometry("340x250")
+            dialog.resizable(0, 0)
+            dialog.grab_set()
+
+
+            def salvar():
+                atual = str(SenhaAtual.get())
+                nova = str(NovaSenha.get())
+                confir = str(ConfirmaçãoSenha.get())
+                conexao = self.conecta_bd()
+                cursor = conexao.cursor()
+                
+                cursor.execute(f"SELECT senha FROM Usuarios WHERE usuario = '{self.usuario_logado}' AND senha = '{atual}'")
+                resposta_bd = cursor.fetchall()
+
+
+
+                if resposta_bd:
+                    if nova == confir:
+                        if len(nova) >=4 and len(confir)>=4:
+                            cursor.execute(f"UPDATE Usuarios SET senha = '{nova}' WHERE usuario = '{self.usuario_logado}'")
+                            conexao.commit()
+                            resposta.configure(text="Senha atualizada", text_color="green")
+                            Okbt.destroy()
+                        else:
+                            resposta.configure(text="Senha curta", text_color="red")
+                    else:
+                        resposta.configure(text="As senhas nao conferem", text_color="red")
+                else:
+      
+                    resposta.configure(text="As senhas nao conferem", text_color="red")
+                    
+            def fechar():
+                self.desconeta_bd()
+                dialog.destroy()
+
+
+            msg = ctk.CTkLabel(dialog, text="Informe os dados da sua nova senha")
+            msg.place(relx=0.5, rely=0.1, anchor="center")
+
+            SenhaAtual = ctk.CTkEntry(dialog, placeholder_text="Digite sua senha atual", width=320)
+            SenhaAtual.place(relx=0.5, rely=0.3, anchor="center")
+
+            NovaSenha = ctk.CTkEntry(dialog, placeholder_text="Digite sua nova senha", width=320, show="*")
+            NovaSenha.place(relx=0.5, rely=0.5, anchor="center")
+
+            ConfirmaçãoSenha = ctk.CTkEntry(dialog, placeholder_text="Confirmar nova senha", width=320, show="*")
+            ConfirmaçãoSenha.place(relx=0.5, rely=0.7, anchor="center")
+
+            resposta = ctk.CTkLabel(dialog, text="", height=2)
+            resposta.place(relx=0.5, rely=0.81, anchor="center")
+
+            Okbt = ctk.CTkButton(dialog, text="SALVAR", command=salvar)
+            Okbt.place(relx=0.25, rely=0.92, anchor="center")
+
+            CancelarBT = ctk.CTkButton(dialog, text="Fechar", command=fechar)
+            CancelarBT.place(relx=0.75, rely=0.92, anchor="center")
+     
+
+        painel_bt3 = ctk.CTkButton(frame_resp, text="", width=1000, height=90, border_width=1, fg_color="transparent", hover_color=("#FBECEC", "gray14"))
+        painel_bt3.place(relx=0.02, rely=0.4, anchor="w")
         label3 = ctk.CTkLabel(painel_bt3, text="Senha", font=titulo, fg_color="transparent")
         label3.place(x=10,y=5)
-        bt3 = ctk.CTkButton(painel_bt3, text="Alterar", fg_color=("#323232"), hover_color='#191919')
+        bt3 = ctk.CTkButton(painel_bt3, text="Alterar", fg_color=("#323232"), hover_color='#191919', command=Trocar_senha)
         bt3.place(x=10,y=50)
 
 
 
-        painel_bt4 = ctk.CTkButton(frame_resp, text="", width=1200, height=90, border_width=1, fg_color="transparent", hover_color=("#FBECEC", "gray14"))
-        painel_bt4.place(relx=0.4, rely=0.55, anchor="center")
+        painel_bt4 = ctk.CTkButton(frame_resp, text="", width=1000, height=90, border_width=1, fg_color="transparent", hover_color=("#FBECEC", "gray14"))
+        painel_bt4.place(relx=0.02, rely=0.55, anchor="w")
         label4 = ctk.CTkLabel(painel_bt4, text="Conta", font=titulo, fg_color="transparent")
         label4.place(x=10,y=5)
         bt4 = ctk.CTkButton(painel_bt4, text="Excluir Conta", fg_color=("#323232"), hover_color='#191919')

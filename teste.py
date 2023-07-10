@@ -9,9 +9,6 @@ def button_click_event():
     dialog = ctk.CTkToplevel()
     dialog.geometry("340x250")
     dialog.resizable(0, 0)
-    dialog.focus_force()
-    dialog.focus_get()
-    dialog.focus_set()
     dialog.grab_set()
 
 
@@ -23,6 +20,7 @@ def button_click_event():
             if nova == confir:
                 if len(nova) >=4 and len(confir)>=4:
                     resposta.configure(text="Senha atualizada", text_color="green")
+                    Okbt.destroy()
                 else:
                     resposta.configure(text="Senha curta", text_color="red")
             else:
