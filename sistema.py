@@ -564,6 +564,7 @@ class Menu(usuario_conf, validar_acesso):
         self.BtConfiguracoes.configure(fg_color="transparent")
 
         self.FrameLateralAtual.destroy()
+        self.frameRespostaAtual.destroy()
                 
                 
         self.FrameEstoqueLateral = ctk.CTkFrame(self.rootHome, width=176, height=self.screen_height, fg_color=("white", "#880016"), corner_radius=0)
@@ -601,6 +602,7 @@ class Menu(usuario_conf, validar_acesso):
         self.BtConfiguracoes.configure(fg_color="transparent")
 
         self.FrameLateralAtual.destroy()
+        self.frameRespostaAtual.destroy()
                 
                 
         self.FrameCadastroLateral = ctk.CTkFrame(self.rootHome, width=176, height=self.screen_height, fg_color=("white", "#880016"), corner_radius=0)
@@ -664,6 +666,7 @@ class Menu(usuario_conf, validar_acesso):
         self.BtConfiguracoes.configure(fg_color="transparent")
 
         self.FrameLateralAtual.destroy()
+        self.frameRespostaAtual.destroy()
                 
                 
         self.FramecarteiraLateral = ctk.CTkFrame(self.rootHome, width=176, height=self.screen_height, fg_color=("white", "#880016"), corner_radius=0)
@@ -697,7 +700,7 @@ class Menu(usuario_conf, validar_acesso):
         self.BtConfiguracoes.configure(fg_color="transparent")
 
         self.FrameLateralAtual.destroy()
-                
+        self.frameRespostaAtual.destroy()
                 
         self.FramefinancasLateral = ctk.CTkFrame(self.rootHome, width=176, height=self.screen_height, fg_color=("white", "#880016"), corner_radius=0)
         self.FramefinancasLateral.grid(row=0,column=1)
