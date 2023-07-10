@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from tkinter import filedialog
 import mysql.connector
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk,  ImageDraw
 import base64
 import binascii
 import io
@@ -58,10 +58,31 @@ class mysql_bd:
         self.conexao.close()
         print('Conexãoao banco de dados foi encerrada')
 
-class validar_acesso():
+class validar_acesso(mysql_bd):
     def validar(self):
-        usuario = self.LoginDigitado.get()
-        print(login)
+        self.usuario_logado = self.LoginDigitado.get()
+        self.senha_logado = self.SenhaDigitado.get()
+
+        if len(self.usuario_logado) ==0 or len(self.senha_logado) ==0:
+            msgbox("Login", "Preencha todos os campos", 0)
+        else:
+            self.conexao_login = self.conecta_bd()
+            cursor = self.conexao_login.cursor()
+            cursor.execute(f"SELECT * FROM Usuarios WHERE usuario = '{self.usuario_logado}' AND senha = '{self.senha_logado}' ")
+            resultado = cursor.fetchall()
+            if resultado:
+                msgbox("Login", "BEM VINDO",0)
+                self.desconeta_bd
+                self.frame_Inicial()
+                
+            else:
+                msgbox("Login", "Login ou senha incorretos, Tente novamente",0)
+                self.desconeta_bd()
+
+    def Novo_Usuario(self):
+        print("em construção")
+
+
 
     
 
@@ -70,25 +91,40 @@ class icone_empresa(mysql_bd):
     def verificar_foto(self, label_img, usuario):
         
 
-        conexao = self.conecta_bd()
-        cursor = conexao.cursor()
-
+        
+        cursor = self.conexao_login.cursor()
         # Buscar a imagem no banco de dados
-        cursor.execute(f"SELECT * FROM foto_perfil WHERE usuario = '{usuario}'")
+        cursor.execute(f"SELECT * FROM Usuarios WHERE usuario = '{usuario}'")
         result = cursor.fetchone()
 
         if result:
             
             print(f"encontrado {usuario}")
             # Converter o valor binário para imagem
-            image_binary = result[2]  # A coluna 'img' é o índice 2 no resultado
+            image_binary = result[4]  # A coluna 'img' é o índice 2 no resultado
             image = Image.open(io.BytesIO(image_binary))
 
             # Redimensionar a imagem se necessário
             image = image.resize((100, 100))
+            # Crie uma nova imagem circular de fundo transparente
+            image_circular = Image.new("RGBA", image.size, (0, 0, 0, 0))
 
-            # Converter a imagem para o formato suportado pelo Tkinter
-            photo = ImageTk.PhotoImage(image)
+            # Crie um objeto de desenho
+            draw = ImageDraw.Draw(image_circular)
+
+            # Calcule as coordenadas do círculo
+            center_x = image_circular.width // 2
+            center_y = image_circular.height // 2
+            radius = min(center_x, center_y)
+
+            # Desenhe o círculo
+            draw.ellipse((center_x - radius, center_y - radius, center_x + radius, center_y + radius), fill="white")
+
+            # Recorte a imagem usando o círculo como máscara
+            image_circular.paste(image, (0, 0), mask=image_circular)
+
+            # Converter a imagem circular para o formato suportado pelo Tkinter
+            photo = ImageTk.PhotoImage(image_circular)
             # Atualizar o widget Label com a nova imagem
             label_img.configure(image=photo, text="")
             label_img.image = photo
@@ -124,9 +160,25 @@ class icone_empresa(mysql_bd):
 
         # Redimensionar a imagem se necessário
         image = image.resize((100, 100))
+        # Crie uma nova imagem circular de fundo transparente
+        image_circular = Image.new("RGBA", image.size, (0, 0, 0, 0))
 
-        # Converter a imagem para o formato suportado pelo Tkinter
-        photo = ImageTk.PhotoImage(image)
+        # Crie um objeto de desenho
+        draw = ImageDraw.Draw(image_circular)
+
+        # Calcule as coordenadas do círculo
+        center_x = image_circular.width // 2
+        center_y = image_circular.height // 2
+        radius = min(center_x, center_y)
+
+        # Desenhe o círculo
+        draw.ellipse((center_x - radius, center_y - radius, center_x + radius, center_y + radius), fill="white")
+
+        # Recorte a imagem usando o círculo como máscara
+        image_circular.paste(image, (0, 0), mask=image_circular)
+
+        # Converter a imagem circular para o formato suportado pelo Tkinter
+        photo = ImageTk.PhotoImage(image_circular)
 
         # Atualizar o widget Label com a nova imagem
         label_img.configure(image=photo, text="")
@@ -141,15 +193,14 @@ class icone_empresa(mysql_bd):
         image_binary = binascii.a2b_base64(image_base64)
 
         # Verificar se já existe uma imagem com o ID 1
-        cursor.execute(f"SELECT COUNT(*) FROM foto_perfil WHERE usuario = '{usuario}'")
+        cursor.execute(f"SELECT COUNT(*) FROM Usuarios WHERE usuario = '{usuario}'")
         count = cursor.fetchone()[0]
 
         if count > 0:
             # Atualizar a imagem existente
-            cursor.execute("UPDATE foto_perfil SET img = %s WHERE usuario = %s", (image_binary, usuario))
+            cursor.execute("UPDATE Usuarios SET img = %s WHERE usuario = %s", (image_binary, usuario))
         else:
-            # Inserir uma nova imagem
-            cursor.execute("INSERT INTO foto_perfil (id, usuario, img) VALUES (%s, %s, %s)", (count+1, usuario, image_binary))
+            msgbox("ERRO", "NAO ENCONTRADO USUARIO NO BD PARA INSERIR A NOVA IMAGEM",0)
 
         # Salvar as alterações e fechar a conexão
         conexao.commit()
@@ -157,15 +208,60 @@ class icone_empresa(mysql_bd):
 
 class usuario_conf(icone_empresa):
     def iniciar_img_perfil(self, labelIMG):
+
         imagem = labelIMG
+
         self.verificar_foto(imagem, usuario="anubis")
-    def trocar_img_perfil(self, frame_resp, labelIMG):
-        imagem = labelIMG
-        def button_click():
+
+    def usuario_funcs(self, frame_resp, labelIMG):
+        
+        titulo = ctk.CTkFont(family='Open Sans', size=14, weight="bold")
+        corpo = ctk.CTkFont(family='Open Sans', size=14)
+        
+        def Trocar_img():
+            imagem = labelIMG
             self.select_image(imagem, usuario="anubis")
 
-        bt = ctk.CTkButton(frame_resp, text="alterar img", command=button_click)
-        bt.place(x=50, y=50)
+        painel_bt = ctk.CTkButton(frame_resp, text="", width=1200, height=90, border_width=1, fg_color="transparent", hover_color=("#FBECEC", "gray14"))
+        painel_bt.place(relx=0.4, rely=0.1, anchor="center")
+        label = ctk.CTkLabel(painel_bt, text="Foto de perfil", font=titulo, fg_color="transparent")
+        label.place(x=10,y=5)
+        bt = ctk.CTkButton(painel_bt, text="Alterar", command=Trocar_img, fg_color=("#323232"), hover_color='#191919')
+        bt.place(x=10,y=50)
+
+
+        def Editar_Usuario():
+            dialog = ctk.CTkInputDialog(text="Informe seu novo Usuario:", title="Editar",button_fg_color=("#323232"), button_hover_color='#191919')
+            resp = dialog.get_input()
+            if resp:
+                label22.configure(text=resp)
+
+        painel_bt2 = ctk.CTkButton(frame_resp, text="", width=1200, height=90, border_width=1, fg_color="transparent", hover_color=("#FBECEC", "gray14"))
+        painel_bt2.place(relx=0.4, rely=0.25, anchor="center")
+        label2 = ctk.CTkLabel(painel_bt2, text="Usuario", font=titulo, fg_color="transparent")
+        label2.place(x=10,y=5)
+        label22 = ctk.CTkLabel(painel_bt2, text=f"{self.usuario_logado}", font=corpo, fg_color="transparent")
+        label22.place(x=10,y=50)
+        bt2 = ctk.CTkButton(painel_bt2, text="Editar", fg_color=("#323232"), hover_color='#191919', command=Editar_Usuario)
+        bt2.place(x=120,y=30)
+
+
+        painel_bt3 = ctk.CTkButton(frame_resp, text="", width=1200, height=90, border_width=1, fg_color="transparent", hover_color=("#FBECEC", "gray14"))
+        painel_bt3.place(relx=0.4, rely=0.4, anchor="center")
+        label3 = ctk.CTkLabel(painel_bt3, text="Senha", font=titulo, fg_color="transparent")
+        label3.place(x=10,y=5)
+        bt3 = ctk.CTkButton(painel_bt3, text="Alterar", fg_color=("#323232"), hover_color='#191919')
+        bt3.place(x=10,y=50)
+
+
+
+        painel_bt4 = ctk.CTkButton(frame_resp, text="", width=1200, height=90, border_width=1, fg_color="transparent", hover_color=("#FBECEC", "gray14"))
+        painel_bt4.place(relx=0.4, rely=0.55, anchor="center")
+        label4 = ctk.CTkLabel(painel_bt4, text="Conta", font=titulo, fg_color="transparent")
+        label4.place(x=10,y=5)
+        bt4 = ctk.CTkButton(painel_bt4, text="Excluir Conta", fg_color=("#323232"), hover_color='#191919')
+        bt4.place(x=10,y=50)
+
 
 class Menu(usuario_conf, validar_acesso):  
     def __init__(self):
@@ -280,6 +376,10 @@ class Menu(usuario_conf, validar_acesso):
 
         self.FaturamentoIcon = ctk.CTkImage(light_image=Image.open(os.path.join(self.image_path, "faturamento_black.png")),
                             dark_image=Image.open(os.path.join(self.image_path, "faturamento_light.png")), size=(17, 17))
+        
+
+        self.perfilIcon = ctk.CTkImage(light_image=Image.open(os.path.join(self.image_path, "perfil.png")),
+                    dark_image=Image.open(os.path.join(self.image_path, "perfil.png")), size=(80, 80))
 
 
         # __________________________________________________________________________________
@@ -287,15 +387,22 @@ class Menu(usuario_conf, validar_acesso):
         LabelTxt = ctk.CTkLabel(self.Root_login, text="Bem Vindo", font=self.FontTitle)
         LabelTxt.place(relx=0.5, rely=0.2, anchor="center")
 
+        def mostrar_senha():
+            if self.MostrarSenha.get():
+                self.SenhaDigitado.configure(show="")
+            else:
+                self.SenhaDigitado.configure(show="*")
+
+
 
         self.LoginDigitado = ctk.CTkEntry(self.Root_login, placeholder_text="Digite seu login", width=200)
         self.LoginDigitado.place(relx=0.5,rely=0.3, anchor='center')
 
-        self.SenhaDigitado = ctk.CTkEntry(self.Root_login, placeholder_text="Digite sua senha", width=200)
+        self.SenhaDigitado = ctk.CTkEntry(self.Root_login, placeholder_text="Digite sua senha", width=200, show="*")
         self.SenhaDigitado.place(relx=0.5,rely=0.4, anchor='center')
 
-        self.MostrarSenha = ctk.CTkCheckBox(self.Root_login, text="Mostrar senha", font=self.FontBody)
-        self.MostrarSenha.place(relx=0.5, rely=0.5, anchor="center")
+        self.MostrarSenha = ctk.CTkCheckBox(self.Root_login, text="Mostrar senha", font=self.FontBody, command=mostrar_senha)
+        self.MostrarSenha.place(relx=0.5, rely=0.5, anchor="center") 
 
         self.BtEntrar = ctk.CTkButton(self.Root_login, text="Entrar",command=self.validar, hover_color= ("#880016", "#880016"),
                                       text_color = ("white", "white"))
@@ -380,7 +487,7 @@ class Menu(usuario_conf, validar_acesso):
 
 
 
-        self.foto_perfil = ctk.CTkLabel(self.frame_MenuLateralEsq, text="Carregando", width=80, height=80, fg_color='gray')
+        self.foto_perfil = ctk.CTkLabel(self.frame_MenuLateralEsq, text="", image=self.perfilIcon)
         self.foto_perfil.place(relx=0.5, rely=0.07, anchor="center")
 
 
@@ -393,8 +500,8 @@ class Menu(usuario_conf, validar_acesso):
 
         self.FrameLateralAtual = self.frame_OcultarMenu   
         self.frameRespostaAtual = self.frame_temp
+       
         self.iniciar_img_perfil(self.foto_perfil)
-
         self.Frame_Home()
         self.rootHome.protocol("WM_DELETE_WINDOW", fecharSistemaa)
         self.rootHome.mainloop()
@@ -416,6 +523,7 @@ class Menu(usuario_conf, validar_acesso):
     def Frame_Home(self):
         self.FrameLateralAtual.destroy()
         self.frameRespostaAtual.destroy()
+        
         
         self.frame_OcultarMenu = ctk.CTkFrame(self.rootHome, width=37, height=self.screen_height, corner_radius=0, fg_color=("white", "#880016"))
         self.frame_OcultarMenu.grid(row=0,column=1)
@@ -636,7 +744,7 @@ class Menu(usuario_conf, validar_acesso):
         self.BtOcultar = ctk.CTkButton(self.FrameLateralAtual,text="", image=self.MenuIcon, anchor="w", width=23, height=23,  fg_color="transparent", command=self.ocultarJanela)
         self.BtOcultar.place(x=0,y=1)   
 
-        self.trocar_img_perfil(self.FrameUsuarioresposta, self.foto_perfil)
+        self.usuario_funcs(self.FrameUsuarioresposta, self.foto_perfil)
     
     def Frame_Configuracoes(self):
         self.BtHome.configure(fg_color="transparent")
