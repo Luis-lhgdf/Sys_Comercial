@@ -35,7 +35,6 @@ def fecharSistemaa():
     resp = msgbox("Confirmação",
                 "Deseja encerrar o sistema?", 4)
     if resp==6:
-        
         sys.exit()
 
 class mysql_bd:
@@ -66,16 +65,16 @@ class validar_acesso(mysql_bd):
         if len(self.usuario_logado) ==0 or len(self.senha_logado) ==0:
             msgbox("Login", "Preencha todos os campos", 0)
         else:
-            self.conexao_login = self.conecta_bd()
-            cursor = self.conexao_login.cursor()
-            cursor.execute(f"SELECT * FROM Usuarios WHERE usuario = '{self.usuario_logado}' AND senha = '{self.senha_logado}' ")
+            self.conexaoBD = self.conecta_bd()
+            cursor = self.conexaoBD.cursor()
+            cursor.execute(f"SELECT * FROM Usuarios WHERE BINARY usuario = '{self.usuario_logado}' AND senha = '{self.senha_logado}' AND status = '{'ativo'}'")
             resultado = cursor.fetchall()
             if resultado:
-                cursor.execute(f"SELECT acesso FROM Usuarios where usuario = '{self.usuario_logado}' ")
+                cursor.execute(f"SELECT acesso FROM Usuarios  WHERE BINARY  usuario = '{self.usuario_logado}' ")
 
                 self.acesso_usuario = str(cursor.fetchall()[0][0])
                 msgbox("Login", f"Bem vindo(a) {self.usuario_logado}",0)
-                self.desconeta_bd
+                
                 self.frame_Inicial()
                 
             else:
@@ -85,26 +84,21 @@ class validar_acesso(mysql_bd):
     def Novo_Usuario(self):
         print("em construção")
 
-
-
-    
-
 class trocar_imgORlogo(mysql_bd):
 
     def verificar_foto(self, label_img, usuario):
         
 
         
-        cursor = self.conexao_login.cursor()
+        cursor = self.conexaoBD.cursor()
         # Buscar a imagem no banco de dados
-        cursor.execute(f"SELECT * FROM Usuarios WHERE usuario = '{usuario}'")
+        cursor.execute(f"SELECT img FROM Usuarios WHERE BINARY usuario = '{usuario}'")
         result = cursor.fetchone()
 
-        if result:
-            
-            print(f"encontrado {usuario}")
+        if result[0] != None:
+
             # Converter o valor binário para imagem
-            image_binary = result[4]  # A coluna 'img' é o índice 2 no resultado
+            image_binary = result[0]  # A coluna 'img' é o índice 2 no resultado
             image = Image.open(io.BytesIO(image_binary))
 
             # Redimensionar a imagem se necessário
@@ -135,8 +129,7 @@ class trocar_imgORlogo(mysql_bd):
         else:
             print("não existe nenhuma img no banco de dados")
 
-        # Fechar a conexão com o banco de dados
-        self.desconeta_bd()
+
     
     def select_image(self, label_img, usuario): # Função para selecionar a imagem
         # Abrir o diálogo de seleção de arquivo
@@ -189,8 +182,8 @@ class trocar_imgORlogo(mysql_bd):
    
     def insert_image(self,image_base64, usuario):  # Função para inserir ou atualizar a img no BD
 
-        conexao = self.conecta_bd()
-        cursor = conexao.cursor()
+        
+        cursor = self.conexaoBD.cursor()
 
         # Converter a imagem base64 para dados binários
         image_binary = binascii.a2b_base64(image_base64)
@@ -206,8 +199,180 @@ class trocar_imgORlogo(mysql_bd):
             msgbox("ERRO", "NAO ENCONTRADO USUARIO NO BD PARA INSERIR A NOVA IMAGEM",0)
 
         # Salvar as alterações e fechar a conexão
-        conexao.commit()
-        conexao.close()
+        self.conexaoBD.commit()
+
+class cadastro_conf():
+   
+    def gerenciar_user(self, frame_resp):
+        if self.acesso_usuario == "adm":
+            titulo = ctk.CTkFont(family='Open Sans', size=14, weight="bold")
+            
+            cursor = self.conexaoBD.cursor()
+            cursor.execute("SELECT usuario, acesso, status FROM Usuarios")
+            resultado = cursor.fetchall()
+
+            usuarios = []
+            status = []
+            acesso = []
+
+            for i, user in enumerate(resultado):
+                usuarios.append(user[0])
+                status.append(user[1])
+                acesso.append(user[2])
+
+
+            def salvar_usuario(i, usuario_entry, status_menu, acesso_menu):
+                editar_button[i].configure(state="normal")
+                # Salva as alterações nas listas
+
+                cursor.execute(f"SELECT usuario FROM Usuarios WHERE BINARY usuario = '{usuario_entry.get()}'")
+                resp = cursor.fetchall()
+                if not resp:
+                    cursor.execute(f"UPDATE Usuarios SET usuario = '{usuario_entry.get()}' WHERE BINARY usuario = '{usuarios[i]}'")
+                    self.conexaoBD.commit()
+                    usuarios[i] = usuario_entry.get()
+                    status[i] = status_menu.get()
+                    acesso[i] = acesso_menu.get()
+                    # Atualiza os rótulos com as novas informações
+                    usuario_label[i].configure(text=usuarios[i])
+                    status_label[i].configure(text=status[i])
+                    acesso_label[i].configure(text=acesso[i])
+                    # Mostra os rótulos e esconde os campos de entrada
+                    usuario_label[i].grid()
+                    status_label[i].grid()
+                    acesso_label[i].grid()
+                    usuario_entry.grid_remove()
+                    status_menu.grid_remove()
+                    acesso_menu.grid_remove()
+
+                    salvar_button[i].grid_remove()
+                    cancelar_button[i].grid_remove()
+                    excluir_button[i].grid_remove()
+                    editar_button[i].grid()
+                else:
+                    msgbox("USUARIO", "Ja existe um usuario com este nome!!!", 0)
+
+            def excluir_usuario(i, usuario_entry, status_menu, acesso_menu):
+                resp = msgbox("EXCLUIR USUARIO", "Deseja realmente excluir este usuario?", 4)
+
+
+                if resp == 6:
+                    editar_button[i].configure(state="normal")
+                    # Salva as alterações nas listas
+                    print(usuarios[i])
+
+                    cursor.execute(f"delete from Usuarios where binary usuario ='{usuarios[i]}' ")
+
+                    self.conexaoBD.commit()
+                    usuarios.pop(i)
+                    status.pop(i) 
+                    acesso.pop(i) 
+                
+                    # Atualiza os rótulos com as novas informações
+
+                    usuario_label[i].destroy()
+                    status_label[i].destroy()
+                    acesso_label[i].destroy()
+
+                    usuario_entry.grid_remove()
+                    status_menu.grid_remove()
+                    acesso_menu.grid_remove()
+
+
+                    salvar_button[i].destroy()
+                    cancelar_button[i].destroy()
+                    excluir_button[i].destroy()
+                    editar_button[i].destroy()
+
+            def cancelar_usuario(i, usuario_entry, status_menu, acesso_menu):
+                editar_button[i].configure(state="normal")
+
+                # Descarta as alterações e esconde os campos de entrada
+                usuario_entry.grid_remove()
+                status_menu.grid_remove()
+                acesso_menu.grid_remove()
+
+                usuario_label[i].grid(row=i, column=0)
+                
+
+                status_label[i].grid(row=i, column=1)
+                
+
+                acesso_label[i].grid(row=i, column=2)
+
+
+
+
+                salvar_button[i].grid_remove()
+                cancelar_button[i].grid_remove()
+                excluir_button[i].grid_remove()
+                editar_button[i].grid()
+
+            def editar_usuario(i):
+                # Cria os campos de entrada com as informações atuais do usuário
+                editar_button[i].configure(state="disabled")
+
+
+                usuario_entry = ctk.CTkEntry(scrol,  width=100)
+                usuario_entry.insert(0, usuarios[i])
+                usuario_entry.grid(padx=2, pady=5,row=i, column=0)
+
+                acesso_menu =  ctk.CTkOptionMenu(scrol, values=("usuario", "adm"),width=100, height=26)
+                acesso_menu.grid(padx=2, pady=5,row=i, column=1)
+                
+                
+                status_menu = ctk.CTkOptionMenu(scrol, values=("ativo", "desativado"), width=100, height=26)
+                status_menu.grid(padx=2, pady=5,row=i, column=2)
+                
+
+
+                
+                # Cria os botões Salvar e Cancelar
+                salvar_button[i] = ctk.CTkButton(scrol, text="", image=self.SalvarIcon, width=60,  fg_color=("transparent"), hover_color=("white", '#191919'), command=lambda: salvar_usuario(i, usuario_entry, status_menu, acesso_menu))
+                salvar_button[i].grid(row=i, column=4)
+                
+                cancelar_button[i] =ctk.CTkButton(scrol, text="",image=self.VoltarIcon, width=60,  fg_color=("transparent"), hover_color=("white", '#191919'), command=lambda: cancelar_usuario(i, usuario_entry, status_menu, acesso_menu))
+                cancelar_button[i].grid(padx=5, row=i, column=5)
+
+                excluir_button[i] =ctk.CTkButton(scrol, text="",image=self.DeletarIcon, width=60, fg_color=("transparent"), hover_color=("white", '#191919'), command=lambda: excluir_usuario(i, usuario_entry, status_menu, acesso_menu))
+                excluir_button[i].grid(padx=5, row=i, column=6)
+                
+                # Esconde os rótulos e o botão Editar
+                usuario_label[i].grid_remove()
+                status_label[i].grid_remove()
+                acesso_label[i].grid_remove()
+                
+            usuario_label = []
+            status_label = []
+            acesso_label = []
+            editar_button = []
+            salvar_button = [None] * len(usuarios)
+            cancelar_button = [None] * len(usuarios)
+            excluir_button = [None] * len(usuarios)
+
+
+            # criando scrolframe com label de cabeçalho
+            cabeçalho = ctk.CTkLabel(frame_resp, text="       Usuario             Acesso             Status", 
+                                    width=723,corner_radius=5, fg_color=("white", "gray10"), text_color=("black", "white"), anchor="w", font=titulo)
+            cabeçalho.place(x=1, y=4)
+            scrol = ctk.CTkScrollableFrame(frame_resp, width=700, height=50)
+            scrol.place(x=1,y=28)
+
+
+
+            # adicionado nas lista os botoes com cada usuario cadastrado no banco de dados
+            for i in range(len(usuarios)):
+                usuario_label.append(ctk.CTkLabel(scrol, text=usuarios[i], fg_color="white", anchor="w", width=100, corner_radius=6, text_color=("black")))
+                usuario_label[i].grid(padx=2, pady=5, row=i, column=0)
+                
+                status_label.append(ctk.CTkLabel(scrol, text=status[i], fg_color="white", anchor="w", width=100, corner_radius=6, text_color=("black")))
+                status_label[i].grid(padx=2, pady=5, row=i, column=1)
+                
+                acesso_label.append(ctk.CTkLabel(scrol, text=acesso[i],  fg_color="white", anchor="w", width=100, corner_radius=6, text_color=("black")))
+                acesso_label[i].grid(padx=2,pady=5, row=i, column=2)
+                
+                editar_button.append(ctk.CTkButton(scrol, text="", image=self.EditarIcon, width=60, fg_color=("transparent"), hover_color=("white", '#191919'), command=lambda i=i: editar_usuario(i)))
+                editar_button[i].grid(padx=60,pady=5, row=i, column=3)
 
 class usuario_conf(trocar_imgORlogo):
     def iniciar_img_perfil(self, labelIMG):
@@ -234,15 +399,13 @@ class usuario_conf(trocar_imgORlogo):
 
 
         def Editar_Usuario():
-            dialog = ctk.CTkInputDialog(text="Informe seu novo Usuario:", title="Editar",button_fg_color=("#323232"), button_hover_color='#191919')
+            dialog = ctk.CTkInputDialog(text="DIGITE SEU NOVO NOME DE USUARIO:", title="Editar",button_fg_color=("#323232"), button_hover_color='#191919')
             resp = dialog.get_input()
             if resp:
-                conexao = self.conecta_bd()
-                cursor = conexao.cursor()
+                cursor = self.conexaoBD.cursor()
                 cursor.execute(f"UPDATE Usuarios SET usuario = '{resp}' WHERE usuario = '{self.usuario_logado}'")
                 self.usuario_logado = str(resp)
-                conexao.commit()
-                conexao.close()
+                self.conexaoBD.commit()
                 label22.configure(text=resp)
 
         painel_bt2 = ctk.CTkButton(frame_resp, text="", width=1000, height=90, border_width=1, fg_color="transparent", hover_color=("#FBECEC", "gray14"))
@@ -262,8 +425,6 @@ class usuario_conf(trocar_imgORlogo):
         bt2.place(x=165,y=28)
 
 
-
-
         def Trocar_senha():
          
             dialog = ctk.CTkToplevel()
@@ -271,61 +432,93 @@ class usuario_conf(trocar_imgORlogo):
             dialog.resizable(0, 0)
             dialog.grab_set()
 
+            def requisitos_atual(event):
+                msgatual = ctk.CTkLabel(dialog, text="Senha atual", height=3)
+                msgatual.place(relx=0.15, rely=0.2, anchor="center")
+
+
+            def requisitos_senha1(event):
+                nova = str(NovaSenha.get())
+                if len(nova) <=5:
+                    msgnova = ctk.CTkLabel(dialog, text="Nova senha", height=3)
+                    msgnova.place(relx=0.15, rely=0.4, anchor="center")
+                    resposta.configure(text="Sua senha deve ter no minimo 6 caracteres.", text_color="red")
+                    Okbt.configure(state="disabled")
+                else:
+                    resposta.configure(text="", text_color="green")
+                    
+                    if len(str(ConfirmaçãoSenha.get())) >5:
+                        Okbt.configure(state="normal")
+                    
+
+            def requisitos_senha2(event):
+                nova = str(NovaSenha.get())
+                confir = str(ConfirmaçãoSenha.get())
+
+                msgconfir = ctk.CTkLabel(dialog, text="Redigite a nova senha", height=3)
+                msgconfir.place(relx=0.23, rely=0.6, anchor="center")
+
+                if confir == nova and len(confir) >5:
+                    resposta.configure(text="", text_color="Green")
+                    Okbt.configure(state="normal")
+                    if len(nova) >5:
+                        Okbt.configure(state="normal")
+                    
+                else:
+                    resposta.configure(text="A nova senha não é igual à redigitada.", text_color="red")
+                    Okbt.configure(state="disabled")
+
+
+
 
             def salvar():
                 atual = str(SenhaAtual.get())
                 nova = str(NovaSenha.get())
-                confir = str(ConfirmaçãoSenha.get())
-                conexao = self.conecta_bd()
-                cursor = conexao.cursor()
-                
+    
+                cursor = self.conexaoBD.cursor()
                 cursor.execute(f"SELECT senha FROM Usuarios WHERE usuario = '{self.usuario_logado}' AND senha = '{atual}'")
-                resposta_bd = cursor.fetchall()
+                resultado_bd = cursor.fetchall()
+                
+
+                if resultado_bd:
+                    cursor.execute(f"UPDATE Usuarios SET senha = '{nova}' WHERE usuario = '{self.usuario_logado}'")
+                    self.conexaoBD.commit()
+                    resposta.configure(text="Senha atualizada com sucesso!", text_color="green")
+                    Okbt.configure(state="disabled")
+                else:   
+                    resposta.configure(text="Senha atual esta incorreta", text_color="red")
 
 
-
-                if resposta_bd:
-                    if nova == confir:
-                        if len(nova) >=4 and len(confir)>=4:
-                            cursor.execute(f"UPDATE Usuarios SET senha = '{nova}' WHERE usuario = '{self.usuario_logado}'")
-                            conexao.commit()
-                            resposta.configure(text="Senha atualizada", text_color="green")
-                            Okbt.destroy()
-                        else:
-                            resposta.configure(text="Senha curta", text_color="red")
-                    else:
-                        resposta.configure(text="As senhas nao conferem", text_color="red")
-                else:
-      
-                    resposta.configure(text="As senhas nao conferem", text_color="red")
                     
             def fechar():
-                self.desconeta_bd()
+               
                 dialog.destroy()
 
 
-            msg = ctk.CTkLabel(dialog, text="Informe os dados da sua nova senha")
+            msg = ctk.CTkLabel(dialog, text="TROCAR SENHA", font=titulo)
             msg.place(relx=0.5, rely=0.1, anchor="center")
 
             SenhaAtual = ctk.CTkEntry(dialog, placeholder_text="Digite sua senha atual", width=320)
             SenhaAtual.place(relx=0.5, rely=0.3, anchor="center")
+            SenhaAtual.bind('<KeyRelease>', requisitos_atual)
 
             NovaSenha = ctk.CTkEntry(dialog, placeholder_text="Digite sua nova senha", width=320, show="*")
             NovaSenha.place(relx=0.5, rely=0.5, anchor="center")
+            NovaSenha.bind('<KeyRelease>', requisitos_senha1)
 
             ConfirmaçãoSenha = ctk.CTkEntry(dialog, placeholder_text="Confirmar nova senha", width=320, show="*")
-            ConfirmaçãoSenha.place(relx=0.5, rely=0.7, anchor="center")
+            ConfirmaçãoSenha.place(relx=0.5, rely=0.7, anchor="center"),
+            ConfirmaçãoSenha.bind('<KeyRelease>', requisitos_senha2)
 
             resposta = ctk.CTkLabel(dialog, text="", height=2)
             resposta.place(relx=0.5, rely=0.81, anchor="center")
 
-            Okbt = ctk.CTkButton(dialog, text="SALVAR", command=salvar)
+            Okbt = ctk.CTkButton(dialog, text="SALVAR", fg_color=("#323232"), hover_color='#191919', command=salvar, state='disabled')
             Okbt.place(relx=0.25, rely=0.92, anchor="center")
 
-            CancelarBT = ctk.CTkButton(dialog, text="Fechar", command=fechar)
+            CancelarBT = ctk.CTkButton(dialog, text="Fechar", fg_color=("#323232"), hover_color='#191919', command=fechar)
             CancelarBT.place(relx=0.75, rely=0.92, anchor="center")
      
-
         painel_bt3 = ctk.CTkButton(frame_resp, text="", width=1000, height=90, border_width=1, fg_color="transparent", hover_color=("#FBECEC", "gray14"))
         painel_bt3.place(relx=0.02, rely=0.4, anchor="w")
         label3 = ctk.CTkLabel(painel_bt3, text="Senha", font=titulo, fg_color="transparent")
@@ -333,17 +526,49 @@ class usuario_conf(trocar_imgORlogo):
         bt3 = ctk.CTkButton(painel_bt3, text="Alterar", fg_color=("#323232"), hover_color='#191919', command=Trocar_senha)
         bt3.place(x=10,y=50)
 
+        def Excluir_conta():
+            
+            dialog = ctk.CTkToplevel()
+            dialog.geometry("340x120")
+            dialog.resizable(0, 0)
+            dialog.grab_set()
+
+        
+            def fechar():
+                dialog.destroy()
+
+            def conta_delete():
+                cursor = self.conexao.cursor()
+                cursor.execute(f"DELETE FROM Usuarios where usuario = '{self.usuario_logado}'")
+                self.conexaoBD.commit()
+                dialog.destroy()
+                self.rootHome.destroy()
+                self.Root_login.deiconify()
+  
+
+                
+                 
+                 
+
+            msg = ctk.CTkLabel(dialog, text="DESEJA REALMENTE EXCLUIR SUA CONTA?", font=titulo)
+            msg.place(relx=0.5, rely=0.1, anchor="center")
+
+            Okbt = ctk.CTkButton(dialog, text="EXCLUIR", fg_color=("#323232"), hover_color='#191919', command=conta_delete)
+            Okbt.place(relx=0.25, rely=0.79, anchor="center")
+
+            CancelarBT = ctk.CTkButton(dialog, text="Fechar", fg_color=("#323232"), hover_color='#191919', command=fechar)
+            CancelarBT.place(relx=0.75, rely=0.79, anchor="center")
+    
 
 
         painel_bt4 = ctk.CTkButton(frame_resp, text="", width=1000, height=90, border_width=1, fg_color="transparent", hover_color=("#FBECEC", "gray14"))
         painel_bt4.place(relx=0.02, rely=0.55, anchor="w")
         label4 = ctk.CTkLabel(painel_bt4, text="Conta", font=titulo, fg_color="transparent")
         label4.place(x=10,y=5)
-        bt4 = ctk.CTkButton(painel_bt4, text="Excluir Conta", fg_color=("#323232"), hover_color='#191919')
+        bt4 = ctk.CTkButton(painel_bt4, text="Excluir Conta", fg_color=("#323232"), hover_color='#191919', command=Excluir_conta)
         bt4.place(x=10,y=50)
 
-
-class Menu(usuario_conf, validar_acesso):  
+class Menu(usuario_conf, validar_acesso, cadastro_conf):  
     def __init__(self):
         super().__init__()
         # tela de login
@@ -421,7 +646,7 @@ class Menu(usuario_conf, validar_acesso):
 
 
         self.EditarIcon = ctk.CTkImage(light_image=Image.open(os.path.join(self.image_path, "editar_black.png")),
-                            dark_image=Image.open(os.path.join(self.image_path, "editar_light.png")), size=(17, 17))
+                            dark_image=Image.open(os.path.join(self.image_path, "editar_light.png")), size=(30, 30))
 
 
         self.ItemIcon = ctk.CTkImage(light_image=Image.open(os.path.join(self.image_path, "item_black.png")),
@@ -434,7 +659,7 @@ class Menu(usuario_conf, validar_acesso):
 
 
         self.VoltarIcon = ctk.CTkImage(light_image=Image.open(os.path.join(self.image_path, "voltar_black.png")),
-                            dark_image=Image.open(os.path.join(self.image_path, "voltar_light.png")), size=(17, 17))
+                            dark_image=Image.open(os.path.join(self.image_path, "voltar_light.png")), size=(30, 30))
 
 
         self.FinancasIcon = ctk.CTkImage(light_image=Image.open(os.path.join(self.image_path, "financas_black.png")),
@@ -456,6 +681,15 @@ class Menu(usuario_conf, validar_acesso):
 
         self.FaturamentoIcon = ctk.CTkImage(light_image=Image.open(os.path.join(self.image_path, "faturamento_black.png")),
                             dark_image=Image.open(os.path.join(self.image_path, "faturamento_light.png")), size=(17, 17))
+
+        self.GerenciarUserIcon = ctk.CTkImage(light_image=Image.open(os.path.join(self.image_path, "gerenciarUser_black.png")),
+                    dark_image=Image.open(os.path.join(self.image_path, "gerenciarUser_light.png")), size=(17, 17))
+
+        self.DeletarIcon = ctk.CTkImage(light_image=Image.open(os.path.join(self.image_path, "deletar_black.png")),
+            dark_image=Image.open(os.path.join(self.image_path, "deletar_light.png")), size=(30, 30))
+        
+        self.SalvarIcon = ctk.CTkImage(light_image=Image.open(os.path.join(self.image_path, "salvar_black.png")),
+            dark_image=Image.open(os.path.join(self.image_path, "salvar_light.png")), size=(30, 30))    
         
 
         self.perfilIcon = ctk.CTkImage(light_image=Image.open(os.path.join(self.image_path, "perfil.png")),
@@ -473,7 +707,13 @@ class Menu(usuario_conf, validar_acesso):
             else:
                 self.SenhaDigitado.configure(show="*")
 
-
+        
+        def ativar_enter(event):
+            self.validar()
+            
+            # Aqui você pode adicionar a lógica que deseja executar quando a tecla Enter for pressionada
+            # Por exemplo, você pode chamar uma função de verificação de login ou qualquer outra ação desejada
+            print("Tecla Enter pressionada!")
 
         self.LoginDigitado = ctk.CTkEntry(self.Root_login, placeholder_text="Digite seu login", width=200)
         self.LoginDigitado.place(relx=0.5,rely=0.3, anchor='center')
@@ -487,6 +727,15 @@ class Menu(usuario_conf, validar_acesso):
         self.BtEntrar = ctk.CTkButton(self.Root_login, text="Entrar",command=self.validar, hover_color= ("#880016", "#880016"),
                                       text_color = ("white", "white"))
         self.BtEntrar.place(relx=0.5, rely=0.6, anchor="center")
+        self.BtEntrar.bind("<Return>", ativar_enter)
+        
+        # Crie um estilo para o botão com a borda alterada quando estiver com foco
+
+
+
+
+# Vincule o evento de pressionar a tecla Enter ao botão BtEntrar
+
 
 
         LabelLogo = ctk.CTkLabel(self.Root_login, text="", image=self.SeuLogo)
@@ -567,7 +816,7 @@ class Menu(usuario_conf, validar_acesso):
 
 
 
-        self.foto_perfil = ctk.CTkLabel(self.frame_MenuLateralEsq, text="", image=self.perfilIcon)
+        self.foto_perfil = ctk.CTkButton(self.frame_MenuLateralEsq, text="", image=self.perfilIcon, command=self.Frame_Usuario, fg_color="transparent")
         self.foto_perfil.place(relx=0.5, rely=0.07, anchor="center")
 
 
@@ -583,7 +832,11 @@ class Menu(usuario_conf, validar_acesso):
        
         self.iniciar_img_perfil(self.foto_perfil)
         self.Frame_Home()
-        self.rootHome.protocol("WM_DELETE_WINDOW", fecharSistemaa)
+
+        def closesys():
+            self.desconeta_bd()
+            fecharSistemaa()
+        self.rootHome.protocol("WM_DELETE_WINDOW", closesys)
         self.rootHome.mainloop()
 
     def aparencia(self, new_appearance_mode: str):
@@ -705,6 +958,44 @@ class Menu(usuario_conf, validar_acesso):
         self.op3 = ctk.CTkButton(self.FrameLateralAtual, text="Novo Usuario", image=self.UsuarioIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
                                  hover_color= ("#ff9ea2", "black"))
         self.op3.place(x=10, y=240)  
+
+        self.op4 = ctk.CTkButton(self.FrameLateralAtual, text="Gerenciar Usuarios", image=self.GerenciarUserIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
+                                 hover_color= ("#ff9ea2", "black"), command=self.Frame_GerenciarUser)
+        self.op4.place(x=10, y=280)  
+
+    def Frame_GerenciarUser(self):
+
+        self.BtHome.configure(fg_color="transparent")
+        self.BtEstoque.configure(fg_color="transparent")
+        self.BtCadastros.configure(fg_color=("white", "#880016"))
+        self.BtAgenda.configure(fg_color="transparent")
+        self.Btcarteira.configure(fg_color="transparent")
+        self.BtFinancas.configure(fg_color="transparent")
+        self.BtUsuario.configure(fg_color="transparent")
+        self.BtConfiguracoes.configure(fg_color="transparent")
+
+        self.FrameLateralAtual.destroy()
+        self.frameRespostaAtual.destroy()
+                
+
+        self.FrameGerenciarUserLateral = ctk.CTkFrame(self.rootHome, width=37, height=self.screen_height, fg_color=("white", "#880016"), corner_radius=0)
+        self.FrameGerenciarUserLateral.grid(row=0,column=1)
+        self.FrameLateralAtual = self.FrameGerenciarUserLateral
+
+        self.FrameGerenciarUserResposta = ctk.CTkFrame(self.rootHome, fg_color="transparent", width=(self.screen_wedth), height=self.screen_height, corner_radius=0)
+        self.FrameGerenciarUserResposta.grid(row=0,column=2)
+        self.frameRespostaAtual = self.FrameGerenciarUserResposta
+
+        self.BtOcultar = ctk.CTkButton(self.FrameLateralAtual,text="", image=self.MenuIcon, anchor="w", width=23, height=23,  fg_color="transparent", command=self.ocultarJanela)
+        self.BtOcultar.place(x=0,y=1)   
+
+        
+        self.gerenciar_user(self.FrameGerenciarUserResposta)
+
+
+
+
+
 
     def Frame_Agenda(self):
 
