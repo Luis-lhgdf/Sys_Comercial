@@ -73,8 +73,6 @@ class validar_acesso(mysql_bd):
                 cursor.execute(f"SELECT acesso FROM Usuarios  WHERE BINARY  usuario = '{self.usuario_logado}' ")
 
                 self.acesso_usuario = str(cursor.fetchall()[0][0])
-                msgbox("Login", f"Bem vindo(a) {self.usuario_logado}",0)
-                
                 self.frame_Inicial()
                 
             else:

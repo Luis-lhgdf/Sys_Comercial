@@ -1,44 +1,19 @@
-import tkinter as tk
-import tkinter.ttk as ttk
-import re
+import customtkinter as ctk
 
-# Lista de nomes aleatórios
-nomes = ["Ana", "Carlos", "João", "Maria", "Pedro", "Lucas", "Lúcia", "Rafaela", "Ricardo", "Sandra"]
+root = ctk.CTk()
+root.geometry("500x500")
 
-# Função para autocompletar o input do usuário
-def autocomplete(text):
-    return [nome for nome in nomes if re.match(f'^{text}', nome, re.IGNORECASE)]
 
-# Função chamada ao selecionar um nome na lista
-def selecionar_nome(event):
-    selected_item = listbox.get(listbox.curselection())
-    entry_var.set(selected_item)
+def switch_event():
+    print("Ativar Modulo de vendas:", switch.get())
 
-# Função para filtrar a lista de nomes conforme o input do usuário
-def atualizar_autocompletar(*args):
-    listbox.delete(0, tk.END)
-    if entry_var.get():
-        suggestions = autocomplete(entry_var.get())
-        for item in suggestions:
-            listbox.insert(tk.END, item)
 
-# Criação da janela principal
-window = tk.Tk()
-window.title("Autocompletar Nomes")
-window.geometry("300x200")
 
-# Variável de controle para o Entry
-entry_var = tk.StringVar()
+switch = ctk.CTkSwitch(root, text="Ativar Modulo de venda", onvalue="on", offvalue="off", command=switch_event,width=500, height=500,)
+switch.place(x=10, y=50)
 
-# Entry para o input do usuário
-entry = ttk.Entry(window, textvariable=entry_var)
-entry.pack(pady=10)
-entry.bind("<KeyRelease>", atualizar_autocompletar)
+# switch.toggle()
 
-# Listbox para mostrar as sugestões
-listbox = tk.Listbox(window)
-listbox.pack()
 
-# Scrollbar para a Listbox
+root.mainloop()
 
-window.mainloop()
