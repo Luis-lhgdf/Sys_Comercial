@@ -1,19 +1,55 @@
-import customtkinter as ctk
+import pandas as pd
+import random
 
-root = ctk.CTk()
-root.geometry("500x500")
+# Exemplo de dados aleatórios
+modules = {
+    "Estoque": {
+        "ENTRADA": {},
+        "SAIDA": {},
+        "INVENTARIO": {}
+    },
+    "Cadastro": {
+        "CAD ITEM": {},
+        "CAD CLIENTE": {},
+        "CAD USUARIO": {},
+        "GERENCIAR USER": {}
+    },
+    "Agenda": {
+        "AGENDA": {}
+    },
+    "Carteira": {
+        "VENDAS": {},
+        "FATURAMENTO": {}
+    },
+    "Finanças": {
+        "DESPESAS": {},
+        "OUTRAS RENDAS": {}
+    },
+    "Usuario": {
+        "USUARIO": {}
+    },
+    "Configurações": {
+        "CONFIGURACOES": {}
+    }
+}
 
+for module_name, module_data in modules.items():
+    for section_name in module_data.keys():
+        section_data = {
+            "Visualizar": random.choice(["liberado", "bloqueado"]),
+            "Novo": random.choice(["liberado", "bloqueado"]),
+            "Editar": random.choice(["liberado", "bloqueado"]),
+            "Remover": random.choice(["liberado", "bloqueado"])
+        }
+        module_data[section_name] = section_data
 
-def switch_event():
-    print("Ativar Modulo de vendas:", switch.get())
+# Criar DataFrame
+data = []
+for module_name, module_data in modules.items():
+    for section_name, section_data in module_data.items():
+        row = [module_name, section_name] + list(section_data.values())
+        data.append(row)
 
-
-
-switch = ctk.CTkSwitch(root, text="Ativar Modulo de venda", onvalue="on", offvalue="off", command=switch_event,width=500, height=500,)
-switch.place(x=10, y=50)
-
-# switch.toggle()
-
-
-root.mainloop()
-
+columns = ["Módulo", "Seção", "Visualizar", "Novo", "Editar", "Remover"]
+df = pd.DataFrame(data, columns=columns)
+print(df)

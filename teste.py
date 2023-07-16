@@ -14,7 +14,16 @@ root = ctk.CTk()
 root.geometry("1000x1000")
 root.title("Editar Usuários")
 titulo = ctk.CTkFont(family='Open Sans', size=14, weight="bold")
-
+def msgbox(title, text, style):
+    #  Styles:
+    #  0 : OK
+    #  1 : OK | Cancel
+    #  2 : Abort | Retry | Ignore
+    #  3 : Yes | No | Cancel 6, 7, 2
+    #  4 : Yes | No
+    #  5 : Retry | Cancel
+    #  6 : Cancel | Try Again | Continue
+    return ctypes.windll.user32.MessageBoxW(0, text, title, style)
 def closesys():
     root.destroy()
 
@@ -221,6 +230,12 @@ class app():
         MenuStatus.place(x=640, y=77)
 
 
+        self.Bt_SalvarModulos = ctk.CTkButton(Painel_NovoUsuario, image=self.SalvarIcon, text_color=("black","white"), text="Salvar Alterações",
+                                        width=80, fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=self.SalvarGetSwitch)
+        self.Bt_SalvarModulos.place(x=900, y=25)
+
+
+
 
         PainelBotoes = ctk.CTkFrame(self.FrameCadUsergResposta, width=1100, height=50, corner_radius=0, fg_color="transparent")
         PainelBotoes.place(relx=0.02, rely=0.19)
@@ -268,7 +283,15 @@ class app():
 
         FrameModuloResp = ctk.CTkFrame(self.FrameCadUsergResposta, width=1100, height=900, corner_radius=0)
         FrameModuloResp.place(relx=0.02, rely=0.24)
-        self.FrameModuloAtual = FrameModuloResp
+
+
+        self.FrameModuloEstoqueResp = None
+        self.FrameModuloCadastroResp = None
+        self.FrameModuloAgendaResp = None
+        self.FrameModuloCarteiraResp = None
+        self.FrameModuloFinancasResp = None
+        self.FrameModuloUsuarioResp = None
+        self.FrameModuloConfiguracoesResp = None
     
     def Destaque_Button(self, bt):
         lista_bt = [self.BT_ModuloEstoque, self.BT_ModuloCadastro,  self.BT_ModuloAgenda,  
@@ -280,179 +303,712 @@ class app():
             else:
                 botao.configure(fg_color="transparent")
 
+    def AtivarSwitch(self, principal, visualizar, novo, editar, remover):
+        valor = principal.get()
+        try:
+            if valor == "liberado":
+                visualizar.configure(state="normal")
+                novo.configure(state="normal")
+                editar.configure(state="normal")
+                remover.configure(state='normal')
+            else:
+
+                visualizar.deselect()
+                novo.deselect()
+                editar.deselect()
+                remover.deselect()
+
+                visualizar.configure(state="disabled")
+                novo.configure(state="disabled")
+                editar.configure(state="disabled")
+                remover.configure(state='disabled')
+                print(valor)
+        except Exception as erro:
+            print(erro)
+
+            pass    
+
+    def SalvarGetSwitch(self):
+        resp = msgbox("SALVAR", "Deseja salvar as alterações nos módulos?", 4)
+        try:
+            if resp == 6:
+                modules = {
+                    "Estoque": {
+                        "ENTRADA": {
+                            "visualizar": "bloqueado" if not hasattr(self, "Entrada_visualizar") else self.Entrada_visualizar.get(),
+                            "novo": "bloqueado" if not hasattr(self, "Entrada_novo") else self.Entrada_novo.get(),
+                            "editar": "bloqueado" if not hasattr(self, "Entrada_editar") else self.Entrada_editar.get(),
+                            "remover": "bloqueado" if not hasattr(self, "Entrada_remover") else self.Entrada_remover.get()
+                        },
+                        "SAIDA": {
+                            "visualizar": "bloqueado" if not hasattr(self, "saida_visualizar") else self.saida_visualizar.get(),
+                            "novo": "bloqueado" if not hasattr(self, "saida_novo") else self.saida_novo.get(),
+                            "editar": "bloqueado" if not hasattr(self, "saida_editar") else self.saida_editar.get(),
+                            "remover": "bloqueado" if not hasattr(self, "saida_remover") else self.saida_remover.get()
+                        },
+                        "INVENTARIO": {
+                            "visualizar": "bloqueado" if not hasattr(self, "inventario_visualizar") else self.inventario_visualizar.get(),
+                            "novo": "bloqueado" if not hasattr(self, "inventario_novo") else self.inventario_novo.get(),
+                            "editar": "bloqueado" if not hasattr(self, "inventario_editar") else self.inventario_editar.get(),
+                            "remover": "bloqueado" if not hasattr(self, "inventario_remover") else self.inventario_remover.get()
+                        }
+                    },
+                    "Cadastro": {
+                        "CAD ITEM": {
+                            "visualizar": "bloqueado" if not hasattr(self, "item_visualizar") else self.item_visualizar.get(),
+                            "novo": "bloqueado" if not hasattr(self, "item_novo") else self.item_novo.get(),
+                            "editar": "bloqueado" if not hasattr(self, "item_editar") else self.item_editar.get(),
+                            "remover": "bloqueado" if not hasattr(self, "item_remover") else self.item_remover.get()
+                        },
+                        "CAD CLIENTE": {
+                            "visualizar": "bloqueado" if not hasattr(self, "cliente_visualizar") else self.cliente_visualizar.get(),
+                            "novo": "bloqueado" if not hasattr(self, "cliente_novo") else self.cliente_novo.get(),
+                            "editar": "bloqueado" if not hasattr(self, "cliente_editar") else self.cliente_editar.get(),
+                            "remover": "bloqueado" if not hasattr(self, "cliente_remover") else self.cliente_remover.get()
+                        },
+                        "CAD USUARIO": {
+                            "visualizar": "bloqueado" if not hasattr(self, "criarusuario_visualizar") else self.criarusuario_visualizar.get(),
+                            "novo": "bloqueado" if not hasattr(self, "criarusuario_novo") else self.criarusuario_novo.get(),
+                            "editar": "bloqueado" if not hasattr(self, "criarusuario_editar") else self.criarusuario_editar.get(),
+                            "remover": "bloqueado" if not hasattr(self, "criarusuario_remover") else self.criarusuario_remover.get()
+                        },
+                        "GERENCIAR USER": {
+                            "visualizar": "bloqueado" if not hasattr(self, "gerenciar_visualizar") else self.gerenciar_visualizar.get(),
+                            "novo": "bloqueado" if not hasattr(self, "gerenciar_novo") else self.gerenciar_novo.get(),
+                            "editar": "bloqueado" if not hasattr(self, "gerenciar_editar") else self.gerenciar_editar.get(),
+                            "remover": "bloqueado" if not hasattr(self, "gerenciar_remover") else self.gerenciar_remover.get()
+                        },
+
+                        
+                    },
+                    "Agenda": {
+                        "AGENDA": {
+                            "visualizar": "bloqueado" if not hasattr(self, "agenda_visualizar") else self.agenda_visualizar.get(),
+                            "novo": "bloqueado" if not hasattr(self, "agenda_novo") else self.agenda_novo.get(),
+                            "editar": "bloqueado" if not hasattr(self, "agenda_editar") else self.agenda_editar.get(),
+                            "remover": "bloqueado" if not hasattr(self, "agenda_remover") else self.agenda_remover.get()
+                        }
+                    },
+                    "Carteira": {
+                        "VENDAS": {
+                            "visualizar": "bloqueado" if not hasattr(self, "vendas_visualizar") else self.vendas_visualizar.get(),
+                            "novo": "bloqueado" if not hasattr(self, "vendas_novo") else self.vendas_novo.get(),
+                            "editar": "bloqueado" if not hasattr(self, "vendas_editar") else self.vendas_editar.get(),
+                            "remover": "bloqueado" if not hasattr(self, "vendas_remover") else self.vendas_remover.get()
+                        },
+                        "FATURAMENTO": {
+                            "visualizar": "bloqueado" if not hasattr(self, "faturamento_visualizar") else self.faturamento_visualizar.get(),
+                            "novo": "bloqueado" if not hasattr(self, "faturamento_novo") else self.faturamento_novo.get(),
+                            "editar": "bloqueado" if not hasattr(self, "faturamento_editar") else self.faturamento_editar.get(),
+                            "remover": "bloqueado" if not hasattr(self, "faturamento_remover") else self.faturamento_remover.get()
+                        }
+                    },
+                    "Finanças": {
+                        "DESPESAS": {
+                            "visualizar": "bloqueado" if not hasattr(self, "despesas_visualizar") else self.despesas_visualizar.get(),
+                            "novo": "bloqueado" if not hasattr(self, "despesas_novo") else self.despesas_novo.get(),
+                            "editar": "bloqueado" if not hasattr(self, "despesas_editar") else self.despesas_editar.get(),
+                            "remover": "bloqueado" if not hasattr(self, "despesas_remover") else self.despesas_remover.get()
+                        },
+                        "OUTRAS RENDAS": {
+                            "visualizar": "bloqueado" if not hasattr(self, "rendas_visualizar") else self.rendas_visualizar.get(),
+                            "novo": "bloqueado" if not hasattr(self, "rendas_novo") else self.rendas_novo.get(),
+                            "editar": "bloqueado" if not hasattr(self, "rendas_editar") else self.rendas_editar.get(),
+                            "remover": "bloqueado" if not hasattr(self, "rendas_remover") else self.rendas_remover.get()
+                        }
+                    },
+                    "Usuario": {
+                        "USUARIO": {
+                            "visualizar": "bloqueado" if not hasattr(self, "usuario_visualizar") else self.usuario_visualizar.get(),
+                            "novo": "bloqueado" if not hasattr(self, "usuario_novo") else self.usuario_novo.get(),
+                            "editar": "bloqueado" if not hasattr(self, "usuario_editar") else self.usuario_editar.get(),
+                            "remover": "bloqueado" if not hasattr(self, "usuario_remover") else self.usuario_remover.get()
+                        }
+                    },
+                    "Configurações": {
+                        "CONFIGURACOES": {
+                            "visualizar": "bloqueado" if not hasattr(self, "configuracoes_visualizar") else self.configuracoes_visualizar.get(),
+                            "novo": "bloqueado" if not hasattr(self, "configuracoes_novo") else self.configuracoes_novo.get(),
+                            "editar": "bloqueado" if not hasattr(self, "configuracoes_editar") else self.configuracoes_editar.get(),
+                            "remover": "bloqueado" if not hasattr(self, "configuracoes_remover") else self.configuracoes_remover.get()
+                        }
+                    }
+                }
+                for module_name, module_data in modules.items():
+                    print("_____#___________#__________#______")
+                    print("_____#___________#__________#______")
+                    print(f"Module: {module_name}")
+                    for section_name, section_data in module_data.items():
+                        print(f"Section: {section_name}")
+                        for key, value in section_data.items():
+                            if value == "liberado":
+                                color = "blue"
+                            else:
+                                color = "red"
+                            print(f"{key}: \033[1;{30 + (color == 'red')}m{value}\033[0m")
+
+                msgbox("SALVAR", "Alterações salvas com sucesso!!!", 0)
+                self.inicio()
+        except Exception as erro:
+            print(erro)
+            
     def Modulo_Estoque(self):
        
-        self.FrameModuloAtual.destroy()
+        if self.FrameModuloEstoqueResp is None:
 
-        FrameModuloEstoqueResp = ctk.CTkFrame(self.FrameCadUsergResposta, width=1100, height=900, corner_radius=0)
-        FrameModuloEstoqueResp.place(relx=0.02, rely=0.24)
-        self.FrameModuloAtual = FrameModuloEstoqueResp
+            self.FrameModuloEstoqueResp = ctk.CTkFrame(self.FrameCadUsergResposta, width=1100, height=900, corner_radius=0)
+            self.FrameModuloEstoqueResp.place(relx=0.02, rely=0.24)
+            
 
+            self.Destaque_Button(self.BT_ModuloEstoque)
 
+    
 
+            titulo_entrada = ctk.CTkLabel(self.FrameModuloEstoqueResp, font=ctk.CTkFont(weight="bold"), text="ENTRADA",text_color=("black","white"), height=38, width=200,
+                                        fg_color=("white", "gray10"),corner_radius=10, anchor="w")
+            titulo_entrada.place(relx=0.1, rely=0.03, anchor="center")
 
- 
-
-        titulo_entrada = ctk.CTkLabel(FrameModuloEstoqueResp, font=ctk.CTkFont(weight="bold"), text="ENTRADA",
-                                    text_color=("black","white"), height=30, width=200, fg_color=("white", "gray10"),
-                                    corner_radius=6, anchor="w")
-        titulo_entrada.place(relx=0.1, rely=0.03, anchor="center")
-
-        Entrada_switch = ctk.CTkSwitch(titulo_entrada, font=ctk.CTkFont(weight="bold"), text="", onvalue="liberado",
-                                    offvalue="bloqueado", switch_height=25, switch_width=50, progress_color="#3DED9D",state="normal",command=lambda: self.ativarswitchp(Entrada_switch))
-        Entrada_switch.place(relx=0.95, rely=0.5, anchor="center")
-
-        Entrada_visualizar = ctk.CTkSwitch(FrameModuloEstoqueResp, font=ctk.CTkFont(weight="bold"), text="Visualizar",onvalue="liberado", offvalue="bloqueado", switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
-        Entrada_visualizar.place(x=10, y=50)
-
-
-        Entrada_novo = ctk.CTkSwitch(FrameModuloEstoqueResp,  font=ctk.CTkFont(weight="bold"),text="Novo",onvalue="liberado", offvalue="bloqueado", switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
-        Entrada_novo.place(x=10, y=80)
-
-
-        Entrada_editar = ctk.CTkSwitch(FrameModuloEstoqueResp, font=ctk.CTkFont(weight="bold"), text="Editar",onvalue="liberado", offvalue="bloqueado", switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
-        Entrada_editar.place(x=10, y=110)
-
-
-        Entrada_remover = ctk.CTkSwitch(FrameModuloEstoqueResp, font=ctk.CTkFont(weight="bold"), text="Remover",onvalue="liberado", offvalue="bloqueado", switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
-        Entrada_remover.place(x=10, y=140)
+            Entrada_switch = ctk.CTkSwitch(titulo_entrada, font=ctk.CTkFont(weight="bold"), text="", onvalue="liberado",offvalue="bloqueado", 
+                                        switch_height=25, switch_width=45, progress_color="#3DED9D",
+                                        command=lambda: self.AtivarSwitch(Entrada_switch, self.Entrada_visualizar, self.Entrada_novo, self.Entrada_editar, self.Entrada_remover))
+            Entrada_switch.place(relx=0.94, rely=0.5, anchor="center")
 
 
 
 
-
-        titulo_saida = ctk.CTkLabel(FrameModuloEstoqueResp,  font=ctk.CTkFont(weight="bold"),text="SAIDA",  text_color=("black","white"),height=30, width=200, fg_color=("white", "gray10"), corner_radius=6, anchor="w")
-        titulo_saida.place(relx=0.36, rely=0.03, anchor="center")
-        saida_switch = ctk.CTkSwitch(titulo_entrada,  font=ctk.CTkFont(weight="bold"),text="",onvalue="liberado", offvalue="bloqueado", switch_height=25, switch_width=50, progress_color="#3DED9D")
-        saida_switch.place(relx=0.95, rely=0.5, anchor="center")
-
-
-        saida_visualizar = ctk.CTkSwitch(FrameModuloEstoqueResp, font=ctk.CTkFont(weight="bold"), text="Visualizar",onvalue="liberado", offvalue="bloqueado",switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
-        saida_visualizar.place(x=300, y=50)
-
-
-        saida_novo = ctk.CTkSwitch(FrameModuloEstoqueResp,  font=ctk.CTkFont(weight="bold"),text="Novo",onvalue="liberado", offvalue="bloqueado", switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
-        saida_novo.place(x=300, y=80)
-
-
-        saida_editar = ctk.CTkSwitch(FrameModuloEstoqueResp, font=ctk.CTkFont(weight="bold"), text="Editar",onvalue="liberado", offvalue="bloqueado", switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
-        saida_editar.place(x=300, y=110)
-
-
-        saida_remover = ctk.CTkSwitch(FrameModuloEstoqueResp, font=ctk.CTkFont(weight="bold"), text="Remover",onvalue="liberado", offvalue="bloqueado", switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
-        saida_remover.place(x=300, y=140)
+            self.Entrada_visualizar = ctk.CTkSwitch(self.FrameModuloEstoqueResp, font=ctk.CTkFont(weight="bold"), text="Visualizar",onvalue="liberado", offvalue="bloqueado",
+                                                switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.Entrada_visualizar.place(x=10, y=50)
 
 
 
-        
-        titulo_inventario = ctk.CTkLabel(FrameModuloEstoqueResp,  font=ctk.CTkFont(weight="bold"),text="INVENTARIO",  text_color=("black","white"),height=30, width=200, fg_color=("white", "gray10"), corner_radius=6, anchor="w")
-        titulo_inventario.place(relx=0.632, rely=0.03, anchor="center")
-        inventario_switch = ctk.CTkSwitch(titulo_entrada,  font=ctk.CTkFont(weight="bold"),text="",onvalue="liberado", offvalue="bloqueado", switch_height=25, switch_width=50, progress_color="#3DED9D")
-        inventario_switch.place(relx=0.95, rely=0.5, anchor="center")
+            self.Entrada_novo = ctk.CTkSwitch(self.FrameModuloEstoqueResp,  font=ctk.CTkFont(weight="bold"),text="Novo",onvalue="liberado", offvalue="bloqueado", 
+                                        switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.Entrada_novo.place(x=10, y=80)
 
 
-        inventario_visualizar = ctk.CTkSwitch(FrameModuloEstoqueResp, font=ctk.CTkFont(weight="bold"), text="Visualizar",onvalue="liberado", offvalue="bloqueado",switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
-        inventario_visualizar.place(x=600, y=50)
+            self.Entrada_editar = ctk.CTkSwitch(self.FrameModuloEstoqueResp, font=ctk.CTkFont(weight="bold"), text="Editar",onvalue="liberado", offvalue="bloqueado", 
+                                        switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.Entrada_editar.place(x=10, y=110)
 
 
-        inventario_novo = ctk.CTkSwitch(FrameModuloEstoqueResp,  font=ctk.CTkFont(weight="bold"),text="Novo",onvalue="liberado", offvalue="bloqueado", switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
-        inventario_novo.place(x=600, y=80)
+            self.Entrada_remover = ctk.CTkSwitch(self.FrameModuloEstoqueResp, font=ctk.CTkFont(weight="bold"), text="Remover",onvalue="liberado", offvalue="bloqueado", 
+                                            switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.Entrada_remover.place(x=10, y=140)
 
 
-        inventario_editar = ctk.CTkSwitch(FrameModuloEstoqueResp, font=ctk.CTkFont(weight="bold"), text="Editar",onvalue="liberado", offvalue="bloqueado", switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
-        inventario_editar.place(x=600, y=110)
+            #____________________________________________________________________________________________________________________________________________________________________________________
 
 
-        inventario_remover = ctk.CTkSwitch(FrameModuloEstoqueResp, font=ctk.CTkFont(weight="bold"), text="Remover",onvalue="liberado", offvalue="bloqueado", switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
-        inventario_remover.place(x=600, y=140)
+            titulo_saida = ctk.CTkLabel(self.FrameModuloEstoqueResp,  font=ctk.CTkFont(weight="bold"),text="SAIDA",  text_color=("black","white"),height=38, width=200, 
+                                        fg_color=("white", "gray10"), corner_radius=6, anchor="w")
+            titulo_saida.place(relx=0.36, rely=0.03, anchor="center")
+
+            saida_switch = ctk.CTkSwitch(titulo_saida,  font=ctk.CTkFont(weight="bold"),text="",onvalue="liberado", offvalue="bloqueado", 
+                                        switch_height=25, switch_width=45, progress_color="#3DED9D",
+                                        command=lambda: self.AtivarSwitch(saida_switch, self.saida_visualizar, self.saida_novo, self.saida_editar, self.saida_remover))
+            saida_switch.place(relx=0.94, rely=0.5, anchor="center")
 
 
+            self.saida_visualizar = ctk.CTkSwitch(self.FrameModuloEstoqueResp, font=ctk.CTkFont(weight="bold"), text="Visualizar",onvalue="liberado", offvalue="bloqueado",
+                                            switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.saida_visualizar.place(x=300, y=50)
 
 
+            self.saida_novo = ctk.CTkSwitch(self.FrameModuloEstoqueResp,  font=ctk.CTkFont(weight="bold"),text="Novo",onvalue="liberado", offvalue="bloqueado",
+                                        switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.saida_novo.place(x=300, y=80)
 
 
-
-    def ativarswitchp(self):
-        print("função chamada")
-
-
-        
+            self.saida_editar = ctk.CTkSwitch(self.FrameModuloEstoqueResp, font=ctk.CTkFont(weight="bold"), text="Editar",onvalue="liberado", offvalue="bloqueado", 
+                                        switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.saida_editar.place(x=300, y=110)
 
 
+            self.saida_remover = ctk.CTkSwitch(self.FrameModuloEstoqueResp, font=ctk.CTkFont(weight="bold"), text="Remover",onvalue="liberado", offvalue="bloqueado",
+                                        switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.saida_remover.place(x=300, y=140)
 
-        self.Destaque_Button(self.BT_ModuloEstoque)
-     
+
+            #________________________________________________________________________________________________________________________________________-
+
+            
+            titulo_inventario = ctk.CTkLabel(self.FrameModuloEstoqueResp,  font=ctk.CTkFont(weight="bold"),text="INVENTARIO",  text_color=("black","white"),height=38, width=200, 
+                                            fg_color=("white", "gray10"), corner_radius=6, anchor="w")
+            titulo_inventario.place(relx=0.632, rely=0.03, anchor="center")
+            
+            inventario_switch = ctk.CTkSwitch(titulo_inventario,  font=ctk.CTkFont(weight="bold"),text="",onvalue="liberado", offvalue="bloqueado",
+                                            switch_height=25, switch_width=45, progress_color="#3DED9D", 
+                                            command=lambda: self.AtivarSwitch(inventario_switch, self.inventario_visualizar, self.inventario_novo, self.inventario_editar, self.inventario_remover))
+            inventario_switch.place(relx=0.94, rely=0.5, anchor="center")
+
+
+            self.inventario_visualizar = ctk.CTkSwitch(self.FrameModuloEstoqueResp, font=ctk.CTkFont(weight="bold"), text="Visualizar",onvalue="liberado", offvalue="bloqueado",
+                                                switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.inventario_visualizar.place(x=600, y=50)
+
+
+            self.inventario_novo = ctk.CTkSwitch(self.FrameModuloEstoqueResp,  font=ctk.CTkFont(weight="bold"),text="Novo",onvalue="liberado", offvalue="bloqueado",
+                                            switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.inventario_novo.place(x=600, y=80)
+
+
+            self.inventario_editar = ctk.CTkSwitch(self.FrameModuloEstoqueResp, font=ctk.CTkFont(weight="bold"), text="Editar",onvalue="liberado", offvalue="bloqueado", 
+                                            switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.inventario_editar.place(x=600, y=110)
+
+
+            self.inventario_remover = ctk.CTkSwitch(self.FrameModuloEstoqueResp, font=ctk.CTkFont(weight="bold"), text="Remover",onvalue="liberado", offvalue="bloqueado", 
+                                            switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.inventario_remover.place(x=600, y=140)
+        else:
+            self.FrameModuloEstoqueResp.tkraise()
+            self.Destaque_Button(self.BT_ModuloEstoque)
+
     def Modulo_Cadastro(self):
        
-        self.FrameModuloAtual.destroy()
+        if self.FrameModuloCadastroResp is None:
 
-        FrameModuloCadastroResp = ctk.CTkFrame(self.FrameCadUsergResposta, width=1100, height=900, corner_radius=0)
-        FrameModuloCadastroResp.place(relx=0.02, rely=0.24)
-        self.FrameModuloAtual = FrameModuloCadastroResp
+            self.FrameModuloCadastroResp = ctk.CTkFrame(self.FrameCadUsergResposta, width=1100, height=900, corner_radius=0)
+            self.FrameModuloCadastroResp.place(relx=0.02, rely=0.24)
+            
+            self.Destaque_Button(self.BT_ModuloCadastro)
+
+            
+            titulo_item = ctk.CTkLabel(self.FrameModuloCadastroResp, font=ctk.CTkFont(weight="bold"), text="CAD ITENS",text_color=("black","white"), height=38, width=200,
+                                        fg_color=("white", "gray10"),corner_radius=10, anchor="w")
+            titulo_item.place(relx=0.1, rely=0.03, anchor="center")
+
+            item_switch = ctk.CTkSwitch(titulo_item, font=ctk.CTkFont(weight="bold"), text="", onvalue="liberado",offvalue="bloqueado", 
+                                        switch_height=25, switch_width=45, progress_color="#3DED9D",
+                                        command=lambda: self.AtivarSwitch(item_switch, self.item_visualizar, self.item_novo, self.item_editar, self.item_remover))
+            item_switch.place(relx=0.94, rely=0.5, anchor="center")
 
 
-        self.Destaque_Button(self.BT_ModuloCadastro)
 
+
+            self.item_visualizar = ctk.CTkSwitch(self.FrameModuloCadastroResp, font=ctk.CTkFont(weight="bold"), text="Visualizar",onvalue="liberado", offvalue="bloqueado",
+                                                switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.item_visualizar.place(x=10, y=50)
+
+
+
+            self.item_novo = ctk.CTkSwitch(self.FrameModuloCadastroResp,  font=ctk.CTkFont(weight="bold"),text="Novo",onvalue="liberado", offvalue="bloqueado", 
+                                        switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.item_novo.place(x=10, y=80)
+
+
+            self.item_editar = ctk.CTkSwitch(self.FrameModuloCadastroResp, font=ctk.CTkFont(weight="bold"), text="Editar",onvalue="liberado", offvalue="bloqueado", 
+                                        switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.item_editar.place(x=10, y=110)
+
+
+            self.item_remover = ctk.CTkSwitch(self.FrameModuloCadastroResp, font=ctk.CTkFont(weight="bold"), text="Remover",onvalue="liberado", offvalue="bloqueado", 
+                                            switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.item_remover.place(x=10, y=140)
+
+
+            #____________________________________________________________________________________________________________________________________________________________________________________
+
+
+            titulo_cliente = ctk.CTkLabel(self.FrameModuloCadastroResp,  font=ctk.CTkFont(weight="bold"),text="CAD CLIENTES",  text_color=("black","white"),height=38, width=200, 
+                                        fg_color=("white", "gray10"), corner_radius=6, anchor="w")
+            titulo_cliente.place(relx=0.36, rely=0.03, anchor="center")
+
+            cliente_switch = ctk.CTkSwitch(titulo_cliente,  font=ctk.CTkFont(weight="bold"),text="",onvalue="liberado", offvalue="bloqueado", 
+                                        switch_height=25, switch_width=45, progress_color="#3DED9D",
+                                        command=lambda: self.AtivarSwitch(cliente_switch, self.cliente_visualizar, self.cliente_novo, self.cliente_editar, self.cliente_remover))
+            cliente_switch.place(relx=0.94, rely=0.5, anchor="center")
+
+
+            self.cliente_visualizar = ctk.CTkSwitch(self.FrameModuloCadastroResp, font=ctk.CTkFont(weight="bold"), text="Visualizar",onvalue="liberado", offvalue="bloqueado",
+                                            switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.cliente_visualizar.place(x=300, y=50)
+
+
+            self.cliente_novo = ctk.CTkSwitch(self.FrameModuloCadastroResp,  font=ctk.CTkFont(weight="bold"),text="Novo",onvalue="liberado", offvalue="bloqueado",
+                                        switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.cliente_novo.place(x=300, y=80)
+
+
+            self.cliente_editar = ctk.CTkSwitch(self.FrameModuloCadastroResp, font=ctk.CTkFont(weight="bold"), text="Editar",onvalue="liberado", offvalue="bloqueado", 
+                                        switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.cliente_editar.place(x=300, y=110)
+
+
+            self.cliente_remover = ctk.CTkSwitch(self.FrameModuloCadastroResp, font=ctk.CTkFont(weight="bold"), text="Remover",onvalue="liberado", offvalue="bloqueado",
+                                        switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.cliente_remover.place(x=300, y=140)
+
+
+            #________________________________________________________________________________________________________________________________________-
+
+            
+            titulo_criarusuario = ctk.CTkLabel(self.FrameModuloCadastroResp,  font=ctk.CTkFont(weight="bold"),text="CAD USUARIO",  text_color=("black","white"),height=38, width=200, 
+                                            fg_color=("white", "gray10"), corner_radius=6, anchor="w")
+            titulo_criarusuario.place(relx=0.632, rely=0.03, anchor="center")
+            
+            criarusuario_switch = ctk.CTkSwitch(titulo_criarusuario,  font=ctk.CTkFont(weight="bold"),text="",onvalue="liberado", offvalue="bloqueado",
+                                            switch_height=25, switch_width=45, progress_color="#3DED9D", 
+                                            command=lambda: self.AtivarSwitch(criarusuario_switch, self.criarusuario_visualizar, self.criarusuario_novo, self.criarusuario_editar, self.criarusuario_remover))
+            criarusuario_switch.place(relx=0.94, rely=0.5, anchor="center")
+
+
+            self.criarusuario_visualizar = ctk.CTkSwitch(self.FrameModuloCadastroResp, font=ctk.CTkFont(weight="bold"), text="Visualizar",onvalue="liberado", offvalue="bloqueado",
+                                                switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.criarusuario_visualizar.place(x=600, y=50)
+
+
+            self.criarusuario_novo = ctk.CTkSwitch(self.FrameModuloCadastroResp,  font=ctk.CTkFont(weight="bold"),text="Novo",onvalue="liberado", offvalue="bloqueado",
+                                            switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.criarusuario_novo.place(x=600, y=80)
+
+
+            self.criarusuario_editar = ctk.CTkSwitch(self.FrameModuloCadastroResp, font=ctk.CTkFont(weight="bold"), text="Editar",onvalue="liberado", offvalue="bloqueado", 
+                                            switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.criarusuario_editar.place(x=600, y=110)
+
+
+            self.criarusuario_remover = ctk.CTkSwitch(self.FrameModuloCadastroResp, font=ctk.CTkFont(weight="bold"), text="Remover",onvalue="liberado", offvalue="bloqueado", 
+                                            switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.criarusuario_remover.place(x=600, y=140)
+
+
+            #________________________________________________________________________________________________________________________________________-
+
+            
+            titulo_gerenciarUser = ctk.CTkLabel(self.FrameModuloCadastroResp,  font=ctk.CTkFont(weight="bold"),text="GERENCIAR USER",  text_color=("black","white"),height=38, width=200, 
+                                            fg_color=("white", "gray10"), corner_radius=6, anchor="w")
+            titulo_gerenciarUser.place(relx=0.1, rely=0.26, anchor="center")
+            
+            gerenciar_switch = ctk.CTkSwitch(titulo_gerenciarUser,  font=ctk.CTkFont(weight="bold"),text="",onvalue="liberado", offvalue="bloqueado",
+                                            switch_height=25, switch_width=45, progress_color="#3DED9D", 
+                                            command=lambda: self.AtivarSwitch(gerenciar_switch, self.gerenciar_visualizar, self.gerenciar_novo, self.gerenciar_editar, self.gerenciar_remover))
+            gerenciar_switch.place(relx=0.94, rely=0.5, anchor="center")
+
+
+            self.gerenciar_visualizar = ctk.CTkSwitch(self.FrameModuloCadastroResp, font=ctk.CTkFont(weight="bold"), text="Visualizar",onvalue="liberado", offvalue="bloqueado",
+                                                switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.gerenciar_visualizar.place(x=10, y=260)
+
+
+            self.gerenciar_novo = ctk.CTkSwitch(self.FrameModuloCadastroResp,  font=ctk.CTkFont(weight="bold"),text="Novo",onvalue="liberado", offvalue="bloqueado",
+                                            switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.gerenciar_novo.place(x=10, y=290)
+
+
+            self.gerenciar_editar = ctk.CTkSwitch(self.FrameModuloCadastroResp, font=ctk.CTkFont(weight="bold"), text="Editar",onvalue="liberado", offvalue="bloqueado", 
+                                            switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.gerenciar_editar.place(x=10, y=320)
+
+
+            self.gerenciar_remover = ctk.CTkSwitch(self.FrameModuloCadastroResp, font=ctk.CTkFont(weight="bold"), text="Remover",onvalue="liberado", offvalue="bloqueado", 
+                                            switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.gerenciar_remover.place(x=10, y=350)
+        else:
+             self.FrameModuloCadastroResp.tkraise()
+             self.Destaque_Button(self.BT_ModuloCadastro)
+    
     def Modulo_Agenda(self):
        
-        self.FrameModuloAtual.destroy()
+        if self.FrameModuloAgendaResp is None:
 
-        FrameModuloAgendaResp = ctk.CTkFrame(self.FrameCadUsergResposta, width=1100, height=900, corner_radius=0)
-        FrameModuloAgendaResp.place(relx=0.02, rely=0.24)
+            self.FrameModuloAgendaResp = ctk.CTkFrame(self.FrameCadUsergResposta, width=1100, height=900, corner_radius=0)
+            self.FrameModuloAgendaResp.place(relx=0.02, rely=0.24)
+           
+            self.Destaque_Button(self.BT_ModuloAgenda)
 
-        self.FrameModuloAtual = FrameModuloAgendaResp
 
 
-        self.Destaque_Button(self.BT_ModuloAgenda)
+            titulo_agenda = ctk.CTkLabel(self.FrameModuloAgendaResp, font=ctk.CTkFont(weight="bold"), text="AGENDA",text_color=("black","white"), height=38, width=200,
+                                        fg_color=("white", "gray10"),corner_radius=10, anchor="w")
+            titulo_agenda.place(relx=0.1, rely=0.03, anchor="center")
+
+            agenda_switch = ctk.CTkSwitch(titulo_agenda, font=ctk.CTkFont(weight="bold"), text="", onvalue="liberado",offvalue="bloqueado", 
+                                        switch_height=25, switch_width=45, progress_color="#3DED9D",
+                                        command=lambda: self.AtivarSwitch(agenda_switch, self.agenda_visualizar, self.agenda_novo, self.agenda_editar, self.agenda_remover))
+            agenda_switch.place(relx=0.94, rely=0.5, anchor="center")
+
+
+
+            self.agenda_visualizar = ctk.CTkSwitch(self.FrameModuloAgendaResp, font=ctk.CTkFont(weight="bold"), text="Visualizar",onvalue="liberado", offvalue="bloqueado",
+                                                switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.agenda_visualizar.place(x=10, y=50)
+
+
+
+            self.agenda_novo = ctk.CTkSwitch(self.FrameModuloAgendaResp,  font=ctk.CTkFont(weight="bold"),text="Novo",onvalue="liberado", offvalue="bloqueado", 
+                                        switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.agenda_novo.place(x=10, y=80)
+
+
+            self.agenda_editar = ctk.CTkSwitch(self.FrameModuloAgendaResp, font=ctk.CTkFont(weight="bold"), text="Editar",onvalue="liberado", offvalue="bloqueado", 
+                                        switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.agenda_editar.place(x=10, y=110)
+
+
+            self.agenda_remover = ctk.CTkSwitch(self.FrameModuloAgendaResp, font=ctk.CTkFont(weight="bold"), text="Remover",onvalue="liberado", offvalue="bloqueado", 
+                                            switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.agenda_remover.place(x=10, y=140)
+        else:
+            self.FrameModuloAgendaResp.tkraise()
+            self.Destaque_Button(self.BT_ModuloAgenda)
 
     def Modulo_Carteira(self):
        
-        self.FrameModuloAtual.destroy()
+       
+        if self.FrameModuloCarteiraResp is None:
 
-        FrameModuloCarteiraResp = ctk.CTkFrame(self.FrameCadUsergResposta, width=1100, height=900, corner_radius=0)
-        FrameModuloCarteiraResp.place(relx=0.02, rely=0.24)
+            self.FrameModuloCarteiraResp = ctk.CTkFrame(self.FrameCadUsergResposta, width=1100, height=900, corner_radius=0)
+            self.FrameModuloCarteiraResp.place(relx=0.02, rely=0.24)
+        
+            self.Destaque_Button(self.BT_ModuloCarteira)
 
-        self.FrameModuloAtual = FrameModuloCarteiraResp
 
 
-        self.Destaque_Button(self.BT_ModuloCarteira)
+            titulo_vendas = ctk.CTkLabel(self.FrameModuloCarteiraResp, font=ctk.CTkFont(weight="bold"), text="VENDAS",text_color=("black","white"), height=38, width=200,
+                                        fg_color=("white", "gray10"),corner_radius=10, anchor="w")
+            titulo_vendas.place(relx=0.1, rely=0.03, anchor="center")
+
+            vendas_switch = ctk.CTkSwitch(titulo_vendas, font=ctk.CTkFont(weight="bold"), text="", onvalue="liberado",offvalue="bloqueado", 
+                                        switch_height=25, switch_width=45, progress_color="#3DED9D",
+                                        command=lambda: self.AtivarSwitch(vendas_switch, self.vendas_visualizar, self.vendas_novo, self.vendas_editar, self.vendas_remover))
+            vendas_switch.place(relx=0.94, rely=0.5, anchor="center")
+
+
+
+
+            self.vendas_visualizar = ctk.CTkSwitch(self.FrameModuloCarteiraResp, font=ctk.CTkFont(weight="bold"), text="Visualizar",onvalue="liberado", offvalue="bloqueado",
+                                                switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.vendas_visualizar.place(x=10, y=50)
+
+
+
+            self.vendas_novo = ctk.CTkSwitch(self.FrameModuloCarteiraResp,  font=ctk.CTkFont(weight="bold"),text="Novo",onvalue="liberado", offvalue="bloqueado", 
+                                        switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.vendas_novo.place(x=10, y=80)
+
+
+            self.vendas_editar = ctk.CTkSwitch(self.FrameModuloCarteiraResp, font=ctk.CTkFont(weight="bold"), text="Editar",onvalue="liberado", offvalue="bloqueado", 
+                                        switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.vendas_editar.place(x=10, y=110)
+
+
+            self.vendas_remover = ctk.CTkSwitch(self.FrameModuloCarteiraResp, font=ctk.CTkFont(weight="bold"), text="Remover",onvalue="liberado", offvalue="bloqueado", 
+                                            switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.vendas_remover.place(x=10, y=140)
+
+
+            #____________________________________________________________________________________________________________________________________________________________________________________
+
+
+            titulo_faturamento = ctk.CTkLabel(self.FrameModuloCarteiraResp,  font=ctk.CTkFont(weight="bold"),text="FATURAMENTO",  text_color=("black","white"),height=38, width=200, 
+                                        fg_color=("white", "gray10"), corner_radius=6, anchor="w")
+            titulo_faturamento.place(relx=0.36, rely=0.03, anchor="center")
+
+            faturamento_switch = ctk.CTkSwitch(titulo_faturamento,  font=ctk.CTkFont(weight="bold"),text="",onvalue="liberado", offvalue="bloqueado", 
+                                        switch_height=25, switch_width=45, progress_color="#3DED9D",
+                                        command=lambda: self.AtivarSwitch(faturamento_switch, self.faturamento_visualizar, self.faturamento_novo, self.faturamento_editar, self.faturamento_remover))
+            faturamento_switch.place(relx=0.94, rely=0.5, anchor="center")
+
+
+            self.faturamento_visualizar = ctk.CTkSwitch(self.FrameModuloCarteiraResp, font=ctk.CTkFont(weight="bold"), text="Visualizar",onvalue="liberado", offvalue="bloqueado",
+                                            switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.faturamento_visualizar.place(x=300, y=50)
+
+
+            self.faturamento_novo = ctk.CTkSwitch(self.FrameModuloCarteiraResp,  font=ctk.CTkFont(weight="bold"),text="Novo",onvalue="liberado", offvalue="bloqueado",
+                                        switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.faturamento_novo.place(x=300, y=80)
+
+
+            self.faturamento_editar = ctk.CTkSwitch(self.FrameModuloCarteiraResp, font=ctk.CTkFont(weight="bold"), text="Editar",onvalue="liberado", offvalue="bloqueado", 
+                                        switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.faturamento_editar.place(x=300, y=110)
+
+
+            self.faturamento_remover = ctk.CTkSwitch(self.FrameModuloCarteiraResp, font=ctk.CTkFont(weight="bold"), text="Remover",onvalue="liberado", offvalue="bloqueado",
+                                        switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.faturamento_remover.place(x=300, y=140)
+        else:
+            self.FrameModuloCarteiraResp.tkraise()
+            self.Destaque_Button(self.BT_ModuloCarteira)
 
     def Modulo_Financas(self):
-       
-        self.FrameModuloAtual.destroy()
 
-        FrameModuloFinancasResp = ctk.CTkFrame(self.FrameCadUsergResposta, width=1100, height=900, corner_radius=0)
-        FrameModuloFinancasResp.place(relx=0.02, rely=0.24)
+        if self.FrameModuloFinancasResp is None:
+            
+            self.FrameModuloFinancasResp = ctk.CTkFrame(self.FrameCadUsergResposta, width=1100, height=900, corner_radius=0)
+            self.FrameModuloFinancasResp.place(relx=0.02, rely=0.24)
 
-        self.FrameModuloAtual = FrameModuloFinancasResp
+            self.Destaque_Button(self.BT_ModuloFinancas)
 
 
-        self.Destaque_Button(self.BT_ModuloFinancas)
+            titulo_despesas = ctk.CTkLabel(self.FrameModuloFinancasResp, font=ctk.CTkFont(weight="bold"), text="DESPESAS",text_color=("black","white"), height=38, width=200,
+                                        fg_color=("white", "gray10"),corner_radius=10, anchor="w")
+            titulo_despesas.place(relx=0.1, rely=0.03, anchor="center")
+
+            despesas_switch = ctk.CTkSwitch(titulo_despesas, font=ctk.CTkFont(weight="bold"), text="", onvalue="liberado",offvalue="bloqueado", 
+                                        switch_height=25, switch_width=45, progress_color="#3DED9D",
+                                        command=lambda: self.AtivarSwitch(despesas_switch, self.despesas_visualizar, self.despesas_novo, self.despesas_editar, self.despesas_remover))
+            despesas_switch.place(relx=0.94, rely=0.5, anchor="center")
+
+
+
+
+            self.despesas_visualizar = ctk.CTkSwitch(self.FrameModuloFinancasResp, font=ctk.CTkFont(weight="bold"), text="Visualizar",onvalue="liberado", offvalue="bloqueado",
+                                                switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.despesas_visualizar.place(x=10, y=50)
+
+
+
+            self.despesas_novo = ctk.CTkSwitch(self.FrameModuloFinancasResp,  font=ctk.CTkFont(weight="bold"),text="Novo",onvalue="liberado", offvalue="bloqueado", 
+                                        switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.despesas_novo.place(x=10, y=80)
+
+
+            self.despesas_editar = ctk.CTkSwitch(self.FrameModuloFinancasResp, font=ctk.CTkFont(weight="bold"), text="Editar",onvalue="liberado", offvalue="bloqueado", 
+                                        switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.despesas_editar.place(x=10, y=110)
+
+
+            self.despesas_remover = ctk.CTkSwitch(self.FrameModuloFinancasResp, font=ctk.CTkFont(weight="bold"), text="Remover",onvalue="liberado", offvalue="bloqueado", 
+                                            switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.despesas_remover.place(x=10, y=140)
+
+
+            #____________________________________________________________________________________________________________________________________________________________________________________
+
+
+            titulo_rendas = ctk.CTkLabel(self.FrameModuloFinancasResp,  font=ctk.CTkFont(weight="bold"),text="OUTRAS RENDAS",  text_color=("black","white"),height=38, width=200, 
+                                        fg_color=("white", "gray10"), corner_radius=6, anchor="w")
+            titulo_rendas.place(relx=0.36, rely=0.03, anchor="center")
+
+            rendas_switch = ctk.CTkSwitch(titulo_rendas,  font=ctk.CTkFont(weight="bold"),text="",onvalue="liberado", offvalue="bloqueado", 
+                                        switch_height=25, switch_width=45, progress_color="#3DED9D",
+                                        command=lambda: self.AtivarSwitch(rendas_switch, self.rendas_visualizar, self.rendas_novo, self.rendas_editar, self.rendas_remover))
+            rendas_switch.place(relx=0.94, rely=0.5, anchor="center")
+
+
+            self.rendas_visualizar = ctk.CTkSwitch(self.FrameModuloFinancasResp, font=ctk.CTkFont(weight="bold"), text="Visualizar",onvalue="liberado", offvalue="bloqueado",
+                                            switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.rendas_visualizar.place(x=300, y=50)
+
+
+            self.rendas_novo = ctk.CTkSwitch(self.FrameModuloFinancasResp,  font=ctk.CTkFont(weight="bold"),text="Novo",onvalue="liberado", offvalue="bloqueado",
+                                        switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.rendas_novo.place(x=300, y=80)
+
+
+            self.rendas_editar = ctk.CTkSwitch(self.FrameModuloFinancasResp, font=ctk.CTkFont(weight="bold"), text="Editar",onvalue="liberado", offvalue="bloqueado", 
+                                        switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.rendas_editar.place(x=300, y=110)
+
+
+            self.rendas_remover = ctk.CTkSwitch(self.FrameModuloFinancasResp, font=ctk.CTkFont(weight="bold"), text="Remover",onvalue="liberado", offvalue="bloqueado",
+                                        switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.rendas_remover.place(x=300, y=140)
+
+        else:
+            self.FrameModuloFinancasResp.tkraise()
+            self.Destaque_Button(self.BT_ModuloFinancas)
 
     def Modulo_Usuario(self):
        
-        self.FrameModuloAtual.destroy()
+        if self.FrameModuloUsuarioResp is None:
+            self.FrameModuloUsuarioResp = ctk.CTkFrame(self.FrameCadUsergResposta, width=1100, height=900, corner_radius=0)
+            self.FrameModuloUsuarioResp.place(relx=0.02, rely=0.24)
 
-        FrameModuloUsuarioResp = ctk.CTkFrame(self.FrameCadUsergResposta, width=1100, height=900, corner_radius=0)
-        FrameModuloUsuarioResp.place(relx=0.02, rely=0.24)
-
-        self.FrameModuloAtual = FrameModuloUsuarioResp
+            
+            self.Destaque_Button(self.BT_ModuloUsuarios)
 
 
-        self.Destaque_Button(self.BT_ModuloUsuarios)
+
+
+
+            titulo_usuario = ctk.CTkLabel(self.FrameModuloUsuarioResp, font=ctk.CTkFont(weight="bold"), text="USUARIO",text_color=("black","white"), height=38, width=200,
+                                        fg_color=("white", "gray10"),corner_radius=10, anchor="w")
+            titulo_usuario.place(relx=0.1, rely=0.03, anchor="center")
+
+            usuario_switch = ctk.CTkSwitch(titulo_usuario, font=ctk.CTkFont(weight="bold"), text="", onvalue="liberado",offvalue="bloqueado", 
+                                        switch_height=25, switch_width=45, progress_color="#3DED9D",
+                                        command=lambda: self.AtivarSwitch(usuario_switch, self.usuario_visualizar, self.usuario_novo, self.usuario_editar, self.usuario_remover))
+            usuario_switch.place(relx=0.94, rely=0.5, anchor="center")
+
+
+
+
+            self.usuario_visualizar = ctk.CTkSwitch(self.FrameModuloUsuarioResp, font=ctk.CTkFont(weight="bold"), text="Visualizar",onvalue="liberado", offvalue="bloqueado",
+                                                switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.usuario_visualizar.place(x=10, y=50)
+
+
+
+            self.usuario_novo = ctk.CTkSwitch(self.FrameModuloUsuarioResp,  font=ctk.CTkFont(weight="bold"),text="Novo",onvalue="liberado", offvalue="bloqueado", 
+                                        switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.usuario_novo.place(x=10, y=80)
+
+
+            self.usuario_editar = ctk.CTkSwitch(self.FrameModuloUsuarioResp, font=ctk.CTkFont(weight="bold"), text="Editar",onvalue="liberado", offvalue="bloqueado", 
+                                        switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.usuario_editar.place(x=10, y=110)
+
+
+            self.usuario_remover = ctk.CTkSwitch(self.FrameModuloUsuarioResp, font=ctk.CTkFont(weight="bold"), text="Remover",onvalue="liberado", offvalue="bloqueado", 
+                                            switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.usuario_remover.place(x=10, y=140)
+        else:
+            self.FrameModuloUsuarioResp.tkraise()
+            self.Destaque_Button(self.BT_ModuloUsuarios)
 
     def Modulo_Configuracoes(self):
        
-        self.FrameModuloAtual.destroy()
+        if self.FrameModuloConfiguracoesResp is None:
 
-        FrameModuloConfiguracoesResp = ctk.CTkFrame(self.FrameCadUsergResposta, width=1100, height=900, corner_radius=0)
-        FrameModuloConfiguracoesResp.place(relx=0.02, rely=0.24)
+            self.FrameModuloConfiguracoesResp = ctk.CTkFrame(self.FrameCadUsergResposta, width=1100, height=900, corner_radius=0)
+            self.FrameModuloConfiguracoesResp.place(relx=0.02, rely=0.24)
+
+        
+            self.Destaque_Button(self.BT_ModuloConfiguracoes)
 
 
-        self.FrameModuloAtual = FrameModuloConfiguracoesResp
 
 
-        self.Destaque_Button(self.BT_ModuloConfiguracoes)
+            titulo_configuracoes = ctk.CTkLabel(self.FrameModuloConfiguracoesResp, font=ctk.CTkFont(weight="bold"), text="CONFIGURAÇÕES",text_color=("black","white"), height=38, width=200,
+                                        fg_color=("white", "gray10"),corner_radius=10, anchor="w")
+            titulo_configuracoes.place(relx=0.1, rely=0.03, anchor="center")
+
+            configuracoes_switch = ctk.CTkSwitch(titulo_configuracoes, font=ctk.CTkFont(weight="bold"), text="", onvalue="liberado",offvalue="bloqueado", 
+                                        switch_height=25, switch_width=45, progress_color="#3DED9D",
+                                        command=lambda: self.AtivarSwitch(configuracoes_switch, self.configuracoes_visualizar, self.configuracoes_novo, self.configuracoes_editar, self.configuracoes_remover))
+            configuracoes_switch.place(relx=0.94, rely=0.5, anchor="center")
+
+
+
+
+            self.configuracoes_visualizar = ctk.CTkSwitch(self.FrameModuloConfiguracoesResp, font=ctk.CTkFont(weight="bold"), text="Visualizar",onvalue="liberado", offvalue="bloqueado",
+                                                switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.configuracoes_visualizar.place(x=10, y=50)
+
+
+
+            self.configuracoes_novo = ctk.CTkSwitch(self.FrameModuloConfiguracoesResp,  font=ctk.CTkFont(weight="bold"),text="Novo",onvalue="liberado", offvalue="bloqueado", 
+                                        switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.configuracoes_novo.place(x=10, y=80)
+
+
+            self.configuracoes_editar = ctk.CTkSwitch(self.FrameModuloConfiguracoesResp, font=ctk.CTkFont(weight="bold"), text="Editar",onvalue="liberado", offvalue="bloqueado", 
+                                        switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.configuracoes_editar.place(x=10, y=110)
+
+
+            self.configuracoes_remover = ctk.CTkSwitch(self.FrameModuloConfiguracoesResp, font=ctk.CTkFont(weight="bold"), text="Remover",onvalue="liberado", offvalue="bloqueado", 
+                                            switch_height=25, switch_width=50, progress_color="#3DED9D", state="disabled")
+            self.configuracoes_remover.place(x=10, y=140)
+
+        else:
+            self.FrameModuloConfiguracoesResp.tkraise()
+            self.Destaque_Button(self.BT_ModuloConfiguracoes)
 
 app()
 root.protocol("WM_DELETE_WINDOW", closesys)
