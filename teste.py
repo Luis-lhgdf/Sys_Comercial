@@ -6,9 +6,19 @@ import mysql.connector
 from PIL import Image
 import os
 import ctypes
+
 local  = r'liftam.JSON'
 ctk.set_default_color_theme(local)
 
+import mysql.connector
+database = 'railway'
+host = 'containers-us-west-1.railway.app'
+port = 5474
+user = 'root'
+password = 'JThLpvacyDNwzFLPyLhX'
+
+# Crie a conexão
+conexaoBD = mysql.connector.connect(host=host, user=user, password=password, database=database, port=port)
 
 root = ctk.CTk()
 root.geometry("1000x1000")
@@ -206,28 +216,29 @@ class app():
         TituloUsuario = ctk.CTkLabel(Painel_NovoUsuario, text="USUARIO")
         TituloUsuario.place(x=63, y=15)
 
-        EntryUsuario  = ctk.CTkEntry(Painel_NovoUsuario, placeholder_text="Digite aqui:",width=150)
-        EntryUsuario.place(x=10, y=45)
+        self.EntryUsuario  = ctk.CTkEntry(Painel_NovoUsuario, placeholder_text="Digite aqui:",width=150)
+        self.EntryUsuario.place(x=10, y=45)
 
 
 
         TituloSenha = ctk.CTkLabel(Painel_NovoUsuario, text="SENHA")
         TituloSenha.place(x=265, y=15)
-        EntrySenha  = ctk.CTkEntry(Painel_NovoUsuario, placeholder_text="Digite aqui:",width=150)
-        EntryUsuario.place(x=10, y=45)
-        EntrySenha.place(x=210, y=45)
+
+        self.EntrySenha  = ctk.CTkEntry(Painel_NovoUsuario, placeholder_text="Digite aqui:",width=150)
+        self.EntrySenha.place(x=210, y=45)
 
 
         TituloAcesso = ctk.CTkLabel(Painel_NovoUsuario, text="ACESSO")
         TituloAcesso.place(x=465, y=15)
-        MenuAcesso = ctk.CTkOptionMenu(self.FrameCadUsergResposta, values=("Usuario", "Adm"),width=150)
-        MenuAcesso.place(x=440, y=77)
+        self.MenuAcesso = ctk.CTkOptionMenu(self.FrameCadUsergResposta, values=("Usuario", "Adm"),width=150)
+        self.MenuAcesso.place(x=440, y=87)
+
 
 
         TituloStatus = ctk.CTkLabel(Painel_NovoUsuario, text="STATUS")
         TituloStatus.place(x=665, y=15)
-        MenuStatus = ctk.CTkOptionMenu(self.FrameCadUsergResposta, values=("Ativo", "Desativado"),width=150)
-        MenuStatus.place(x=640, y=77)
+        self.MenuStatus = ctk.CTkOptionMenu(self.FrameCadUsergResposta, values=("Ativo", "Desativado"),width=150)
+        self.MenuStatus.place(x=640, y=87)
 
 
         self.Bt_SalvarModulos = ctk.CTkButton(Painel_NovoUsuario, image=self.SalvarIcon, text_color=("black","white"), text="Salvar Alterações",
@@ -332,123 +343,156 @@ class app():
         resp = msgbox("SALVAR", "Deseja salvar as alterações nos módulos?", 4)
         try:
             if resp == 6:
-                modules = {
-                    "Estoque": {
-                        "ENTRADA": {
-                            "visualizar": "bloqueado" if not hasattr(self, "Entrada_visualizar") else self.Entrada_visualizar.get(),
-                            "novo": "bloqueado" if not hasattr(self, "Entrada_novo") else self.Entrada_novo.get(),
-                            "editar": "bloqueado" if not hasattr(self, "Entrada_editar") else self.Entrada_editar.get(),
-                            "remover": "bloqueado" if not hasattr(self, "Entrada_remover") else self.Entrada_remover.get()
-                        },
-                        "SAIDA": {
-                            "visualizar": "bloqueado" if not hasattr(self, "saida_visualizar") else self.saida_visualizar.get(),
-                            "novo": "bloqueado" if not hasattr(self, "saida_novo") else self.saida_novo.get(),
-                            "editar": "bloqueado" if not hasattr(self, "saida_editar") else self.saida_editar.get(),
-                            "remover": "bloqueado" if not hasattr(self, "saida_remover") else self.saida_remover.get()
-                        },
-                        "INVENTARIO": {
-                            "visualizar": "bloqueado" if not hasattr(self, "inventario_visualizar") else self.inventario_visualizar.get(),
-                            "novo": "bloqueado" if not hasattr(self, "inventario_novo") else self.inventario_novo.get(),
-                            "editar": "bloqueado" if not hasattr(self, "inventario_editar") else self.inventario_editar.get(),
-                            "remover": "bloqueado" if not hasattr(self, "inventario_remover") else self.inventario_remover.get()
-                        }
-                    },
-                    "Cadastro": {
-                        "CAD ITEM": {
-                            "visualizar": "bloqueado" if not hasattr(self, "item_visualizar") else self.item_visualizar.get(),
-                            "novo": "bloqueado" if not hasattr(self, "item_novo") else self.item_novo.get(),
-                            "editar": "bloqueado" if not hasattr(self, "item_editar") else self.item_editar.get(),
-                            "remover": "bloqueado" if not hasattr(self, "item_remover") else self.item_remover.get()
-                        },
-                        "CAD CLIENTE": {
-                            "visualizar": "bloqueado" if not hasattr(self, "cliente_visualizar") else self.cliente_visualizar.get(),
-                            "novo": "bloqueado" if not hasattr(self, "cliente_novo") else self.cliente_novo.get(),
-                            "editar": "bloqueado" if not hasattr(self, "cliente_editar") else self.cliente_editar.get(),
-                            "remover": "bloqueado" if not hasattr(self, "cliente_remover") else self.cliente_remover.get()
-                        },
-                        "CAD USUARIO": {
-                            "visualizar": "bloqueado" if not hasattr(self, "criarusuario_visualizar") else self.criarusuario_visualizar.get(),
-                            "novo": "bloqueado" if not hasattr(self, "criarusuario_novo") else self.criarusuario_novo.get(),
-                            "editar": "bloqueado" if not hasattr(self, "criarusuario_editar") else self.criarusuario_editar.get(),
-                            "remover": "bloqueado" if not hasattr(self, "criarusuario_remover") else self.criarusuario_remover.get()
-                        },
-                        "GERENCIAR USER": {
-                            "visualizar": "bloqueado" if not hasattr(self, "gerenciar_visualizar") else self.gerenciar_visualizar.get(),
-                            "novo": "bloqueado" if not hasattr(self, "gerenciar_novo") else self.gerenciar_novo.get(),
-                            "editar": "bloqueado" if not hasattr(self, "gerenciar_editar") else self.gerenciar_editar.get(),
-                            "remover": "bloqueado" if not hasattr(self, "gerenciar_remover") else self.gerenciar_remover.get()
-                        },
+                login_digitado = self.EntryUsuario.get()
+                senha_digitada = self.EntrySenha.get()
+                acesso = self.MenuAcesso.get()
+                status = self.MenuStatus.get()
 
+
+    
+
+                if len(login_digitado) <=2:
+                    msgbox("USUARIO", "Nome de usuario deve conter pelo menos 3 caracteres", 0)
+                elif len(senha_digitada) <=5:
+                    msgbox("SENHA", "Sua senha deve ter no minimo 6 caracteres", 0)
+                else:
                         
-                    },
-                    "Agenda": {
-                        "AGENDA": {
-                            "visualizar": "bloqueado" if not hasattr(self, "agenda_visualizar") else self.agenda_visualizar.get(),
-                            "novo": "bloqueado" if not hasattr(self, "agenda_novo") else self.agenda_novo.get(),
-                            "editar": "bloqueado" if not hasattr(self, "agenda_editar") else self.agenda_editar.get(),
-                            "remover": "bloqueado" if not hasattr(self, "agenda_remover") else self.agenda_remover.get()
-                        }
-                    },
-                    "Carteira": {
-                        "VENDAS": {
-                            "visualizar": "bloqueado" if not hasattr(self, "vendas_visualizar") else self.vendas_visualizar.get(),
-                            "novo": "bloqueado" if not hasattr(self, "vendas_novo") else self.vendas_novo.get(),
-                            "editar": "bloqueado" if not hasattr(self, "vendas_editar") else self.vendas_editar.get(),
-                            "remover": "bloqueado" if not hasattr(self, "vendas_remover") else self.vendas_remover.get()
-                        },
-                        "FATURAMENTO": {
-                            "visualizar": "bloqueado" if not hasattr(self, "faturamento_visualizar") else self.faturamento_visualizar.get(),
-                            "novo": "bloqueado" if not hasattr(self, "faturamento_novo") else self.faturamento_novo.get(),
-                            "editar": "bloqueado" if not hasattr(self, "faturamento_editar") else self.faturamento_editar.get(),
-                            "remover": "bloqueado" if not hasattr(self, "faturamento_remover") else self.faturamento_remover.get()
-                        }
-                    },
-                    "Finanças": {
-                        "DESPESAS": {
-                            "visualizar": "bloqueado" if not hasattr(self, "despesas_visualizar") else self.despesas_visualizar.get(),
-                            "novo": "bloqueado" if not hasattr(self, "despesas_novo") else self.despesas_novo.get(),
-                            "editar": "bloqueado" if not hasattr(self, "despesas_editar") else self.despesas_editar.get(),
-                            "remover": "bloqueado" if not hasattr(self, "despesas_remover") else self.despesas_remover.get()
-                        },
-                        "OUTRAS RENDAS": {
-                            "visualizar": "bloqueado" if not hasattr(self, "rendas_visualizar") else self.rendas_visualizar.get(),
-                            "novo": "bloqueado" if not hasattr(self, "rendas_novo") else self.rendas_novo.get(),
-                            "editar": "bloqueado" if not hasattr(self, "rendas_editar") else self.rendas_editar.get(),
-                            "remover": "bloqueado" if not hasattr(self, "rendas_remover") else self.rendas_remover.get()
-                        }
-                    },
-                    "Usuario": {
-                        "USUARIO": {
-                            "visualizar": "bloqueado" if not hasattr(self, "usuario_visualizar") else self.usuario_visualizar.get(),
-                            "novo": "bloqueado" if not hasattr(self, "usuario_novo") else self.usuario_novo.get(),
-                            "editar": "bloqueado" if not hasattr(self, "usuario_editar") else self.usuario_editar.get(),
-                            "remover": "bloqueado" if not hasattr(self, "usuario_remover") else self.usuario_remover.get()
-                        }
-                    },
-                    "Configurações": {
-                        "CONFIGURACOES": {
-                            "visualizar": "bloqueado" if not hasattr(self, "configuracoes_visualizar") else self.configuracoes_visualizar.get(),
-                            "novo": "bloqueado" if not hasattr(self, "configuracoes_novo") else self.configuracoes_novo.get(),
-                            "editar": "bloqueado" if not hasattr(self, "configuracoes_editar") else self.configuracoes_editar.get(),
-                            "remover": "bloqueado" if not hasattr(self, "configuracoes_remover") else self.configuracoes_remover.get()
-                        }
-                    }
-                }
-                for module_name, module_data in modules.items():
-                    print("_____#___________#__________#______")
-                    print("_____#___________#__________#______")
-                    print(f"Module: {module_name}")
-                    for section_name, section_data in module_data.items():
-                        print(f"Section: {section_name}")
-                        for key, value in section_data.items():
-                            if value == "liberado":
-                                color = "blue"
-                            else:
-                                color = "red"
-                            print(f"{key}: \033[1;{30 + (color == 'red')}m{value}\033[0m")
+                    cursor = conexaoBD.cursor()
+                    cursor.execute(f"SELECT usuario FROM Usuarios where binary usuario = '{login_digitado}'")
+                    resp = cursor.fetchall()
+                    if resp:
+                        msgbox("USUARIO", "Ja existe um usuario com este nome, por favor escolha outro", 0)
+                    else:
 
-                msgbox("SALVAR", "Alterações salvas com sucesso!!!", 0)
-                self.inicio()
+                        modules = {
+                            "Estoque": {
+                                "ENTRADA": {
+                                    "visualizar": "bloqueado" if not hasattr(self, "Entrada_visualizar") else self.Entrada_visualizar.get(),
+                                    "novo": "bloqueado" if not hasattr(self, "Entrada_novo") else self.Entrada_novo.get(),
+                                    "editar": "bloqueado" if not hasattr(self, "Entrada_editar") else self.Entrada_editar.get(),
+                                    "remover": "bloqueado" if not hasattr(self, "Entrada_remover") else self.Entrada_remover.get()
+                                },
+                                "SAIDA": {
+                                    "visualizar": "bloqueado" if not hasattr(self, "saida_visualizar") else self.saida_visualizar.get(),
+                                    "novo": "bloqueado" if not hasattr(self, "saida_novo") else self.saida_novo.get(),
+                                    "editar": "bloqueado" if not hasattr(self, "saida_editar") else self.saida_editar.get(),
+                                    "remover": "bloqueado" if not hasattr(self, "saida_remover") else self.saida_remover.get()
+                                },
+                                "INVENTARIO": {
+                                    "visualizar": "bloqueado" if not hasattr(self, "inventario_visualizar") else self.inventario_visualizar.get(),
+                                    "novo": "bloqueado" if not hasattr(self, "inventario_novo") else self.inventario_novo.get(),
+                                    "editar": "bloqueado" if not hasattr(self, "inventario_editar") else self.inventario_editar.get(),
+                                    "remover": "bloqueado" if not hasattr(self, "inventario_remover") else self.inventario_remover.get()
+                                }
+                            },
+                            "Cadastro": {
+                                "CAD ITEM": {
+                                    "visualizar": "bloqueado" if not hasattr(self, "item_visualizar") else self.item_visualizar.get(),
+                                    "novo": "bloqueado" if not hasattr(self, "item_novo") else self.item_novo.get(),
+                                    "editar": "bloqueado" if not hasattr(self, "item_editar") else self.item_editar.get(),
+                                    "remover": "bloqueado" if not hasattr(self, "item_remover") else self.item_remover.get()
+                                },
+                                "CAD CLIENTE": {
+                                    "visualizar": "bloqueado" if not hasattr(self, "cliente_visualizar") else self.cliente_visualizar.get(),
+                                    "novo": "bloqueado" if not hasattr(self, "cliente_novo") else self.cliente_novo.get(),
+                                    "editar": "bloqueado" if not hasattr(self, "cliente_editar") else self.cliente_editar.get(),
+                                    "remover": "bloqueado" if not hasattr(self, "cliente_remover") else self.cliente_remover.get()
+                                },
+                                "CAD USUARIO": {
+                                    "visualizar": "bloqueado" if not hasattr(self, "criarusuario_visualizar") else self.criarusuario_visualizar.get(),
+                                    "novo": "bloqueado" if not hasattr(self, "criarusuario_novo") else self.criarusuario_novo.get(),
+                                    "editar": "bloqueado" if not hasattr(self, "criarusuario_editar") else self.criarusuario_editar.get(),
+                                    "remover": "bloqueado" if not hasattr(self, "criarusuario_remover") else self.criarusuario_remover.get()
+                                },
+                                "GERENCIAR USER": {
+                                    "visualizar": "bloqueado" if not hasattr(self, "gerenciar_visualizar") else self.gerenciar_visualizar.get(),
+                                    "novo": "bloqueado" if not hasattr(self, "gerenciar_novo") else self.gerenciar_novo.get(),
+                                    "editar": "bloqueado" if not hasattr(self, "gerenciar_editar") else self.gerenciar_editar.get(),
+                                    "remover": "bloqueado" if not hasattr(self, "gerenciar_remover") else self.gerenciar_remover.get()
+                                },
+
+                                
+                            },
+                            "Agenda": {
+                                "AGENDA": {
+                                    "visualizar": "bloqueado" if not hasattr(self, "agenda_visualizar") else self.agenda_visualizar.get(),
+                                    "novo": "bloqueado" if not hasattr(self, "agenda_novo") else self.agenda_novo.get(),
+                                    "editar": "bloqueado" if not hasattr(self, "agenda_editar") else self.agenda_editar.get(),
+                                    "remover": "bloqueado" if not hasattr(self, "agenda_remover") else self.agenda_remover.get()
+                                }
+                            },
+                            "Carteira": {
+                                "VENDAS": {
+                                    "visualizar": "bloqueado" if not hasattr(self, "vendas_visualizar") else self.vendas_visualizar.get(),
+                                    "novo": "bloqueado" if not hasattr(self, "vendas_novo") else self.vendas_novo.get(),
+                                    "editar": "bloqueado" if not hasattr(self, "vendas_editar") else self.vendas_editar.get(),
+                                    "remover": "bloqueado" if not hasattr(self, "vendas_remover") else self.vendas_remover.get()
+                                },
+                                "FATURAMENTO": {
+                                    "visualizar": "bloqueado" if not hasattr(self, "faturamento_visualizar") else self.faturamento_visualizar.get(),
+                                    "novo": "bloqueado" if not hasattr(self, "faturamento_novo") else self.faturamento_novo.get(),
+                                    "editar": "bloqueado" if not hasattr(self, "faturamento_editar") else self.faturamento_editar.get(),
+                                    "remover": "bloqueado" if not hasattr(self, "faturamento_remover") else self.faturamento_remover.get()
+                                }
+                            },
+                            "Finanças": {
+                                "DESPESAS": {
+                                    "visualizar": "bloqueado" if not hasattr(self, "despesas_visualizar") else self.despesas_visualizar.get(),
+                                    "novo": "bloqueado" if not hasattr(self, "despesas_novo") else self.despesas_novo.get(),
+                                    "editar": "bloqueado" if not hasattr(self, "despesas_editar") else self.despesas_editar.get(),
+                                    "remover": "bloqueado" if not hasattr(self, "despesas_remover") else self.despesas_remover.get()
+                                },
+                                "OUTRAS RENDAS": {
+                                    "visualizar": "bloqueado" if not hasattr(self, "rendas_visualizar") else self.rendas_visualizar.get(),
+                                    "novo": "bloqueado" if not hasattr(self, "rendas_novo") else self.rendas_novo.get(),
+                                    "editar": "bloqueado" if not hasattr(self, "rendas_editar") else self.rendas_editar.get(),
+                                    "remover": "bloqueado" if not hasattr(self, "rendas_remover") else self.rendas_remover.get()
+                                }
+                            },
+                            "Usuario": {
+                                "USUARIO": {
+                                    "visualizar": "bloqueado" if not hasattr(self, "usuario_visualizar") else self.usuario_visualizar.get(),
+                                    "novo": "bloqueado" if not hasattr(self, "usuario_novo") else self.usuario_novo.get(),
+                                    "editar": "bloqueado" if not hasattr(self, "usuario_editar") else self.usuario_editar.get(),
+                                    "remover": "bloqueado" if not hasattr(self, "usuario_remover") else self.usuario_remover.get()
+                                }
+                            },
+                            "Configurações": {
+                                "CONFIGURACOES": {
+                                    "visualizar": "bloqueado" if not hasattr(self, "configuracoes_visualizar") else self.configuracoes_visualizar.get(),
+                                    "novo": "bloqueado" if not hasattr(self, "configuracoes_novo") else self.configuracoes_novo.get(),
+                                    "editar": "bloqueado" if not hasattr(self, "configuracoes_editar") else self.configuracoes_editar.get(),
+                                    "remover": "bloqueado" if not hasattr(self, "configuracoes_remover") else self.configuracoes_remover.get()
+                                }
+                            }
+                        }
+
+                        cursor = conexaoBD.cursor()
+
+                        cursor.execute("""INSERT INTO Usuarios(usuario, senha, acesso, status)
+                                       VALUES(%s, %s, %s, %s )""", (login_digitado, senha_digitada, acesso, status))
+                        conexaoBD.commit()
+                        
+                        # Itera sobre os dados do dicionário e insere no banco de dados
+                        for modulo, submodulos in modules.items():
+                            for submodulo, permissoes in submodulos.items():
+                                visualizar = permissoes['visualizar']
+                                novo = permissoes['novo']
+                                editar = permissoes['editar']
+                                remover = permissoes['remover']
+                                cursor.execute("""
+                                    INSERT INTO modulos (usuario, modulo, submodulo, visualizar, novo, editar, remover)
+                                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                                """, (login_digitado, modulo, submodulo, visualizar, novo, editar, remover))
+
+                        # Efetua o commit da transação
+                        conexaoBD.commit()
+                        
+
+                        # Fecha a conexão
+                        conexaoBD.close()
+                        self.inicio()
+                        msgbox("SALVAR", "Usuario criado com sucesso!!!", 0)
         except Exception as erro:
             print(erro)
             
