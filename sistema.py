@@ -547,12 +547,27 @@ class usuario_conf(trocar_imgORlogo):
         def Editar_Usuario():
             dialog = ctk.CTkInputDialog(text="DIGITE SEU NOVO NOME DE USUARIO:", title="Editar",button_fg_color=("#323232"), button_hover_color='#191919')
             resp = dialog.get_input()
-            if resp:
+            if len(resp) >=3:
                 cursor = self.conexaoBD.cursor()
-                cursor.execute(f"UPDATE Usuarios SET usuario = '{resp}' WHERE usuario = '{self.usuario_logado}'")
-                self.usuario_logado = str(resp)
-                self.conexaoBD.commit()
-                LabelUsuario.configure(text=resp)
+                cursor.execute(f"SELECT usuario FROM Usuarios WHERE BINARY usuario = '{resp}'")
+                resp = cursor.fetchall()
+                if not resp:
+                    cursor.execute(f"UPDATE Usuarios SET usuario = '{resp}' WHERE usuario = '{self.usuario_logado}'")
+                    self.usuario_logado = str(resp)
+                    self.conexaoBD.commit()
+                    LabelUsuario.configure(text=resp)
+
+                elif  resp == self.usuario_logado:
+                    msgbox("USUARIO", "Este ja é o seu nome de usuario\n Informe um nome diferente.", 0)
+
+                else:
+                    msgbox("USUARIO", "Ja existe um usuario com este nome!!!", 0)
+
+
+
+
+            else:
+                msgbox("USUARIO", "Seu novo nome de usuario deve conter pelo menos 3 caracteres", 0)
 
         Painel_Usuario = ctk.CTkButton(frame_resp, text="", width=1100, height=90, border_width=1, fg_color="transparent", hover_color=("#FBECEC", "gray14"))
         Painel_Usuario.place(relx=0.02, rely=0.25, anchor="w")
