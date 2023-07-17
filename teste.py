@@ -186,7 +186,7 @@ class app():
         ctk.set_appearance_mode(new_appearance_mode) 
 
     def inicio(self):
-        root.state("zoomed")
+        
         screen_height = root.winfo_screenheight()
         screen_wedth = root.winfo_screenwidth()
 
@@ -230,15 +230,16 @@ class app():
 
         TituloAcesso = ctk.CTkLabel(Painel_NovoUsuario, text="ACESSO")
         TituloAcesso.place(x=465, y=15)
-        self.MenuAcesso = ctk.CTkOptionMenu(self.FrameCadUsergResposta, values=("Usuario", "Adm"),width=150)
-        self.MenuAcesso.place(x=440, y=87)
+        self.MenuAcesso = ctk.CTkOptionMenu(Painel_NovoUsuario, values=("Usuario", "Adm"),width=150)
+        self.MenuAcesso.place(x=410, y=45)
+
 
 
 
         TituloStatus = ctk.CTkLabel(Painel_NovoUsuario, text="STATUS")
-        TituloStatus.place(x=665, y=15)
-        self.MenuStatus = ctk.CTkOptionMenu(self.FrameCadUsergResposta, values=("Ativo", "Desativado"),width=150)
-        self.MenuStatus.place(x=640, y=87)
+        TituloStatus.place(x=663, y=15)
+        self.MenuStatus = ctk.CTkOptionMenu(Painel_NovoUsuario, values=("Ativo", "Desativado"),width=150)
+        self.MenuStatus.place(x=610, y=45)
 
 
         self.Bt_SalvarModulos = ctk.CTkButton(Painel_NovoUsuario, image=self.SalvarIcon, text_color=("black","white"), text="Salvar Alterações",
