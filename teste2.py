@@ -10,9 +10,14 @@ conexaoBD = mysql.connector.connect(host=host, user=user, password=password, dat
 
 cursor = conexaoBD.cursor()
 
-cursor.execute("select * from modulos where usuario = 'anubis' ")
+cursor.execute("select * from modulos where usuario = 'anubis'")
 resultado = cursor.fetchall()
 
 conexaoBD.close()
+modulo = "Estoque"
+submodulo = 'ENTRADA'
 
-print(resultado)
+for tupla in resultado:
+   if tupla[2] == modulo and tupla[3] == submodulo:
+    if tupla[4] == "liberado" or tupla[5] == "liberado" or tupla[6] == "liberado" or tupla[7] == "liberado":
+        print("liberado")

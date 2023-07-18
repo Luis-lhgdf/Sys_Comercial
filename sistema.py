@@ -9,12 +9,7 @@ import os
 import ctypes
 import sys
 
-
 # Criar a janela
-
-
-
-
 
 local  = r'liftam.JSON'
 ctk.set_default_color_theme(local)
@@ -72,12 +67,26 @@ class validar_acesso(mysql_bd):
             if resultado:
                 cursor.execute(f"SELECT acesso FROM Usuarios  WHERE BINARY  usuario = '{self.usuario_logado}' ")
                 self.acesso_usuario = str(cursor.fetchall()[0][0])
-                
+
+                cursor.execute(f"select * from modulos where usuario = '{self.usuario_logado}'")
+                self.ModulosDoUsuario = cursor.fetchall()
                 self.frame_Inicial()
                 
             else:
                 msgbox("Login", "Login ou senha incorretos, Tente novamente",0)
                 self.desconeta_bd()
+
+    def VerificarLiberacao(self, modulo, submodulo, bt=""):
+       
+        resultado = self.ModulosDoUsuario
+        for tupla in resultado:
+            if tupla[2] == modulo and tupla[3] == submodulo:
+                if tupla[4] == "liberado" or tupla[5] == "liberado" or tupla[6] == "liberado" or tupla[7] == "liberado":
+                    return True
+                else:      
+                    return False
+                    
+
 
     def Novo_Usuario(self):
         print("em construção")
@@ -1815,7 +1824,7 @@ class Menu(usuario_conf, validar_acesso, cadastro_conf):
         self.BtOcultar = ctk.CTkButton(self.frame_OcultarMenu,text="", image=self.MenuIcon, anchor="w", width=23, height=23,  fg_color="transparent", text_color=("black","white"), command=self.ocultarJanela)
         self.BtOcultar.place(x=0,y=1)
 
-
+           
         self.BtHome = ctk.CTkButton(self.frame_MenuLateralEsq, text="Home", image=self.HomeIcon, anchor="w", 
                                     width=176, corner_radius=0, fg_color="transparent", text_color=("black","white"), command=self.Frame_Home)
         self.BtHome.place(x=0, y=120)
@@ -1832,8 +1841,10 @@ class Menu(usuario_conf, validar_acesso, cadastro_conf):
 
 
         self.BtAgenda = ctk.CTkButton(self.frame_MenuLateralEsq, text="Agenda", image=self.AgendaIcon, anchor="w", 
-                                      width=176, corner_radius=0, fg_color="transparent", text_color=("black","white"), command=self.Frame_Agenda)
+                                      width=176, corner_radius=0, fg_color="transparent", text_color=("black","white"),
+                                      command=lambda: self.Frame_Agenda() if self.VerificarLiberacao(modulo="Agenda", submodulo="AGENDA", bt=self.BtAgenda) else None)
         self.BtAgenda.place(x=0, y=240)
+
 
 
         self.Btcarteira = ctk.CTkButton(self.frame_MenuLateralEsq, text="Carteira", image=self.carteiraIcon, anchor="w", 
@@ -1848,8 +1859,10 @@ class Menu(usuario_conf, validar_acesso, cadastro_conf):
 
 
         self.BtUsuario = ctk.CTkButton(self.frame_MenuLateralEsq, text="Usuario", image=self.UsuarioIcon, anchor="w", 
-                                       width=176, corner_radius=0, fg_color="transparent", text_color=("black","white"), command=self.Frame_Usuario)
+                                       width=176, corner_radius=0, fg_color="transparent", text_color=("black","white"), 
+                                       command=lambda: self.Frame_Usuario() if self.VerificarLiberacao(modulo="Usuario", submodulo="USUARIO", bt=self.BtUsuario) else None)
         self.BtUsuario.place(x=0, y=360)  
+    
 
 
 
@@ -1991,23 +2004,25 @@ class Menu(usuario_conf, validar_acesso, cadastro_conf):
         self.BtOcultar = ctk.CTkButton(self.FrameLateralAtual,text="", image=self.MenuIcon, anchor="w", width=23, height=23,  fg_color="transparent", command=self.ocultarJanela)
         self.BtOcultar.place(x=138,y=1)
 
-        self.op1 = ctk.CTkButton(self.FrameLateralAtual, text="Cadastrar Itens", image=self.EstoqueIcon,anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
+        op1 = ctk.CTkButton(self.FrameLateralAtual, text="Cadastrar Itens", image=self.EstoqueIcon,anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
                                  hover_color= ("#ff9ea2", "black"))
-        self.op1.place(x=10, y=160)
+        op1.place(x=10, y=160)
+        # self.op1.configure(command=lambda: self.Frame_GerenciarUser() if self.VerificarLiberacao(modulo="Cadastro", submodulo="GERENCIAR USER") else None)
         
-        self.op2 = ctk.CTkButton(self.FrameLateralAtual, text="Cadastrar Clientes", image=self.CadastroIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
+        op2 = ctk.CTkButton(self.FrameLateralAtual, text="Cadastrar Clientes", image=self.CadastroIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
                                  hover_color= ("#ff9ea2", "black"))
-        self.op2.place(x=10, y=200)  
+        op2.place(x=10, y=200)  
+        # self.op2.configure(command=lambda: self.Frame_GerenciarUser() if self.VerificarLiberacao(modulo="Cadastro", submodulo="GERENCIAR USER") else None)
 
-        self.op3 = ctk.CTkButton(self.FrameLateralAtual, text="Novo Usuario", image=self.UsuarioIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
-                                 hover_color= ("#ff9ea2", "black"), command=self.Frame_NovoUser)
-        self.op3.place(x=10, y=240)  
-
-        self.op4 = ctk.CTkButton(self.FrameLateralAtual, text="Gerenciar Usuarios", image=self.GerenciarUserIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
-                                 hover_color= ("#ff9ea2", "black"), command=self.Frame_GerenciarUser)
-        self.op4.place(x=10, y=280)  
+        op3 = ctk.CTkButton(self.FrameLateralAtual, text="Novo Usuario", image=self.UsuarioIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
+                                 hover_color= ("#ff9ea2", "black"), command=lambda: self.Frame_NovoUser() if self.VerificarLiberacao(modulo="Cadastro", submodulo="CAD USUARIO", bt=op3) else None)
+        op3.place(x=10, y=240)  
 
 
+        op4 = ctk.CTkButton(self.FrameLateralAtual, text="Gerenciar Usuarios", image=self.GerenciarUserIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
+                                 hover_color= ("#ff9ea2", "black"), command=lambda: self.Frame_GerenciarUser() if self.VerificarLiberacao(modulo="Cadastro", submodulo="GERENCIAR USER", bt=op4) else None)
+        op4.place(x=10, y=280)  
+        
 
     def Frame_NovoUser(self):
 
@@ -2037,7 +2052,6 @@ class Menu(usuario_conf, validar_acesso, cadastro_conf):
 
         
         self.novo_user(self.FrameNovoUserResposta)
-
 
     def Frame_GerenciarUser(self):
 
