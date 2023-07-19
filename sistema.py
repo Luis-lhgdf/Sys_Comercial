@@ -76,16 +76,94 @@ class validar_acesso(mysql_bd):
                 msgbox("Login", "Login ou senha incorretos, Tente novamente",0)
                 self.desconeta_bd()
 
-    def VerificarLiberacao(self, modulo, submodulo, bt=""):
-       
+    def DesativarModulos(self):
+        
         resultado = self.ModulosDoUsuario
         for tupla in resultado:
-            if tupla[2] == modulo and tupla[3] == submodulo:
-                if tupla[4] == "liberado" or tupla[5] == "liberado" or tupla[6] == "liberado" or tupla[7] == "liberado":
-                    return True
-                else:      
-                    return False
+
+        
+            if tupla[2] == 'Agenda' and tupla[3] == 'AGENDA':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                    self.BtAgenda.configure(state="disabled")
+
+
+
+            elif tupla[2] == 'Usuario' and tupla[3] == 'USUARIO':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                    self.BtUsuario.configure(state="disabled")
+               
+
+            elif tupla[2] == 'Configurações' and tupla[3] == 'CONFIGURACOES':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                   self.BtConfiguracoes.configure(state="disabled")
+              
+    
+    def DesativarSubModulos(self):
+        resultado = self.ModulosDoUsuario
+        try:
+            for tupla in resultado:
+
+        
+                if tupla[2] == 'Estoque' and tupla[3] == 'ENTRADA':
+                    if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
                     
+                        self.BTEntrada.configure(state="disabled")
+                    
+                elif tupla[2] == 'Estoque' and tupla[3] == 'SAIDA':
+                    if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                        self.BTSaida.configure(state="disabled")
+                
+                elif tupla[2] == 'Estoque' and tupla[3] == 'INVENTARIO':
+                    if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                        self.BTInventario.configure(state="disabled")
+                
+
+
+
+                elif tupla[2] == 'Cadastro' and tupla[3] == 'CAD ITEM':
+                    if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                        self.BTCadastrarItens.configure(state="disabled")
+                    
+
+                elif tupla[2] == 'Cadastro' and tupla[3] == 'CAD CLIENTE':
+                    if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                        self.BTCadastrarClientes.configure(state="disabled")
+                    
+
+                elif tupla[2] == 'Cadastro' and tupla[3] == 'CAD USUARIO':
+                    if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                        self.BTCriarNovoUsuario.configure(state="disabled")
+                    
+
+                elif tupla[2] == 'Cadastro' and tupla[3] == 'GERENCIAR USER':
+                    if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                        self.BTGerenciarUsuario.configure(state="disabled")
+                    
+
+                    
+                elif tupla[2] == 'Carteira' and tupla[3] == 'VENDAS':
+                    if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                    
+                        self.BTRegistrarVenda.configure(state="disabled")
+                
+
+                elif tupla[2] == 'Carteira' and tupla[3] == 'FATURAMENTO':
+                    if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                        self.BTFaturamento.configure(state="disabled")
+                
+
+
+                elif tupla[2] == 'Finanças' and tupla[3] == 'DESPESAS':
+                    if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                        self.BTRegistrarDespesas.configure(state="disabled")
+                    
+
+                elif tupla[2] == 'Finanças' and tupla[3] == 'OUTRAS RENDAS':
+                    if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                        self.BTOutrasRendas.configure(state="disabled")
+                    
+        except Exception as erro:
+            print(erro)
 
 
     def Novo_Usuario(self):
@@ -1842,7 +1920,7 @@ class Menu(usuario_conf, validar_acesso, cadastro_conf):
 
         self.BtAgenda = ctk.CTkButton(self.frame_MenuLateralEsq, text="Agenda", image=self.AgendaIcon, anchor="w", 
                                       width=176, corner_radius=0, fg_color="transparent", text_color=("black","white"),
-                                      command=lambda: self.Frame_Agenda() if self.VerificarLiberacao(modulo="Agenda", submodulo="AGENDA", bt=self.BtAgenda) else None)
+                                      command=lambda: self.Frame_Agenda())
         self.BtAgenda.place(x=0, y=240)
 
 
@@ -1860,7 +1938,7 @@ class Menu(usuario_conf, validar_acesso, cadastro_conf):
 
         self.BtUsuario = ctk.CTkButton(self.frame_MenuLateralEsq, text="Usuario", image=self.UsuarioIcon, anchor="w", 
                                        width=176, corner_radius=0, fg_color="transparent", text_color=("black","white"), 
-                                       command=lambda: self.Frame_Usuario() if self.VerificarLiberacao(modulo="Usuario", submodulo="USUARIO", bt=self.BtUsuario) else None)
+                                       command=lambda: self.Frame_Usuario())
         self.BtUsuario.place(x=0, y=360)  
     
 
@@ -1886,6 +1964,7 @@ class Menu(usuario_conf, validar_acesso, cadastro_conf):
 
         self.FrameLateralAtual = self.frame_OcultarMenu   
         self.frameRespostaAtual = self.frame_temp
+        self.DesativarModulos()
        
         self.iniciar_img_perfil(self.foto_perfil)
         self.Frame_Home()
@@ -1943,7 +2022,7 @@ class Menu(usuario_conf, validar_acesso, cadastro_conf):
         self.BtOcultar.place(x=0,y=1)
 
     def Frame_Estoque(self):
-
+        
         self.BtHome.configure(fg_color="transparent")
         self.BtEstoque.configure(fg_color=("white", "#880016"))
         self.BtCadastros.configure(fg_color="transparent")
@@ -1968,17 +2047,19 @@ class Menu(usuario_conf, validar_acesso, cadastro_conf):
         self.BtOcultar = ctk.CTkButton(self.FrameLateralAtual,text="", image=self.MenuIcon, anchor="w", width=23, height=23,  fg_color="transparent", command=self.ocultarJanela)
         self.BtOcultar.place(x=138,y=1)
 
-        self.op1 = ctk.CTkButton(self.FrameLateralAtual, text="Entrada", image=self.EntradaIcon,anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
+        self.BTEntrada = ctk.CTkButton(self.FrameLateralAtual, text="Entrada", image=self.EntradaIcon,anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
                                  hover_color= ("#ff9ea2", "black"))
-        self.op1.place(x=10, y=120)
+        self.BTEntrada.place(x=10, y=120)
         
-        self.op2 = ctk.CTkButton(self.FrameLateralAtual, text="Saida", image=self.SaidaIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
+        self.BTSaida = ctk.CTkButton(self.FrameLateralAtual, text="Saida", image=self.SaidaIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
                                  hover_color= ("#ff9ea2", "black"))
-        self.op2.place(x=10, y=160)  
+        self.BTSaida.place(x=10, y=160)  
 
-        self.op3 = ctk.CTkButton(self.FrameLateralAtual, text="Inventario", image=self.InventarioIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
+        self.BTInventario = ctk.CTkButton(self.FrameLateralAtual, text="Inventario", image=self.InventarioIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
                                  hover_color= ("#ff9ea2", "black"))
-        self.op3.place(x=10, y=200)  
+        self.BTInventario.place(x=10, y=200) 
+
+        self.DesativarSubModulos()
 
     def Frame_Cadastro(self):
 
@@ -2004,26 +2085,27 @@ class Menu(usuario_conf, validar_acesso, cadastro_conf):
         self.BtOcultar = ctk.CTkButton(self.FrameLateralAtual,text="", image=self.MenuIcon, anchor="w", width=23, height=23,  fg_color="transparent", command=self.ocultarJanela)
         self.BtOcultar.place(x=138,y=1)
 
-        op1 = ctk.CTkButton(self.FrameLateralAtual, text="Cadastrar Itens", image=self.EstoqueIcon,anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
+        self.BTCadastrarItens = ctk.CTkButton(self.FrameLateralAtual, text="Cadastrar Itens", image=self.EstoqueIcon,anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
                                  hover_color= ("#ff9ea2", "black"))
-        op1.place(x=10, y=160)
-        # self.op1.configure(command=lambda: self.Frame_GerenciarUser() if self.VerificarLiberacao(modulo="Cadastro", submodulo="GERENCIAR USER") else None)
+        self.BTCadastrarItens.place(x=10, y=160)
+
         
-        op2 = ctk.CTkButton(self.FrameLateralAtual, text="Cadastrar Clientes", image=self.CadastroIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
+        self.BTCadastrarClientes = ctk.CTkButton(self.FrameLateralAtual, text="Cadastrar Clientes", image=self.CadastroIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
                                  hover_color= ("#ff9ea2", "black"))
-        op2.place(x=10, y=200)  
-        # self.op2.configure(command=lambda: self.Frame_GerenciarUser() if self.VerificarLiberacao(modulo="Cadastro", submodulo="GERENCIAR USER") else None)
+        self.BTCadastrarClientes.place(x=10, y=200)  
+      
 
-        op3 = ctk.CTkButton(self.FrameLateralAtual, text="Novo Usuario", image=self.UsuarioIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
-                                 hover_color= ("#ff9ea2", "black"), command=lambda: self.Frame_NovoUser() if self.VerificarLiberacao(modulo="Cadastro", submodulo="CAD USUARIO", bt=op3) else None)
-        op3.place(x=10, y=240)  
+        self.BTCriarNovoUsuario = ctk.CTkButton(self.FrameLateralAtual, text="Novo Usuario", image=self.UsuarioIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
+                                 hover_color= ("#ff9ea2", "black"), command=lambda: self.Frame_NovoUser())
+        self.BTCriarNovoUsuario.place(x=10, y=240)  
 
 
-        op4 = ctk.CTkButton(self.FrameLateralAtual, text="Gerenciar Usuarios", image=self.GerenciarUserIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
-                                 hover_color= ("#ff9ea2", "black"), command=lambda: self.Frame_GerenciarUser() if self.VerificarLiberacao(modulo="Cadastro", submodulo="GERENCIAR USER", bt=op4) else None)
-        op4.place(x=10, y=280)  
+        self.BTGerenciarUsuario = ctk.CTkButton(self.FrameLateralAtual, text="Gerenciar Usuarios", image=self.GerenciarUserIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
+                                 hover_color= ("#ff9ea2", "black"), command=lambda: self.Frame_GerenciarUser())
+        self.BTGerenciarUsuario.place(x=10, y=280)  
+
+        self.DesativarSubModulos()
         
-
     def Frame_NovoUser(self):
 
         self.BtHome.configure(fg_color="transparent")
@@ -2136,13 +2218,15 @@ class Menu(usuario_conf, validar_acesso, cadastro_conf):
         self.BtOcultar = ctk.CTkButton(self.FrameLateralAtual,text="", image=self.MenuIcon, anchor="w", width=23, height=23,  fg_color="transparent", command=self.ocultarJanela)
         self.BtOcultar.place(x=138,y=1)
 
-        self.op1 = ctk.CTkButton(self.FrameLateralAtual, text="Registrar Venda", image=self.VendasIcon,anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
+        self.BTRegistrarVenda = ctk.CTkButton(self.FrameLateralAtual, text="Registrar Venda", image=self.VendasIcon,anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
                                     hover_color= ("#ff9ea2", "black"))
-        self.op1.place(x=10, y=280)
+        self.BTRegistrarVenda.place(x=10, y=280)
         
-        self.op2 = ctk.CTkButton(self.FrameLateralAtual, text="Faturamento", image=self.FaturamentoIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
+        self.BTFaturamento = ctk.CTkButton(self.FrameLateralAtual, text="Faturamento", image=self.FaturamentoIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
                                     hover_color= ("#ff9ea2", "black"))
-        self.op2.place(x=10, y=320)   
+        self.BTFaturamento.place(x=10, y=320)  
+
+        self.DesativarSubModulos() 
     
     def Frame_financas(self):
 
@@ -2169,13 +2253,15 @@ class Menu(usuario_conf, validar_acesso, cadastro_conf):
         self.BtOcultar = ctk.CTkButton(self.FrameLateralAtual,text="", image=self.MenuIcon, anchor="w", width=23, height=23,  fg_color="transparent", command=self.ocultarJanela)
         self.BtOcultar.place(x=138,y=1)
 
-        self.op1 = ctk.CTkButton(self.FrameLateralAtual, text="Registrar Despesas", image=self.DespesaIcon,anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
+        self.BTRegistrarDespesas = ctk.CTkButton(self.FrameLateralAtual, text="Registrar Despesas", image=self.DespesaIcon,anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
                                     hover_color= ("#ff9ea2", "black"))
-        self.op1.place(x=10, y=320)
+        self.BTRegistrarDespesas.place(x=10, y=320)
         
-        self.op2 = ctk.CTkButton(self.FrameLateralAtual, text="Outras Rendas +", image=self.ReceitaIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
+        self.BTOutrasRendas = ctk.CTkButton(self.FrameLateralAtual, text="Outras Rendas +", image=self.ReceitaIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
                                     hover_color= ("#ff9ea2", "black"))
-        self.op2.place(x=10, y=360)      
+        self.BTOutrasRendas.place(x=10, y=360)   
+
+        self.DesativarSubModulos()  
    
     def Frame_Usuario(self):
 
