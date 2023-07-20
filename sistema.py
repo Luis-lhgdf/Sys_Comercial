@@ -62,7 +62,7 @@ class validar_acesso(mysql_bd):
         else:
             self.conexaoBD = self.conecta_bd()
             cursor = self.conexaoBD.cursor()
-            cursor.execute(f"SELECT * FROM Usuarios WHERE BINARY usuario = '{self.usuario_logado}' AND senha = '{self.senha_logado}' AND status = '{'ativo'}'")
+            cursor.execute(f"SELECT * FROM Usuarios WHERE BINARY usuario = '{self.usuario_logado}' AND senha = '{self.senha_logado}' AND status = '{'ATIVO'}'")
             resultado = cursor.fetchall()
             if resultado:
                 cursor.execute(f"SELECT acesso FROM Usuarios  WHERE BINARY  usuario = '{self.usuario_logado}' ")
@@ -77,7 +77,11 @@ class validar_acesso(mysql_bd):
                 self.desconeta_bd()
 
     def DesativarModulos(self):
-        
+        estoque = 0
+        cadastro = 0
+        carteira = 0
+        financas = 0
+
         resultado = self.ModulosDoUsuario
         for tupla in resultado:
 
@@ -96,78 +100,148 @@ class validar_acesso(mysql_bd):
             elif tupla[2] == 'Configurações' and tupla[3] == 'CONFIGURACOES':
                 if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
                    self.BtConfiguracoes.configure(state="disabled")
-              
+
+
+
+
+            elif tupla[2] == 'Estoque' and tupla[3] == 'ENTRADA':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                    estoque +=1
+                
+            elif tupla[2] == 'Estoque' and tupla[3] == 'SAIDA':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                    estoque +=1
+            
+            elif tupla[2] == 'Estoque' and tupla[3] == 'INVENTARIO':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                    estoque +=1                
     
-    def DesativarSubModulos(self):
+
+
+
+            elif tupla[2] == 'Cadastro' and tupla[3] == 'CAD ITEM':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                    cadastro +=1
+                
+            elif tupla[2] == 'Cadastro' and tupla[3] == 'CAD CLIENTE':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                   cadastro +=1
+                
+            elif tupla[2] == 'Cadastro' and tupla[3] == 'CAD USUARIO':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                    cadastro +=1
+                
+            elif tupla[2] == 'Cadastro' and tupla[3] == 'GERENCIAR USER':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                    cadastro +=1
+    
+    
+    
+
+            
+            elif tupla[2] == 'Carteira' and tupla[3] == 'VENDAS':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                
+                    carteira+=1
+            
+
+            elif tupla[2] == 'Carteira' and tupla[3] == 'FATURAMENTO':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                    carteira+=1
+    
+
+
+
+            elif tupla[2] == 'Finanças' and tupla[3] == 'DESPESAS':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                    financas +=1
+                
+
+            elif tupla[2] == 'Finanças' and tupla[3] == 'OUTRAS RENDAS':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                    financas +=1
+
+        if estoque == 3:
+            self.BtEstoque.configure(state='disabled')
+
+        if cadastro == 4:
+            self.BtCadastros.configure(state='disabled')
+
+        if carteira == 2:
+            self.Btcarteira.configure(state='disabled')
+        
+        if financas == 2:
+            self.BtFinancas.configure(state='disabled')
+        
+    def DesativarSubModulos(self, modulo):
         resultado = self.ModulosDoUsuario
         try:
-            for tupla in resultado:
+            if modulo == 'Estoque':
+                for tupla in resultado:
 
-        
-                if tupla[2] == 'Estoque' and tupla[3] == 'ENTRADA':
-                    if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+            
+                    if tupla[2] == 'Estoque' and tupla[3] == 'ENTRADA':
+                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                        
+                            self.BTEntrada.configure(state="disabled")
+                        
+                    elif tupla[2] == 'Estoque' and tupla[3] == 'SAIDA':
+                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                            self.BTSaida.configure(state="disabled")
                     
-                        self.BTEntrada.configure(state="disabled")
+                    elif tupla[2] == 'Estoque' and tupla[3] == 'INVENTARIO':
+                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                            self.BTInventario.configure(state="disabled")                 
+           
+            elif modulo == 'Cadastro':
+                 for tupla in resultado:
+                    if tupla[2] == 'Cadastro' and tupla[3] == 'CAD ITEM':
+                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                            self.BTCadastrarItens.configure(state="disabled")
+                        
+
+                    elif tupla[2] == 'Cadastro' and tupla[3] == 'CAD CLIENTE':
+                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                            self.BTCadastrarClientes.configure(state="disabled")
+                        
+
+                    elif tupla[2] == 'Cadastro' and tupla[3] == 'CAD USUARIO':
+                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                            self.BTCriarNovoUsuario.configure(state="disabled")
+                        
+
+                    elif tupla[2] == 'Cadastro' and tupla[3] == 'GERENCIAR USER':
+                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                            self.BTGerenciarUsuario.configure(state="disabled")
+           
+            elif modulo == 'Carteira':
+                 for tupla in resultado:  
+
                     
-                elif tupla[2] == 'Estoque' and tupla[3] == 'SAIDA':
-                    if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                        self.BTSaida.configure(state="disabled")
+                    if tupla[2] == 'Carteira' and tupla[3] == 'VENDAS':
+                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                        
+                            self.BTRegistrarVenda.configure(state="disabled")
+                    
+
+                    elif tupla[2] == 'Carteira' and tupla[3] == 'FATURAMENTO':
+                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                            self.BTFaturamento.configure(state="disabled")
                 
-                elif tupla[2] == 'Estoque' and tupla[3] == 'INVENTARIO':
-                    if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                        self.BTInventario.configure(state="disabled")
-                
+            elif modulo == 'Finanças':
+                 for tupla in resultado:
 
+                    if tupla[2] == 'Finanças' and tupla[3] == 'DESPESAS':
+                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                            self.BTRegistrarDespesas.configure(state="disabled")
+                        
 
-
-                elif tupla[2] == 'Cadastro' and tupla[3] == 'CAD ITEM':
-                    if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                        self.BTCadastrarItens.configure(state="disabled")
-                    
-
-                elif tupla[2] == 'Cadastro' and tupla[3] == 'CAD CLIENTE':
-                    if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                        self.BTCadastrarClientes.configure(state="disabled")
-                    
-
-                elif tupla[2] == 'Cadastro' and tupla[3] == 'CAD USUARIO':
-                    if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                        self.BTCriarNovoUsuario.configure(state="disabled")
-                    
-
-                elif tupla[2] == 'Cadastro' and tupla[3] == 'GERENCIAR USER':
-                    if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                        self.BTGerenciarUsuario.configure(state="disabled")
-                    
-
-                    
-                elif tupla[2] == 'Carteira' and tupla[3] == 'VENDAS':
-                    if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                    
-                        self.BTRegistrarVenda.configure(state="disabled")
-                
-
-                elif tupla[2] == 'Carteira' and tupla[3] == 'FATURAMENTO':
-                    if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                        self.BTFaturamento.configure(state="disabled")
-                
-
-
-                elif tupla[2] == 'Finanças' and tupla[3] == 'DESPESAS':
-                    if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                        self.BTRegistrarDespesas.configure(state="disabled")
-                    
-
-                elif tupla[2] == 'Finanças' and tupla[3] == 'OUTRAS RENDAS':
-                    if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                        self.BTOutrasRendas.configure(state="disabled")
-                    
+                    elif tupla[2] == 'Finanças' and tupla[3] == 'OUTRAS RENDAS':
+                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                            self.BTOutrasRendas.configure(state="disabled")
+                        
         except Exception as erro:
             print(erro)
-
-
-    def Novo_Usuario(self):
-        print("em construção")
 
 class trocar_imgORlogo(mysql_bd):
 
@@ -214,8 +288,6 @@ class trocar_imgORlogo(mysql_bd):
         else:
             print("não existe nenhuma img no banco de dados")
 
-
-    
     def select_image(self, label_img, usuario): # Função para selecionar a imagem
         # Abrir o diálogo de seleção de arquivo
         file_path = filedialog.askopenfilename(filetypes=[("Imagens", "*.jpg;*.jpeg;*.png")])
@@ -305,13 +377,13 @@ class cadastro_conf():
         TituloSenha = ctk.CTkLabel(Painel_NovoUsuario, text="SENHA")
         TituloSenha.place(x=265, y=15)
 
-        self.EntrySenha  = ctk.CTkEntry(Painel_NovoUsuario, placeholder_text="Digite aqui:",width=150)
+        self.EntrySenha  = ctk.CTkEntry(Painel_NovoUsuario, placeholder_text="Senha temporaria:",width=150)
         self.EntrySenha.place(x=210, y=45)
 
 
         TituloAcesso = ctk.CTkLabel(Painel_NovoUsuario, text="ACESSO")
         TituloAcesso.place(x=465, y=15)
-        self.MenuAcesso = ctk.CTkOptionMenu(Painel_NovoUsuario, values=("Usuario", "Adm"),width=150)
+        self.MenuAcesso = ctk.CTkOptionMenu(Painel_NovoUsuario, values=("USUARIO", "ADM"),width=150)
         self.MenuAcesso.place(x=410, y=45)
 
 
@@ -319,7 +391,7 @@ class cadastro_conf():
 
         TituloStatus = ctk.CTkLabel(Painel_NovoUsuario, text="STATUS")
         TituloStatus.place(x=663, y=15)
-        self.MenuStatus = ctk.CTkOptionMenu(Painel_NovoUsuario, values=("Ativo", "Desativado"),width=150)
+        self.MenuStatus = ctk.CTkOptionMenu(Painel_NovoUsuario, values=("ATIVO", "DESATIVADO"),width=150)
         self.MenuStatus.place(x=610, y=45)
 
 
@@ -1136,7 +1208,7 @@ class cadastro_conf():
             self.Destaque_Button(self.BT_ModuloConfiguracoes)
 
     def gerenciar_user(self, frame_resp):
-        if self.acesso_usuario == "adm":
+        if self.acesso_usuario == "ADM":
             titulo = ctk.CTkFont(size=14, weight="bold")
             
             cursor = self.conexaoBD.cursor()
@@ -1189,7 +1261,7 @@ class cadastro_conf():
                     Tuser = 0
 
                     for v in acesso:
-                        if v == 'adm':
+                        if v == 'ADM':
                             Tadm +=1
                         else:
                             Tuser +=1  
@@ -1245,7 +1317,7 @@ class cadastro_conf():
                     Tuser = 0
 
                     for v in acesso:
-                        if v == 'adm':
+                        if v == 'ADM':
                             Tadm +=1
                         else:
                             Tuser +=1  
@@ -1308,18 +1380,18 @@ class cadastro_conf():
                 usuario_entry.insert(0, usuarios[i])
                 usuario_entry.grid(padx=2, pady=5,row=i, column=0)
 
-                Menu1 = ("usuario", "adm")
-                Menu2 = ("adm", "usuario")
+                Menu1 = ("USUARIO", "ADM")
+                Menu2 = ("ADM", "USUARIO")
 
-                Status1 = ("ativo", "desativado")
-                Status2 = ("desativado", "ativo")
+                Status1 = ("ATIVO", "DESATIVADO")
+                Status2 = ("DESATIVADO", "ATIVO")
 
 
-                acesso_menu =  ctk.CTkOptionMenu(scrol, values=(Menu1 if acesso[i] == "usuario" else Menu2), width=100, height=26)
+                acesso_menu =  ctk.CTkOptionMenu(scrol, values=(Menu1 if acesso[i] == "USUARIO" else Menu2), width=100, height=26)
                 acesso_menu.grid(padx=2, pady=5,row=i, column=1)
                 
                 
-                status_menu = ctk.CTkOptionMenu(scrol, values=(Status1 if status[i] == "ativo" else Status2), width=100, height=26)
+                status_menu = ctk.CTkOptionMenu(scrol, values=(Status1 if status[i] == "ATIVO" else Status2), width=100, height=26)
                 status_menu.grid(padx=2, pady=5,row=i, column=2)
                 
 
@@ -1357,7 +1429,7 @@ class cadastro_conf():
             Tuser = 0
 
             for v in acesso:
-                if v == 'adm':
+                if v == 'ADM':
                     Tadm +=1
                 else:
                     Tuser +=1
@@ -1454,6 +1526,8 @@ class cadastro_conf():
             Bt_NovoUser.place(relx=0.74, rely=0.8, anchor="w")
 
 class usuario_conf(trocar_imgORlogo):
+
+
     def iniciar_img_perfil(self, labelIMG):
 
         imagem = labelIMG
@@ -2059,7 +2133,7 @@ class Menu(usuario_conf, validar_acesso, cadastro_conf):
                                  hover_color= ("#ff9ea2", "black"))
         self.BTInventario.place(x=10, y=200) 
 
-        self.DesativarSubModulos()
+        self.DesativarSubModulos(modulo='Estoque')
 
     def Frame_Cadastro(self):
 
@@ -2104,7 +2178,7 @@ class Menu(usuario_conf, validar_acesso, cadastro_conf):
                                  hover_color= ("#ff9ea2", "black"), command=lambda: self.Frame_GerenciarUser())
         self.BTGerenciarUsuario.place(x=10, y=280)  
 
-        self.DesativarSubModulos()
+        self.DesativarSubModulos(modulo='Cadastro')
         
     def Frame_NovoUser(self):
 
@@ -2226,7 +2300,7 @@ class Menu(usuario_conf, validar_acesso, cadastro_conf):
                                     hover_color= ("#ff9ea2", "black"))
         self.BTFaturamento.place(x=10, y=320)  
 
-        self.DesativarSubModulos() 
+        self.DesativarSubModulos(modulo='Carteira') 
     
     def Frame_financas(self):
 
@@ -2261,7 +2335,7 @@ class Menu(usuario_conf, validar_acesso, cadastro_conf):
                                     hover_color= ("#ff9ea2", "black"))
         self.BTOutrasRendas.place(x=10, y=360)   
 
-        self.DesativarSubModulos()  
+        self.DesativarSubModulos(modulo='Finanças')  
    
     def Frame_Usuario(self):
 
