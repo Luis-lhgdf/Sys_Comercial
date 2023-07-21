@@ -1602,6 +1602,7 @@ class usuario_conf(trocar_imgORlogo):
         def Trocar_senha():
          
             dialog = ctk.CTkToplevel()
+            dialog.title("SENHA")
             dialog.geometry("340x250")
             dialog.resizable(0, 0)
             dialog.grab_set()
@@ -1706,6 +1707,7 @@ class usuario_conf(trocar_imgORlogo):
         def Excluir_conta():
             
             dialog = ctk.CTkToplevel()
+            dialog.title("EXCLUIR")
             dialog.geometry("340x120")
             dialog.resizable(0, 0)
             dialog.grab_set()
@@ -1957,7 +1959,9 @@ class Menu(usuario_conf, validar_acesso, cadastro_conf):
 
     def frame_Inicial(self):
         self.Root_login.withdraw()
+  
         self.rootHome = ctk.CTkToplevel()
+        self.rootHome.title("SYS COMERCIAL")
         self.rootHome.state('zoomed')
         self.screen_height = self.rootHome.winfo_screenheight()
         self.screen_wedth = self.rootHome.winfo_screenwidth()
