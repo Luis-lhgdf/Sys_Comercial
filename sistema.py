@@ -2379,11 +2379,9 @@ class Menu(usuario_conf, validar_acesso, cadastro_conf):
         self.BtUsuario.configure(fg_color="transparent")
         self.BtConfiguracoes.configure(fg_color=("white", "#880016"))
 
-
         self.FrameLateralAtual.destroy()
         self.frameRespostaAtual.destroy()
                 
-
         self.FrameConfigLateral = ctk.CTkFrame(self.rootHome, width=37, height=self.screen_height, fg_color=("white", "#880016"), corner_radius=0)
         self.FrameConfigLateral.grid(row=0,column=1)
         self.FrameLateralAtual = self.FrameConfigLateral
