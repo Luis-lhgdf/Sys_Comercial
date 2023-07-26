@@ -1224,7 +1224,125 @@ class cadastro_conf():
                 acesso.append(user[1])
                 status.append(user[2])
 
-            
+
+            def modulos_usuario(indice, usuario_entry, status_menu, acesso_menu):
+                cursor.execute(f"select * from modulos where usuario = '{usuarios[indice]}'")
+
+                self.indice_usuario = indice
+                self.ModulosDoUsuario = cursor.fetchall()
+
+                usuario_entry.grid_remove()
+                acesso_menu.grid_remove()
+                status_menu.grid_remove()
+     
+
+                salvar_button[indice].grid_remove()
+                cancelar_button[indice].grid_remove()
+                excluir_button[indice].grid_remove()
+                Editar_Modulos[indice].grid_remove()
+
+                
+                outros_usuarios = len(usuario_label)-1
+                for c in range(0, outros_usuarios+1):
+                    usuario_label[c].grid_remove()
+                    acesso_label[c].grid_remove()
+                    status_label[c].grid_remove()
+                    editar_button[c].grid_remove()
+
+                cabeçalho.configure(text='     Usuario             Modulo             Submodulo             visualizar             Novo             Editar             Remover')
+
+                usuario_label_modulo = []
+                modulo_label_modulo = []
+                submodulo_label_modulo = []
+                visualizar_menu_modulo = []
+                novo_menu_modulo = []
+                editar_menu_modulo = []
+                remover_menu_modulo = []
+
+
+                
+
+          
+
+                for i, linha in enumerate(self.ModulosDoUsuario):
+                    usuario_label_modulo.append(ctk.CTkLabel(scrol, text=linha[1], fg_color="white", anchor="w", width=100, corner_radius=6, text_color=("black")))
+                    usuario_label_modulo[i].grid(padx=2, pady=5, row=i, column=0)
+
+                    modulo_label_modulo.append(ctk.CTkLabel(scrol, text=linha[2], fg_color="white", anchor="w", width=100, corner_radius=6, text_color=("black")))
+                    modulo_label_modulo[i].grid(padx=2, pady=5,  row=i, column=1)
+
+                    submodulo_label_modulo.append(ctk.CTkLabel(scrol, text=linha[3].capitalize(), fg_color="white", anchor="w", width=100, corner_radius=6, text_color=("black")))
+                    submodulo_label_modulo[i].grid(padx=2, pady=5,  row=i, column=2)
+
+                    visualizar_menu_modulo.append(ctk.CTkOptionMenu(scrol, values=(("liberado", "bloqueado") if linha[4] == 'liberado' else ("bloqueado", "liberado")), width=100, height=26))
+                    visualizar_menu_modulo[i].grid(padx=2, pady=5,  row=i, column=3)
+
+                    novo_menu_modulo.append(ctk.CTkOptionMenu(scrol, values=(("liberado", "bloqueado") if linha[4] == 'liberado' else ("bloqueado", "liberado")), width=100, height=26))
+                    novo_menu_modulo[i].grid(padx=2, pady=5, row=i, column=4)
+
+                    editar_menu_modulo.append(ctk.CTkOptionMenu(scrol,  values=(("liberado", "bloqueado") if linha[4] == 'liberado' else ("bloqueado", "liberado")), width=100, height=26))
+                    editar_menu_modulo[i].grid(padx=2, pady=5,  row=i, column=5)
+
+                    remover_menu_modulo.append(ctk.CTkOptionMenu(scrol, values=(("liberado", "bloqueado") if linha[4] == 'liberado' else ("bloqueado", "liberado")), width=100, height=26))
+                    remover_menu_modulo[i].grid(padx=2, pady=5, row=i, column=6)
+
+
+
+                def salvar():
+                    resp = msgbox("Salvar", "Deseja salvar as alterações feita?", 4)
+                    if resp == 6:
+                        for pos, modulo in enumerate(self.ModulosDoUsuario):
+
+                            visualizar = visualizar_menu_modulo[pos].get()
+                            novo =  novo_menu_modulo[pos].get()
+                            editar = editar_menu_modulo[pos].get()
+                            remover =  remover_menu_modulo[pos].get()
+                            
+                            cursor.execute(f'''UPDATE modulos SET 
+                                            visualizar = "{visualizar}", 
+                                            novo = "{novo}", 
+                                            editar = "{editar}", 
+                                            remover = "{remover}" 
+                                           WHERE usuario = "{usuarios[indice]}" AND submodulo = "{modulo[3]}"''')
+                            self.conexaoBD.commit()
+
+
+
+                   
+                            
+                           
+                            
+                           
+                        msgbox("Salvar", "Alterações salvas com Sucesso", 0)
+
+
+                def cancelar():
+                    cursor.execute(f"SELECT acesso FROM Usuarios  WHERE BINARY  usuario = '{self.usuario_logado}' ")
+                    self.acesso_usuario = str(cursor.fetchall()[0][0])
+
+                        
+                    Bt_Salvar_modulo.destroy()
+                                        
+                    Bt_Cancelar_modulo.destroy()
+   
+
+                    self.gerenciar_user(frame_resp=frame_resp)
+
+          
+
+
+                Bt_Salvar_modulo = ctk.CTkButton(frame_resp, text="Salvar",  image=self.SalvarIcon, text_color=("black","white"), 
+                                            width=100,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=lambda:salvar())
+                
+                Bt_Salvar_modulo.place(relx=0.4, rely=0.8, anchor="w")
+
+
+                Bt_Cancelar_modulo = ctk.CTkButton(frame_resp, text="Voltar",  image=self.VoltarIcon, text_color=("black","white"), 
+                                            width=100,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), anchor="w", command= lambda: cancelar())
+                
+                Bt_Cancelar_modulo.place(relx=0.3, rely=0.8, anchor="w")
+
+               
 
             def salvar_usuario(i, usuario_entry, status_menu, acesso_menu):
                 editar_button[i].configure(state="normal")
@@ -1404,7 +1522,7 @@ class cadastro_conf():
                 cancelar_button[i] =ctk.CTkButton(scrol, text="Cancelar", text_color=("black","white"), image=self.VoltarIcon, width=60,  fg_color=("transparent"), hover_color=("white", '#191919'), command=lambda: cancelar_usuario(i, usuario_entry, status_menu, acesso_menu))
                 cancelar_button[i].grid(padx=5, row=i, column=5)
 
-                Editar_Modulos[i] =ctk.CTkButton(scrol, text="Modulos", text_color=("black","white"),image=self.EditarIcon, width=60,  fg_color=("transparent"), hover_color=("white", '#191919'))
+                Editar_Modulos[i] =ctk.CTkButton(scrol, text="Modulos", text_color=("black","white"),image=self.EditarIcon, width=60,  fg_color=("transparent"), hover_color=("white", '#191919'), command=lambda: modulos_usuario(i, usuario_entry, status_menu, acesso_menu))
                 Editar_Modulos[i].grid(padx=5, row=i, column=6)
 
                 excluir_button[i] =ctk.CTkButton(scrol, text="Deletar", text_color=("black","white"),image=self.DeletarIcon, width=60, fg_color=("transparent"), hover_color=("white", '#191919'), command=lambda: excluir_usuario(i, usuario_entry, status_menu, acesso_menu))
@@ -1520,10 +1638,6 @@ class cadastro_conf():
 
 
 
-            Bt_NovoUser = ctk.CTkButton(frame_resp, text="Novo Usuario",  image=self.AdicionarIcon, text_color=("black","white"), 
-                                        width=80,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'))
-            
-            Bt_NovoUser.place(relx=0.74, rely=0.8, anchor="w")
 
 class usuario_conf(trocar_imgORlogo):
 

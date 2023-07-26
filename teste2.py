@@ -207,8 +207,7 @@ class Menu():
             cursor.execute("SELECT usuario, acesso, status FROM Usuarios")
             resultado = cursor.fetchall()
 
-            cursor.execute(f"select * from modulos where usuario = '{self.usuario_logado}'")
-            self.ModulosDoUsuario = cursor.fetchall()
+           
 
             usuarios = []
             acesso = []
@@ -220,16 +219,21 @@ class Menu():
                 status.append(user[2])
 
                         
-            def modulos_usuario(i, usuario_entry, status_menu, acesso_menu):
+            def modulos_usuario(indice, usuario_entry, status_menu, acesso_menu):
+                cursor.execute(f"select * from modulos where usuario = '{usuarios[indice]}'")
+
+                self.indice_usuario = indice
+                self.ModulosDoUsuario = cursor.fetchall()
 
                 usuario_entry.grid_remove()
                 acesso_menu.grid_remove()
                 status_menu.grid_remove()
+     
 
-                salvar_button[i].grid_remove()
-                cancelar_button[i].grid_remove()
-                excluir_button[i].grid_remove()
-                Editar_Modulos[i].grid_remove()
+                salvar_button[indice].grid_remove()
+                cancelar_button[indice].grid_remove()
+                excluir_button[indice].grid_remove()
+                Editar_Modulos[indice].grid_remove()
 
                 
                 outros_usuarios = len(usuario_label)-1
@@ -248,30 +252,76 @@ class Menu():
                 novo_menu_modulo = []
                 editar_menu_modulo = []
                 remover_menu_modulo = []
-                print(self.ModulosDoUsuario)
+
+
+                
+
+          
 
                 for i, linha in enumerate(self.ModulosDoUsuario):
                     usuario_label_modulo.append(ctk.CTkLabel(scrol, text=linha[1], fg_color="white", anchor="w", width=100, corner_radius=6, text_color=("black")))
                     usuario_label_modulo[i].grid(padx=2, pady=5, row=i, column=0)
 
                     modulo_label_modulo.append(ctk.CTkLabel(scrol, text=linha[2], fg_color="white", anchor="w", width=100, corner_radius=6, text_color=("black")))
-                    modulo_label_modulo[i].grid(padx=2, pady=5, row=i, column=1)
+                    modulo_label_modulo[i].grid(padx=2, pady=5,  row=i, column=1)
 
                     submodulo_label_modulo.append(ctk.CTkLabel(scrol, text=linha[3].capitalize(), fg_color="white", anchor="w", width=100, corner_radius=6, text_color=("black")))
-                    submodulo_label_modulo[i].grid(padx=2, pady=5, row=i, column=2)
+                    submodulo_label_modulo[i].grid(padx=2, pady=5,  row=i, column=2)
 
-                    visualizar_menu_modulo.append(ctk.CTkOptionMenu(scrol, values=("liberado", "bloquado"), width=100, height=26))
-                    visualizar_menu_modulo[i].grid(padx=2, pady=5, row=i, column=3)
+                    visualizar_menu_modulo.append(ctk.CTkOptionMenu(scrol, values=(("liberado", "bloqueado") if linha[4] == 'liberado' else ("bloqueado", "liberado")), width=100, height=26))
+                    visualizar_menu_modulo[i].grid(padx=2, pady=5,  row=i, column=3)
 
-                    novo_menu_modulo.append(ctk.CTkOptionMenu(scrol, values=("liberado", "bloquado"), width=100, height=26))
+                    novo_menu_modulo.append(ctk.CTkOptionMenu(scrol, values=(("liberado", "bloqueado") if linha[4] == 'liberado' else ("bloqueado", "liberado")), width=100, height=26))
                     novo_menu_modulo[i].grid(padx=2, pady=5, row=i, column=4)
 
-                    editar_menu_modulo.append(ctk.CTkOptionMenu(scrol, values=("liberado", "bloquado"), width=100, height=26))
-                    editar_menu_modulo[i].grid(padx=2, pady=5, row=i, column=5)
+                    editar_menu_modulo.append(ctk.CTkOptionMenu(scrol,  values=(("liberado", "bloqueado") if linha[4] == 'liberado' else ("bloqueado", "liberado")), width=100, height=26))
+                    editar_menu_modulo[i].grid(padx=2, pady=5,  row=i, column=5)
 
-                    remover_menu_modulo.append(ctk.CTkOptionMenu(scrol, values=("liberado", "bloquado"), width=100, height=26))
+                    remover_menu_modulo.append(ctk.CTkOptionMenu(scrol, values=(("liberado", "bloqueado") if linha[4] == 'liberado' else ("bloqueado", "liberado")), width=100, height=26))
                     remover_menu_modulo[i].grid(padx=2, pady=5, row=i, column=6)
 
+
+
+                def salvar():
+                    resp = msgbox("Salvar", "Deseja salvar as alterações feita?", 4)
+                    if resp == 6:
+                        msgbox("Salvar", "Alterações salvas com Sucesso", 0)
+
+
+                def cancelar():
+ 
+                    for pos, modulo in enumerate(usuario_label_modulo):
+                        usuario_label_modulo[pos].grid_remove()
+                        modulo_label_modulo[pos].grid_remove()
+                        submodulo_label_modulo[pos].grid_remove()
+                        visualizar_menu_modulo[pos].grid_remove()
+                        novo_menu_modulo[pos].grid_remove()
+                        editar_menu_modulo[pos].grid_remove()
+                        remover_menu_modulo[pos].grid_remove()
+
+
+
+
+                    editar_usuario(self.indice_usuario)
+
+
+                    pass
+
+
+
+
+                Bt_Salvar_modulo = ctk.CTkButton(frame_resp, text="Salvar",  image=self.SalvarIcon, text_color=("black","white"), 
+                                            width=100,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=lambda:salvar())
+                
+                Bt_Salvar_modulo.place(relx=0.4, rely=0.8, anchor="w")
+
+
+                Bt_Cancelar_modulo = ctk.CTkButton(frame_resp, text="Voltar",  image=self.VoltarIcon, text_color=("black","white"), 
+                                            width=100,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), anchor="w", command= lambda: cancelar())
+                
+                Bt_Cancelar_modulo.place(relx=0.3, rely=0.8, anchor="w")
+
+                Bt_NovoUser.configure(state='disabled')
 
                 
 
@@ -467,7 +517,7 @@ class Menu():
 
 
 
-                print("a")
+        
          
             usuario_label = []
             status_label = []
