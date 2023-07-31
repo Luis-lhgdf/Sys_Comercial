@@ -1225,6 +1225,7 @@ class cadastro_conf():
                 status.append(user[2])
 
 
+
             def modulos_usuario(indice, usuario_entry, status_menu, acesso_menu):
                 cursor.execute(f"select * from modulos where usuario = '{usuarios[indice]}'")
 
@@ -1636,11 +1637,10 @@ class cadastro_conf():
                                             width=80, fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=pesquisarUser)
             Bt_Pesquisar.place(relx=0.612, rely=0.18, anchor="w")
 
-
-
+    def novo_cliente(self, frame_resp):
+        print("em construção")
 
 class usuario_conf(trocar_imgORlogo):
-
 
     def iniciar_img_perfil(self, labelIMG):
 
@@ -2283,7 +2283,7 @@ class Menu(usuario_conf, validar_acesso, cadastro_conf):
 
         
         self.BTCadastrarClientes = ctk.CTkButton(self.FrameLateralAtual, text="Cadastrar Clientes", image=self.CadastroIcon, anchor="w", width=155, fg_color=("#FFD6D6","gray17"), text_color=("black", "white"),
-                                 hover_color= ("#ff9ea2", "black"))
+                                 hover_color= ("#ff9ea2", "black"), command=lambda: self.Frame_NovoCLiente())
         self.BTCadastrarClientes.place(x=10, y=200)  
       
 
@@ -2297,7 +2297,36 @@ class Menu(usuario_conf, validar_acesso, cadastro_conf):
         self.BTGerenciarUsuario.place(x=10, y=280)  
 
         self.DesativarSubModulos(modulo='Cadastro')
+
+    def Frame_NovoCLiente(self):
+
+        self.BtHome.configure(fg_color="transparent")
+        self.BtEstoque.configure(fg_color="transparent")
+        self.BtCadastros.configure(fg_color=("white", "#880016"))
+        self.BtAgenda.configure(fg_color="transparent")
+        self.Btcarteira.configure(fg_color="transparent")
+        self.BtFinancas.configure(fg_color="transparent")
+        self.BtUsuario.configure(fg_color="transparent")
+        self.BtConfiguracoes.configure(fg_color="transparent")
+
+        self.FrameLateralAtual.destroy()
+        self.frameRespostaAtual.destroy()
+                
+
+        self.FrameNovoCLienteLateral = ctk.CTkFrame(self.rootHome, width=37, height=self.screen_height, fg_color=("white", "#880016"), corner_radius=0)
+        self.FrameNovoCLienteLateral.grid(row=0,column=1)
+        self.FrameLateralAtual = self.FrameNovoCLienteLateral
+
+        self.FrameNovoClienteResposta = ctk.CTkFrame(self.rootHome, fg_color="transparent", width=(self.screen_wedth), height=self.screen_height, corner_radius=0)
+        self.FrameNovoClienteResposta.grid(row=0,column=2)
+        self.frameRespostaAtual = self.FrameNovoClienteResposta
+
+        self.BtOcultar = ctk.CTkButton(self.FrameLateralAtual,text="", image=self.MenuIcon, anchor="w", width=23, height=23,  fg_color="transparent", command=self.ocultarJanela)
+        self.BtOcultar.place(x=0,y=1)   
+
         
+        self.novo_cliente(self.FrameNovoClienteResposta)    
+
     def Frame_NovoUser(self):
 
         self.BtHome.configure(fg_color="transparent")

@@ -2,6 +2,7 @@ import customtkinter as ctk
 from tkinter import filedialog
 import mysql.connector
 from PIL import Image, ImageTk,  ImageDraw
+from tkinter import ttk
 import base64
 import binascii
 import io
@@ -200,434 +201,62 @@ class Menu():
         frame_resp.grid(row=0,column=2)
 
 
-        if self.acesso_usuario == "ADM":
-            titulo = ctk.CTkFont(size=14, weight="bold")
-            
-            cursor = self.conexaoBD.cursor()
-            cursor.execute("SELECT usuario, acesso, status FROM Usuarios")
-            resultado = cursor.fetchall()
-
-           
-
-            usuarios = []
-            acesso = []
-            status = []
-            
-            for user in resultado:
-                usuarios.append(user[0])
-                acesso.append(user[1])
-                status.append(user[2])
-
-                        
-            def modulos_usuario(indice, usuario_entry, status_menu, acesso_menu):
-                cursor.execute(f"select * from modulos where usuario = '{usuarios[indice]}'")
-
-                self.indice_usuario = indice
-                self.ModulosDoUsuario = cursor.fetchall()
-
-                usuario_entry.grid_remove()
-                acesso_menu.grid_remove()
-                status_menu.grid_remove()
-     
-
-                salvar_button[indice].grid_remove()
-                cancelar_button[indice].grid_remove()
-                excluir_button[indice].grid_remove()
-                Editar_Modulos[indice].grid_remove()
-
-                
-                outros_usuarios = len(usuario_label)-1
-                for c in range(0, outros_usuarios+1):
-                    usuario_label[c].grid_remove()
-                    acesso_label[c].grid_remove()
-                    status_label[c].grid_remove()
-                    editar_button[c].grid_remove()
-
-                cabeçalho.configure(text='     Usuario             Modulo             Submodulo             visualizar             Novo             Editar             Remover')
-
-                usuario_label_modulo = []
-                modulo_label_modulo = []
-                submodulo_label_modulo = []
-                visualizar_menu_modulo = []
-                novo_menu_modulo = []
-                editar_menu_modulo = []
-                remover_menu_modulo = []
-
-
-                
-
-          
-
-                for i, linha in enumerate(self.ModulosDoUsuario):
-                    usuario_label_modulo.append(ctk.CTkLabel(scrol, text=linha[1], fg_color="white", anchor="w", width=100, corner_radius=6, text_color=("black")))
-                    usuario_label_modulo[i].grid(padx=2, pady=5, row=i, column=0)
-
-                    modulo_label_modulo.append(ctk.CTkLabel(scrol, text=linha[2], fg_color="white", anchor="w", width=100, corner_radius=6, text_color=("black")))
-                    modulo_label_modulo[i].grid(padx=2, pady=5,  row=i, column=1)
-
-                    submodulo_label_modulo.append(ctk.CTkLabel(scrol, text=linha[3].capitalize(), fg_color="white", anchor="w", width=100, corner_radius=6, text_color=("black")))
-                    submodulo_label_modulo[i].grid(padx=2, pady=5,  row=i, column=2)
-
-                    visualizar_menu_modulo.append(ctk.CTkOptionMenu(scrol, values=(("liberado", "bloqueado") if linha[4] == 'liberado' else ("bloqueado", "liberado")), width=100, height=26))
-                    visualizar_menu_modulo[i].grid(padx=2, pady=5,  row=i, column=3)
-
-                    novo_menu_modulo.append(ctk.CTkOptionMenu(scrol, values=(("liberado", "bloqueado") if linha[4] == 'liberado' else ("bloqueado", "liberado")), width=100, height=26))
-                    novo_menu_modulo[i].grid(padx=2, pady=5, row=i, column=4)
-
-                    editar_menu_modulo.append(ctk.CTkOptionMenu(scrol,  values=(("liberado", "bloqueado") if linha[4] == 'liberado' else ("bloqueado", "liberado")), width=100, height=26))
-                    editar_menu_modulo[i].grid(padx=2, pady=5,  row=i, column=5)
-
-                    remover_menu_modulo.append(ctk.CTkOptionMenu(scrol, values=(("liberado", "bloqueado") if linha[4] == 'liberado' else ("bloqueado", "liberado")), width=100, height=26))
-                    remover_menu_modulo[i].grid(padx=2, pady=5, row=i, column=6)
-
-
-
-                def salvar():
-                    resp = msgbox("Salvar", "Deseja salvar as alterações feita?", 4)
-                    if resp == 6:
-                        msgbox("Salvar", "Alterações salvas com Sucesso", 0)
-
-
-                def cancelar():
- 
-                    for pos, modulo in enumerate(usuario_label_modulo):
-                        usuario_label_modulo[pos].grid_remove()
-                        modulo_label_modulo[pos].grid_remove()
-                        submodulo_label_modulo[pos].grid_remove()
-                        visualizar_menu_modulo[pos].grid_remove()
-                        novo_menu_modulo[pos].grid_remove()
-                        editar_menu_modulo[pos].grid_remove()
-                        remover_menu_modulo[pos].grid_remove()
-
-
-
-
-                    editar_usuario(self.indice_usuario)
-
-
-                    pass
-
-
-
-
-                Bt_Salvar_modulo = ctk.CTkButton(frame_resp, text="Salvar",  image=self.SalvarIcon, text_color=("black","white"), 
-                                            width=100,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=lambda:salvar())
-                
-                Bt_Salvar_modulo.place(relx=0.4, rely=0.8, anchor="w")
-
-
-                Bt_Cancelar_modulo = ctk.CTkButton(frame_resp, text="Voltar",  image=self.VoltarIcon, text_color=("black","white"), 
-                                            width=100,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), anchor="w", command= lambda: cancelar())
-                
-                Bt_Cancelar_modulo.place(relx=0.3, rely=0.8, anchor="w")
-
-                Bt_NovoUser.configure(state='disabled')
-
-                
-
-            def salvar_usuario(i, usuario_entry, status_menu, acesso_menu):
-                editar_button[i].configure(state="normal")
-                # Salva as alterações nas listas 
-
-                NovoUser = usuario_entry.get()
-                NovoAcesso = acesso_menu.get()
-                NovoStatus =  status_menu.get()
-
-                if NovoUser != usuarios[i]:
-                    cursor.execute(f"SELECT usuario FROM Usuarios WHERE BINARY usuario = '{usuario_entry.get()}'")
-                    resp = cursor.fetchall()
-                    if not resp:
-                        cursor.execute(f"UPDATE Usuarios SET usuario = '{usuario_entry.get()}' WHERE BINARY usuario = '{usuarios[i]}'")
-                        self.usuario_logado = usuario_entry.get()
-                        usuarios[i] = usuario_entry.get()
-                        self.conexaoBD.commit()
-                    else:
-                        msgbox("USUARIO", "Ja existe um usuario com este nome!!!", 0)
-
-                if NovoAcesso != acesso[i] :
-                    cursor.execute(f"UPDATE Usuarios SET acesso = '{acesso_menu.get()}' WHERE BINARY usuario = '{usuarios[i]}'")
-                    acesso[i] = acesso_menu.get()
-                    self.conexaoBD.commit()
-
-                if NovoStatus != status[i]:
-                    cursor.execute(f"UPDATE Usuarios SET status = '{status_menu.get()}' WHERE BINARY usuario = '{usuarios[i]}'")
-                    status[i] = status_menu.get()
-                    self.conexaoBD.commit()
-                    
-                # Atualiza os rótulos com as novas informações
-
-                    Tadm = 0
-                    Tuser = 0
-
-                    for v in acesso:
-                        if v == 'ADM':
-                            Tadm +=1
-                        else:
-                            Tuser +=1  
-                    
-                    TotalPerfil.configure(text=f"Total de Perfils\n{len(usuarios)}")
-                                        
-                    TotalAdm.configure(text=f"Total de Administradores\n{Tadm}")
-                                    
-                    TotalUser.configure(text=f"Total de Usuarios\n{Tuser}")
-
-
-
-                usuario_label[i].configure(text=usuarios[i])
-                acesso_label[i].configure(text=acesso[i])
-                status_label[i].configure(text=status[i])
-                
-                # Mostra os rótulos e esconde os campos de entrada
-                usuario_label[i].grid()
-                acesso_label[i].grid()
-                status_label[i].grid()
-                
-                usuario_entry.grid_remove()
-                acesso_menu.grid_remove()
-                status_menu.grid_remove()
-                
-
-                salvar_button[i].grid_remove()
-                Editar_Modulos[i].grid_remove()
-                cancelar_button[i].grid_remove()
-                excluir_button[i].grid_remove()
-                editar_button[i].grid()
-
-            def excluir_usuario(i, usuario_entry, status_menu, acesso_menu):
-                resp = msgbox("EXCLUIR USUARIO", "Deseja realmente excluir este usuario?", 4)
-
-
-                if resp == 6:
-                    editar_button[i].configure(state="normal")
-                    # Salva as alterações nas listas
-                    print(usuarios[i])
-
-                    cursor.execute(f"delete from Usuarios where binary usuario ='{usuarios[i]}' ")
-
-                    self.conexaoBD.commit()
-                    usuarios.pop(i)
-                    acesso.pop(i) 
-                    status.pop(i) 
-                    
-                
-                    # Atualiza os rótulos com as novas informações
-
-                    Tadm = 0
-                    Tuser = 0
-
-                    for v in acesso:
-                        if v == 'ADM':
-                            Tadm +=1
-                        else:
-                            Tuser +=1  
-                    
-                    TotalPerfil.configure(text=f"Total de Perfils\n{len(usuarios)}")
-                                        
-                    TotalAdm.configure(text=f"Total de Administradores\n{Tadm}")
-                                    
-                    TotalUser.configure(text=f"Total de Usuarios\n{Tuser}")
-
-                    usuario_label[i].destroy()
-                    acesso_label[i].destroy()
-                    status_label[i].destroy()
-                    
-
-                    usuario_entry.grid_remove()
-                    acesso_menu.grid_remove()
-                    status_menu.grid_remove()
-                    
-
-
-                    salvar_button[i].destroy()
-                    cancelar_button[i].destroy()
-                    Editar_Modulos[i].destroy()
-                    excluir_button[i].destroy()
-                    editar_button[i].destroy()
-
-            def cancelar_usuario(i, usuario_entry, status_menu,acesso_menu ):
-                editar_button[i].configure(state="normal")
-
-                # Descarta as alterações e esconde os campos de entrada
-                usuario_entry.grid_remove()
-                acesso_menu.grid_remove()
-                status_menu.grid_remove()
-
-                usuario_label[i].grid(row=i, column=0)
-
-                acesso_label[i].grid(row=i, column=1)
-                
-                status_label[i].grid(row=i, column=2)
-                
-
-                
-
-
-
-
-                salvar_button[i].grid_remove()
-                cancelar_button[i].grid_remove()
-                excluir_button[i].grid_remove()
-                Editar_Modulos[i].grid_remove()
-                editar_button[i].grid()
-
-            def editar_usuario(i):
-                # Cria os campos de entrada com as informações atuais do usuário
-                editar_button[i].configure(state="disabled")
-
-
-                usuario_entry = ctk.CTkEntry(scrol,  width=100)
-                usuario_entry.insert(0, usuarios[i])
-                usuario_entry.grid(padx=2, pady=5,row=i, column=0)
-
-                Menu1 = ("USUARIO", "ADM")
-                Menu2 = ("ADM", "USUARIO")
-
-                Status1 = ("ATIVO", "DESATIVADO")
-                Status2 = ("DESATIVADO", "ATIVO")
-
-
-                acesso_menu =  ctk.CTkOptionMenu(scrol, values=(Menu1 if acesso[i] == "USUARIO" else Menu2), width=100, height=26)
-                acesso_menu.grid(padx=2, pady=5,row=i, column=1)
-                
-                
-                status_menu = ctk.CTkOptionMenu(scrol, values=(Status1 if status[i] == "ATIVO" else Status2), width=100, height=26)
-                status_menu.grid(padx=2, pady=5,row=i, column=2)
-                
-
-
-                
-                # Cria os botões Salvar e Cancelar
-                salvar_button[i] = ctk.CTkButton(scrol, text="Salvar", text_color=("black","white"), image=self.SalvarIcon, width=60,  fg_color=("transparent"), hover_color=("white", '#191919'), command=lambda: salvar_usuario(i, usuario_entry, status_menu, acesso_menu))
-                salvar_button[i].grid(row=i, column=4)
-                
-                cancelar_button[i] =ctk.CTkButton(scrol, text="Cancelar", text_color=("black","white"), image=self.VoltarIcon, width=60,  fg_color=("transparent"), hover_color=("white", '#191919'), command=lambda: cancelar_usuario(i, usuario_entry, status_menu, acesso_menu))
-                cancelar_button[i].grid(padx=5, row=i, column=5)
-
-                Editar_Modulos[i] =ctk.CTkButton(scrol, text="Modulos", text_color=("black","white"),image=self.EditarIcon, width=60,  fg_color=("transparent"), hover_color=("white", '#191919'), command=lambda: modulos_usuario(i, usuario_entry, status_menu, acesso_menu))
-                Editar_Modulos[i].grid(padx=5, row=i, column=6)
-
-                excluir_button[i] =ctk.CTkButton(scrol, text="Deletar", text_color=("black","white"),image=self.DeletarIcon, width=60, fg_color=("transparent"), hover_color=("white", '#191919'), command=lambda: excluir_usuario(i, usuario_entry, status_menu, acesso_menu))
-                excluir_button[i].grid(padx=5, row=i, column=7)
-                
-                # Esconde os rótulos e o botão Editar
-                usuario_label[i].grid_remove()
-                status_label[i].grid_remove()
-                acesso_label[i].grid_remove()
-
-
-
+        # Criando o widget Treeview
+        tree = ttk.Treeview(frame_resp, columns=("coluna1", "coluna2", "coluna3", "coluna4","coluna5",
+                                                 "coluna6", "coluna7", "coluna8", "coluna9","coluna10",
+                                                 "coluna11", "coluna12", "coluna13", "coluna14","coluna15", "coluna16"), show="headings")
+
+        # Definindo os cabeçalhos das colunas
+        tree.heading("coluna1", text="Nome")
+        tree.heading("coluna2", text="Cidade")
+        tree.heading("coluna3", text="Telefone")
+
+        #Definindo a largura das colunas
+        tree.column("coluna1", width=30)
+        tree.column("coluna2", width=30)
+        tree.column("coluna3", width=30)
 
         
-         
-            usuario_label = []
-            status_label = []
-            acesso_label = []
-            editar_button = []
-            salvar_button = [None] * len(usuarios)
-            cancelar_button = [None] * len(usuarios)
-            excluir_button = [None] * len(usuarios)
-            Editar_Modulos = [None] * len(usuarios)
+
+        
+        def generate_fake_data():
+            from faker import Faker
+            fake = Faker()
+            data = []
+            for _ in range(500):
+                data.append((fake.name(), fake.city(), fake.phone_number()))
+            return data
+
+        # Gerando dados fake
+        fake_data = generate_fake_data()
+
+        # Inserindo os dados no Treeview
+        for item in fake_data:
+            tree.insert("", "end", values=item)
+
+        # Adicionando uma barra de rolagem ao Treeview
+        scroll_y = ttk.Scrollbar(frame_resp, orient="vertical", command=tree.yview)
+        tree.configure(yscrollcommand=scroll_y.set)
+        scroll_y.pack(side="right", fill="y")
 
 
-            Tadm = 0
-            Tuser = 0
-
-            for v in acesso:
-                if v == 'ADM':
-                    Tadm +=1
-                else:
-                    Tuser +=1
+        # Adicionando uma barra de rolagem horizontal ao Treeview
+        scroll_x = ttk.Scrollbar(frame_resp, orient="horizontal", command=tree.xview)
+        tree.configure(xscrollcommand=scroll_x.set)
+        scroll_x.place(x=5, y=100)
 
 
-            LabelTitulo =ctk.CTkLabel(frame_resp, text=f"GERENCIAR USUARIOS",fg_color="transparent", text_color=("black", "white"), font=titulo, corner_radius=6)
-            LabelTitulo.place(relx=0.001, rely=0.02, anchor="w")
+        # Exibindo o widget Treeview na janela
+        tree.pack()
 
-            TotalPerfil = ctk.CTkLabel(frame_resp, text=f"Total de Perfils\n{len(usuarios)}", height=50, width=200,
-                                        fg_color="white", text_color="black", font=titulo, corner_radius=6)
-            TotalPerfil.place(relx=0.05, rely=0.3, anchor="w")
+        def on_edit(event):
+            selected_item = tree.selection()
+            if selected_item:
+                values = tree.item(selected_item, "values")
+                print(values)
 
-
-            TotalAdm = ctk.CTkLabel(frame_resp, text=f"Total de Administradores\n{Tadm}", height=50, fg_color="white",width=200,
-                                    text_color="black", font=titulo, corner_radius=6)
-            TotalAdm.place(relx=0.35, rely=0.3, anchor="w")
-
-
-            TotalUser = ctk.CTkLabel(frame_resp, text=f"Total de Usuarios\n{Tuser}",height=50, width=200,
-                                    fg_color="white", text_color="black", font=titulo, corner_radius=6)
-            TotalUser.place(relx=0.65, rely=0.3, anchor="w")
-
-
-            # criando scrolframe com label de cabeçalho
-            cabeçalho = ctk.CTkLabel(frame_resp, text="     Usuario             Acesso             Status", 
-                                    width=1123,corner_radius=5, fg_color=("white", "gray10"), text_color=("black", "white"), anchor="w", font=titulo)
-            cabeçalho.place(relx=0.01, rely=0.443, anchor="w")
-
-            scrol = ctk.CTkScrollableFrame(frame_resp, width=1100, height=50)
-            scrol.place(relx=0.01, rely=0.6, anchor="w")
-
-
-            def Reexibir():
-            # adicionado nas lista os botoes com cada usuario cadastrado no banco de dados
-                for i in range(len(usuarios)):
-                    usuario_label.append(ctk.CTkLabel(scrol, text=usuarios[i], fg_color="white", anchor="w", width=100, corner_radius=6, text_color=("black")))
-                    usuario_label[i].grid(padx=2, pady=5, row=i, column=0)
-                                    
-                    acesso_label.append(ctk.CTkLabel(scrol, text=acesso[i],  fg_color="white", anchor="w", width=100, corner_radius=6, text_color=("black")))
-                    acesso_label[i].grid(padx=2,pady=5, row=i, column=1)
-                    
-                    status_label.append(ctk.CTkLabel(scrol, text=status[i], fg_color="white", anchor="w", width=100, corner_radius=6, text_color=("black")))
-                    status_label[i].grid(padx=2, pady=5, row=i, column=2)
-
-                    
-                    editar_button.append(ctk.CTkButton(scrol, text="Editar", text_color=("black","white"), image=self.EditarIcon, width=60, fg_color=("transparent"), hover_color=("white", '#191919'), command=lambda i=i: editar_usuario(i)))
-                    editar_button[i].grid(padx=60,pady=5, row=i, column=3)
-            Reexibir()
-
-            def pesquisarUser():
-                try:
-                    resp = Pesquisar.get()
-                    if len(resp) >0:  
-                        Reexibir() 
-                        for i, v in enumerate(usuario_label):    
-                            if resp.upper().strip() != v._text.upper():
-                                usuario_label[i].grid_remove()
-                                status_label[i].grid_remove()
-                                acesso_label[i].grid_remove()
-                                editar_button[i].grid_remove()
-                    else:
-                        Reexibir() 
-                        
-
-
-                except Exception as erro:
-                    print(erro)
-                    msgbox("Pesquisa", "Usuario nao encontrado", 0)
-                    
-
-            LabelPesquisar = ctk.CTkLabel(frame_resp, text="Busca rapida", fg_color="transparent", font=titulo)
-            LabelPesquisar.place(relx=0.36, rely=0.13, anchor="w")
-
-            Pesquisar = ctk.CTkEntry(frame_resp, placeholder_text="Digite o nome do usuario aqui:", width=550, height=40)
-            Pesquisar.place(relx=0.2, rely=0.18, anchor="w")
-
-
-
-            Bt_Todos = ctk.CTkButton(frame_resp, text="TODOS", image=self.EntradaIcon, text_color=("black","white"), 
-                                        width=80,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=Reexibir)
-            Bt_Todos.place(relx=0.7, rely=0.18, anchor="w")
-
-
-
-            Bt_Pesquisar = ctk.CTkButton(frame_resp, image=self.VisualizarIcon, text_color=("black","white"), text="PESQUISAR",
-                                            width=80, fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=pesquisarUser)
-            Bt_Pesquisar.place(relx=0.612, rely=0.18, anchor="w")
-
-
-
-            Bt_NovoUser = ctk.CTkButton(frame_resp, text="Novo Usuario",  image=self.AdicionarIcon, text_color=("black","white"), 
-                                        width=80,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'))
-            
-            Bt_NovoUser.place(relx=0.74, rely=0.8, anchor="w")
+        # Vinculando o evento de seleção do Treeview à função on_edit()
+        tree.bind("<<TreeviewSelect>>", on_edit)
 
 
 
