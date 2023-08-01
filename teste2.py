@@ -202,29 +202,55 @@ class Menu():
 
 
         # Criando o widget Treeview
-        tree = ttk.Treeview(frame_resp, columns=("coluna1", "coluna2", "coluna3", "coluna4","coluna5",
-                                                 "coluna6", "coluna7", "coluna8", "coluna9","coluna10",
-                                                 "coluna11", "coluna12", "coluna13", "coluna14","coluna15", "coluna16"), show="headings")
+        tree = ttk.Treeview(frame_resp, columns=([f'coluna{c}' for c in range(1,17)]), show="headings")
 
         # Definindo os cabeçalhos das colunas
-        tree.heading("coluna1", text="Nome")
-        tree.heading("coluna2", text="Cidade")
-        tree.heading("coluna3", text="Telefone")
+        database = 'railway'
+        host = 'containers-us-west-1.railway.app'
+        port = 5474
+        user = 'root'
+        password = 'JThLpvacyDNwzFLPyLhX'
 
-        #Definindo a largura das colunas
-        tree.column("coluna1", width=30)
-        tree.column("coluna2", width=30)
-        tree.column("coluna3", width=30)
+        # Crie a conexão
+        conexao = mysql.connector.connect(host=host, user=user, password=password, database=database, port=port)
 
-        
+        cursor = conexao.cursor()
+
+        cursor.execute("SELECT * FROM Clientes")
+        resultado = cursor.column_names
+
+
+
+        for i, coluna in enumerate(tree['columns']):
+            tree.column(coluna, width=20 if coluna == 'coluna1' else 200)
+            tree.heading(coluna, text=f"{resultado[i]}")
+  
 
         
         def generate_fake_data():
-            from faker import Faker
-            fake = Faker()
             data = []
             for _ in range(500):
-                data.append((fake.name(), fake.city(), fake.phone_number()))
+                cliente = [
+                    _ + 1,
+                    'Pessoa Física' if _ % 2 == 0 else 'Pessoa Jurídica',
+                    f'{100 + _}',
+                    f'{200 + _}',
+                    f'cliente{_}@exemplo.com',
+                    f'Empresa {_}',
+                    f'Empresa {_} LTDA',
+                    f'{80000 + _}',
+                    f'Rua {_} de Abril',
+                    str(_),
+                    f'Sala {_}',
+                    'Centro',
+                    'Cidade Exemplo',
+                    'EX',
+                    f'(99) 9999-{1000 + _}',
+                    f'(99) 9999-{2000 + _}',
+                    'Resposta à pergunta',
+                    'Observação sobre o cliente',
+                ]
+                data.append(cliente)
             return data
 
         # Gerando dados fake
@@ -233,29 +259,35 @@ class Menu():
         # Inserindo os dados no Treeview
         for item in fake_data:
             tree.insert("", "end", values=item)
-
+            
         # Adicionando uma barra de rolagem ao Treeview
         scroll_y = ttk.Scrollbar(frame_resp, orient="vertical", command=tree.yview)
         tree.configure(yscrollcommand=scroll_y.set)
-        scroll_y.pack(side="right", fill="y")
+        scroll_y.place(x=1100, y=300, height=300)  # Ajuste a posição x para 850
 
 
         # Adicionando uma barra de rolagem horizontal ao Treeview
         scroll_x = ttk.Scrollbar(frame_resp, orient="horizontal", command=tree.xview)
         tree.configure(xscrollcommand=scroll_x.set)
-        scroll_x.place(x=5, y=100)
+        scroll_x.place(x=50, y=600, width=1050) 
 
 
         # Exibindo o widget Treeview na janela
-        tree.pack()
+        tree.place(x=50,y=300, width=1050, height=300)
 
         def on_edit(event):
             selected_item = tree.selection()
             if selected_item:
                 values = tree.item(selected_item, "values")
+                
                 print(values)
 
         # Vinculando o evento de seleção do Treeview à função on_edit()
+        style = ttk.Style()
+        style.theme_use("alt")
+        style.configure('Treeview.Heading', background="white")
+        style.map("Treeview", background=[('selected', 'gray90')], foreground=[('selected', 'black')])
+        
         tree.bind("<<TreeviewSelect>>", on_edit)
 
 
