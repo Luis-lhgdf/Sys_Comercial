@@ -1343,8 +1343,6 @@ class cadastro_conf():
                 
                 Bt_Cancelar_modulo.place(relx=0.3, rely=0.8, anchor="w")
 
-               
-
             def salvar_usuario(i, usuario_entry, status_menu, acesso_menu):
                 editar_button[i].configure(state="normal")
                 # Salva as alterações nas listas 
@@ -1592,8 +1590,7 @@ class cadastro_conf():
                     
                     status_label.append(ctk.CTkLabel(scrol, text=status[i], fg_color="white", anchor="w", width=100, corner_radius=6, text_color=("black")))
                     status_label[i].grid(padx=2, pady=5, row=i, column=2)
-
-                    
+         
                     editar_button.append(ctk.CTkButton(scrol, text="Editar", text_color=("black","white"), image=self.EditarIcon, width=60, fg_color=("transparent"), hover_color=("white", '#191919'), command=lambda i=i: editar_usuario(i)))
                     editar_button[i].grid(padx=60,pady=5, row=i, column=3)
             Reexibir()
@@ -2055,7 +2052,7 @@ class Menu(usuario_conf, validar_acesso, cadastro_conf):
 
 
 
-# Vincule o evento de pressionar a tecla Enter ao botão BtEntrar
+        # Vincule o evento de pressionar a tecla Enter ao botão BtEntrar
 
 
 

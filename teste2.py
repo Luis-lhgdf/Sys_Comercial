@@ -115,6 +115,10 @@ class Menu():
 
         self.EditarIcon = ctk.CTkImage(light_image=Image.open(os.path.join(self.image_path, "editar_black.png")),
                             dark_image=Image.open(os.path.join(self.image_path, "editar_light.png")), size=(30, 30))
+
+
+        self.ExcelIcon = ctk.CTkImage(light_image=Image.open(os.path.join(self.image_path, "excel.png")),
+                    dark_image=Image.open(os.path.join(self.image_path, "excel.png")), size=(30, 30))
         
 
         self.EditarIcon2 = ctk.CTkImage(light_image=Image.open(os.path.join(self.image_path, "editar_black.png")),
@@ -196,13 +200,6 @@ class Menu():
 
         self.frame_OcultarMenu = ctk.CTkFrame(self.root, fg_color="white", width=37, height=self.screen_height, corner_radius=0)
         self.frame_OcultarMenu.grid(row=0,column=1)
-  
-        frame_resp = ctk.CTkFrame(self.root, fg_color="transparent", width=(self.screen_wedth), height=self.screen_height, corner_radius=0)
-        frame_resp.grid(row=0,column=2)
-
-
-        # Criando o widget Treeview
-        tree = ttk.Treeview(frame_resp, columns=([f'coluna{c}' for c in range(1,17)]), show="headings")
 
         # Definindo os cabeçalhos das colunas
         database = 'railway'
@@ -210,56 +207,148 @@ class Menu():
         port = 5474
         user = 'root'
         password = 'JThLpvacyDNwzFLPyLhX'
-
         # Crie a conexão
         conexao = mysql.connector.connect(host=host, user=user, password=password, database=database, port=port)
-
         cursor = conexao.cursor()
 
-        cursor.execute("SELECT * FROM Clientes")
-        resultado = cursor.column_names
+
+        limite_view = 10
+        cursor.execute(F"SELECT * FROM Clientes limit  {limite_view}")
+        ListaClientes = cursor.fetchall()
+        textcoluna = cursor.column_names
+        cursor.execute("SELECT count(id) from Clientes")
+        totalClientes = cursor.fetchone()[0]
+
+
+        def Reexibir_treeview(lista):
+            cursor = conexao.cursor()
+            for cliente in lista:
+                tree.insert("", "end", values=cliente)
+                tree.tag_configure("center", anchor="center")
+
+
+                
+            for i, coluna in enumerate(tree['columns']):
+ 
+                cursor.execute(f"select max(length(`{textcoluna[i]}`)) from Clientes limit {limite_view}")
+                largura = int(cursor.fetchone()[0])
+                tree.column(coluna, width=largura*9)
+                tree.heading(coluna, text=f"{textcoluna[i]}")
+                tree.column(coluna, stretch=False)
+
+        def Atualizar_limiteView(novo_limite):
+            global limite_view
+            tree.delete(*tree.get_children())
+            print("novo limente é", novo_limite)
+
+            cursor = conexao.cursor()
+            
+            cursor.execute(F"SELECT * FROM Clientes limit  {int(novo_limite)}")
+            ListaClientes = cursor.fetchall()
+
+            Label_LimiteView.configure(text=f"01 A {novo_limite if int(novo_limite) < totalClientes else totalClientes} DE {totalClientes}")
+            limite_view = int(novo_limite)
+            Reexibir_treeview(ListaClientes)
+        
+        def click_select(event):
+            selected_item = tree.selection()
+            if selected_item:
+                if len(selected_item) ==1:
+                    unico = tree.item(selected_item, "values") 
+                    Label_Select.configure(text=f"SELECIONADO: {unico[5][0:20]}")
+                    Bt_EditarCliente.configure(state="normal")
+                    Bt_ExcluirCliente.configure(state="normal")
+
+                                          
+                else:
+                    Bt_EditarCliente.configure(state="disabled")
+                    Bt_ExcluirCliente.configure(state="normal")
+                    for item_id in selected_item:
+                        valor = tree.item(item_id, "values")
+        
+                        Label_Select.configure(text=f"SELECIONADO: {len(selected_item)}")
+
+        def PesquisarCliente():
+            cliente_digitado = str(Entry_Pesquisar.get())
+            if cliente_digitado:
+                cursor = conexao.cursor()
+                cursor.execute(f"select * from Clientes WHERE razao_social LIKE'%{cliente_digitado}%' OR cpf LIKE'%{cliente_digitado}%' OR cnpj LIKE'%{cliente_digitado}%' OR id LIKE'%{cliente_digitado}%'")
+                lista = cursor.fetchall()
+                print(lista)
+                tree.delete(*tree.get_children())
+                Reexibir_treeview(lista=lista)
 
 
 
-        for i, coluna in enumerate(tree['columns']):
-            tree.column(coluna, width=20 if coluna == 'coluna1' else 200)
-            tree.heading(coluna, text=f"{resultado[i]}")
-  
+        frame_resp = ctk.CTkFrame(self.root, fg_color="transparent", width=(self.screen_wedth), height=self.screen_height, corner_radius=0)
+        frame_resp.grid(row=0,column=2)
+
+
+        LabelTitulo =ctk.CTkLabel(frame_resp, text=f"CLIENTES",fg_color="transparent", text_color=("black", "white"),  font=(ctk.CTkFont(size=14, weight="bold")), corner_radius=6)
+        LabelTitulo.place(relx=0.001, rely=0.02, anchor="w")
 
         
-        def generate_fake_data():
-            data = []
-            for _ in range(500):
-                cliente = [
-                    _ + 1,
-                    'Pessoa Física' if _ % 2 == 0 else 'Pessoa Jurídica',
-                    f'{100 + _}',
-                    f'{200 + _}',
-                    f'cliente{_}@exemplo.com',
-                    f'Empresa {_}',
-                    f'Empresa {_} LTDA',
-                    f'{80000 + _}',
-                    f'Rua {_} de Abril',
-                    str(_),
-                    f'Sala {_}',
-                    'Centro',
-                    'Cidade Exemplo',
-                    'EX',
-                    f'(99) 9999-{1000 + _}',
-                    f'(99) 9999-{2000 + _}',
-                    'Resposta à pergunta',
-                    'Observação sobre o cliente',
-                ]
-                data.append(cliente)
-            return data
+        LabelPesquisar = ctk.CTkLabel(frame_resp, text="Busca rapida", fg_color="transparent",font=(ctk.CTkFont(size=14, weight="bold")) )
+        LabelPesquisar.place(relx=0.36, rely=0.13, anchor="w")
 
-        # Gerando dados fake
-        fake_data = generate_fake_data()
+        Entry_Pesquisar = ctk.CTkEntry(frame_resp, placeholder_text="Digite o nome do cliente aqui:", width=550, height=40)
+        Entry_Pesquisar.place(relx=0.2, rely=0.18, anchor="w")
 
-        # Inserindo os dados no Treeview
-        for item in fake_data:
-            tree.insert("", "end", values=item)
-            
+
+
+        Bt_Todos = ctk.CTkButton(frame_resp, text="TODOS", image=self.EntradaIcon, text_color=("black","white"), 
+                                    width=80,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'))
+        Bt_Todos.place(relx=0.7, rely=0.18, anchor="w")
+
+
+
+        Bt_Pesquisar = ctk.CTkButton(frame_resp, image=self.VisualizarIcon, text_color=("black","white"), text="PESQUISAR",
+                                        width=80, fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=PesquisarCliente)
+        Bt_Pesquisar.place(relx=0.612, rely=0.18, anchor="w")       
+
+     
+    
+        Label_Select = ctk.CTkLabel(frame_resp, text=f"SELECIONADO: ", height=37, width=250, fg_color="white", text_color="black", 
+                                   font=(ctk.CTkFont(size=12, weight="bold")), corner_radius=6, anchor="w")
+        Label_Select.place(relx=0.13, rely=0.35, anchor="center")
+
+
+        Bt_EditarCliente = ctk.CTkButton(frame_resp, text="Editar", text_color=("black","white"), image=self.EditarIcon,  
+                                         width=40, fg_color=("transparent"), hover_color=("white", '#191919'), state="disabled")
+        Bt_EditarCliente.place(relx=0.26, rely=0.35, anchor="center")
+
+
+        Bt_ExcluirCliente = ctk.CTkButton(frame_resp, text="Excluir", text_color=("black","white"), image=self.DeletarIcon,  
+                                         width=40, fg_color=("transparent"), hover_color=("white", '#191919'), state="disabled")
+        Bt_ExcluirCliente.place(relx=0.34, rely=0.35, anchor="center")
+
+
+        Label_LimiteView = ctk.CTkLabel(frame_resp,  height=37, text=f"01 A {limite_view} DE {totalClientes}", 
+                                        font=(ctk.CTkFont(size=12, weight="bold")), anchor="w")
+        Label_LimiteView.place(relx=0.59, rely=0.35, anchor="w")
+
+
+
+        Bt_Excel = ctk.CTkButton(frame_resp, text="Excel", text_color=("black","white"), image=self.ExcelIcon,  
+                                 width=40, fg_color=("transparent"), hover_color=("white", '#191919'))
+        Bt_Excel.place(relx=0.77, rely=0.35, anchor="center")
+
+
+
+        Bt_NovoCLiente = ctk.CTkButton(frame_resp, text="NOVO CLIENTE",  image=self.AdicionarIcon, text_color=("black","white"), 
+                                    width=100,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'))
+        
+        Bt_NovoCLiente.place(relx=0.35, rely=0.85, anchor="w")
+
+
+        Menu_LimiteView = ctk.CTkOptionMenu(frame_resp,  height=37, width=80, font=(ctk.CTkFont(size=11, weight="bold")), values=['10','100','1000','10000'], command=Atualizar_limiteView)
+        Menu_LimiteView.place(relx=0.70, rely=0.35, anchor="center")
+     
+        # Criando o widget Treeview
+        tree = ttk.Treeview(frame_resp, columns=([f'coluna{c}' for c in range(1,len(textcoluna)+1)]), show="headings")
+        tree.place(x=50,y=300, width=1050, height=300)  
+
+
         # Adicionando uma barra de rolagem ao Treeview
         scroll_y = ttk.Scrollbar(frame_resp, orient="vertical", command=tree.yview)
         tree.configure(yscrollcommand=scroll_y.set)
@@ -272,23 +361,26 @@ class Menu():
         scroll_x.place(x=50, y=600, width=1050) 
 
 
-        # Exibindo o widget Treeview na janela
-        tree.place(x=50,y=300, width=1050, height=300)
-
-        def on_edit(event):
-            selected_item = tree.selection()
-            if selected_item:
-                values = tree.item(selected_item, "values")
-                
-                print(values)
-
-        # Vinculando o evento de seleção do Treeview à função on_edit()
+   
         style = ttk.Style()
-        style.theme_use("alt")
+        # style.theme_use("clam")
         style.configure('Treeview.Heading', background="white")
-        style.map("Treeview", background=[('selected', 'gray90')], foreground=[('selected', 'black')])
-        
-        tree.bind("<<TreeviewSelect>>", on_edit)
+        style.configure("Treeview.Heading", font=("calibri", 11, "bold"))
+        style.map("Treeview", background=[('selected', 'gray90')], foreground=[('selected', 'black')])  
+        tree.bind("<<TreeviewSelect>>", click_select)
+
+
+        Reexibir_treeview(ListaClientes)
+
+                
+
+
+
+
+
+                        
+
+
 
 
 
