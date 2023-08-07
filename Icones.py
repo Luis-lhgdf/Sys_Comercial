@@ -21,6 +21,14 @@ img_apresentacao = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, 
 
 
 
+ExcelIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "excel.png")),
+            dark_image=Image.open(os.path.join(image_path, "excel.png")), size=(30, 30))
+
+
+EntradaIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "entrada_black.png")),
+                            dark_image=Image.open(os.path.join(image_path, "entrada_light.png")), size=(17, 17))
+
+
 SeuLogo = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "logo1.png")),
                     dark_image=Image.open(os.path.join(image_path, "logo1.png")), size=(100, 100))
 
@@ -76,6 +84,9 @@ EditarIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "edita
 EditarIcon2 = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "editar_black.png")),
                     dark_image=Image.open(os.path.join(image_path, "editar_light.png")), size=(17, 17))
 
+
+sincronizar = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "sincronizar_black.png")),
+                    dark_image=Image.open(os.path.join(image_path, "sincronizar_black.png")), size=(50, 50))
 
 
 ItemIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "item_black.png")),

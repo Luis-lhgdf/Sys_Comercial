@@ -6,7 +6,7 @@ import binascii
 import io
 import ctypes
 from Icones import *
-
+from tkinter import ttk
 
 class Pessoa:
     def __init__(self, nome, idade, email):
@@ -171,7 +171,7 @@ class InterfaceGerenciarUsuarios:
         self.Pesquisar = ctk.CTkEntry(self.frame_resp, placeholder_text="Digite o nome do usuario aqui:", width=550, height=40)
         self.Pesquisar.place(relx=0.2, rely=0.18, anchor="w")
 
-        self.scrol = ctk.CTkScrollableFrame(self.frame_resp, width=1200, height=50)
+        self.scrol = ctk.CTkScrollableFrame(self.frame_resp, width=(self.main_app.screen_wedth)-270, height=50)
         self.scrol.place(relx=0.01, rely=0.6, anchor="w")
 
 
@@ -517,9 +517,188 @@ class InterfaceNovoCliente:
     def __init__(self, main_app, frame_resp):
         self.main_app = main_app
         self.frame_resp = frame_resp
+        self.cursor =  self.main_app.ConexaoPrincipal.cursor()
+        self.limite_view = 10
+        self.ListaClientes = None
+        self.totalClientes = 0
 
-    def novo_cliente(self, frame_resp):
-        print("em construção")
+        self.interface_tabela()
+    
+    def interface_tabela(self): 
+        
+
+        self.LabelTitulo =ctk.CTkLabel(self.frame_resp, text=f"CLIENTES",fg_color="transparent", text_color=("black", "white"),  font=(ctk.CTkFont(size=14, weight="bold")), corner_radius=6)
+        self.LabelTitulo.place(relx=0.001, rely=0.02, anchor="w")
+
+
+        # Criando o widget Treeview
+        self.tree = ttk.Treeview(self.frame_resp, show="headings")
+        self.tree.place(x=50,y=300, width=1050, height=300)  
+
+        # Adicionando uma barra de rolagem ao Treeview
+        scroll_y = ttk.Scrollbar(self.frame_resp, orient="vertical", command=self.tree.yview)
+        self.tree.configure(yscrollcommand=scroll_y.set)
+        scroll_y.place(x=1100, y=300, height=300)  # Ajuste a posição x para 850
+
+        # Adicionando uma barra de rolagem horizontal ao Treeview
+        scroll_x = ttk.Scrollbar(self.frame_resp, orient="horizontal", command=self.tree.xview)
+        self.tree.configure(xscrollcommand=scroll_x.set)
+        scroll_x.place(x=50, y=600, width=1050) 
+
+        self.LabelPesquisar = ctk.CTkLabel(self.frame_resp, text="Busca rapida", fg_color="transparent",font=(ctk.CTkFont(size=14, weight="bold")) )
+        self.LabelPesquisar.place(relx=0.36, rely=0.13, anchor="w")
+
+    
+        self.Label_Select = ctk.CTkLabel(self.frame_resp, text=f"SELECIONADO: ", height=37, width=250, fg_color="white", text_color="black", 
+                                         font=(ctk.CTkFont(size=12, weight="bold")), corner_radius=6, anchor="w")
+        self.Label_Select.place(relx=0.13, rely=0.35, anchor="center")
+
+
+        self.Label_LimiteView = ctk.CTkLabel(self.frame_resp,  height=37, text=f"01 A {self.limite_view} DE {self.totalClientes}", 
+                                        font=(ctk.CTkFont(size=12, weight="bold")), anchor="w")
+        self.Label_LimiteView.place(relx=0.59, rely=0.35, anchor="w")
+
+
+    
+        self.Entry_Pesquisar = ctk.CTkEntry(self.frame_resp, placeholder_text="Pesquise por ID, CNPJ, CPF, ou razão social:", width=550, height=40)
+        self.Entry_Pesquisar.place(relx=0.2, rely=0.18, anchor="w")
+
+
+        self.Bt_Todos = ctk.CTkButton(self.frame_resp, text="TODOS", image=EntradaIcon, text_color=("black","white"), 
+                                    width=80,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'))
+        self.Bt_Todos.place(relx=0.7, rely=0.18, anchor="w")
+
+
+        self.Bt_Pesquisar = ctk.CTkButton(self.frame_resp, image=VisualizarIcon, text_color=("black","white"), text="PESQUISAR",
+                                        width=80, fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=self.PesquisarCliente)
+        self.Bt_Pesquisar.place(relx=0.612, rely=0.18, anchor="w")       
+
+     
+        self.Bt_EditarCliente = ctk.CTkButton(self.frame_resp, text="Editar", text_color=("black","white"), image=EditarIcon,  
+                                         width=40, fg_color=("transparent"), hover_color=("white", '#191919'), state="disabled")
+        self.Bt_EditarCliente.place(relx=0.26, rely=0.35, anchor="center")
+
+
+        self.Bt_ExcluirCliente = ctk.CTkButton(self.frame_resp, text="Excluir", text_color=("black","white"), image=DeletarIcon,  
+                                         width=40, fg_color=("transparent"), hover_color=("white", '#191919'), state="disabled")
+        self.Bt_ExcluirCliente.place(relx=0.34, rely=0.35, anchor="center")
+
+
+        self.Bt_Excel = ctk.CTkButton(self.frame_resp, text="Excel", text_color=("black","white"), image=ExcelIcon,  
+                                 width=40, fg_color=("transparent"), hover_color=("white", '#191919'))
+        self.Bt_Excel.place(relx=0.77, rely=0.35, anchor="center")
+
+
+        self.Bt_NovoCLiente = ctk.CTkButton(self.frame_resp, text="NOVO CLIENTE",  image=AdicionarIcon, text_color=("black","white"), 
+                                    width=100,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'))       
+        self.Bt_NovoCLiente.place(relx=0.35, rely=0.85, anchor="w")
+
+
+        self.Bt_Sincronizar = ctk.CTkButton(self.tree, text="",  image=sincronizar, text_color=("black","white"),
+                                            fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=self.sincronizar_tabela)
+        
+        self.Bt_Sincronizar.place(relx=0.40, rely=0.5, anchor="w")
+
+
+
+        self.Menu_LimiteView = ctk.CTkOptionMenu(self.frame_resp,  height=37, width=80, font=(ctk.CTkFont(size=11, weight="bold")), values=['10','100','1000','10000'], command=self.Atualizar_limiteView)
+        self.Menu_LimiteView.place(relx=0.70, rely=0.35, anchor="center")
+
+   
+        style = ttk.Style()
+        style.theme_use("clam")
+        style.configure('Treeview.Heading', background="white")
+        style.configure("Treeview.Heading", font=("calibri", 11, "bold"))
+        style.map("Treeview", background=[('selected', 'gray90')], foreground=[('selected', 'black')])  
+        self.tree.bind("<<TreeviewSelect>>", self.click_select)
+
+    def sincronizar_tabela(self):
+        self.Bt_Sincronizar.destroy()
+        self.cursor.execute("SELECT * FROM Clientes limit 10")
+
+        self.ListaClientes = self.cursor.fetchall()
+        self.column_names = self.cursor.column_names
+
+        self.cursor.execute("SELECT COUNT(*) AS total_linhas FROM Clientes ")
+        self.totalClientes = len(self.cursor.fetchall())
+
+
+        self.tree.configure(columns=([f'coluna{c}' for c in range(1,len(self.column_names)+1)]))
+        
+        print(self.ListaClientes)
+
+        print(self.column_names)
+
+
+
+        self.Atualizar_limiteView(10)
+
+    def Reexibir_treeview(self, lista):
+
+       
+        for cliente in lista:
+            self.tree.insert("", "end", values=cliente)
+            self.tree.tag_configure("center", anchor="center")
+
+      
+        for i, coluna in enumerate(self.tree['columns']):
+
+            self.cursor.execute(f"select max(length(`{self.column_names[i]}`)) from Clientes limit {self.limite_view}")
+
+            largura = int(self.cursor.fetchone()[0])
+            self.tree.column(coluna, width=largura*9)
+            self.tree.heading(coluna, text=f"{self.column_names[i]}")
+            self.tree.column(coluna, stretch=False)
+
+    def Atualizar_limiteView(self, novo_limite):
+        try:
+            self.tree.delete(*self.tree.get_children())
+        except:
+            pass
+
+        print("novo limente é", novo_limite)
+
+
+
+        self.cursor.execute(f"SELECT * FROM Clientes limit {int(novo_limite)}")
+        self.ListaClientes = self.cursor.fetchall()
+
+
+        self.Label_LimiteView.configure(text=f"01 A {novo_limite if int(novo_limite) < self.totalClientes else self.totalClientes} DE {self.totalClientes}")
+        self.limite_view = int(novo_limite)
+
+        self.Reexibir_treeview(self.ListaClientes)
+  
+    def click_select(self, event):
+        selected_item = self.tree.selection()
+        if selected_item:
+            if len(selected_item) ==1:
+                unico = self.tree.item(selected_item, "values") 
+                self.Label_Select.configure(text=f"SELECIONADO: {unico[5][0:20]}")
+                self.Bt_EditarCliente.configure(state="normal")
+                self.Bt_ExcluirCliente.configure(state="normal")
+
+                                        
+            else:
+                self.Bt_EditarCliente.configure(state="disabled")
+                self.Bt_ExcluirCliente.configure(state="normal")
+                for item_id in selected_item:
+                    valor = self.tree.item(item_id, "values")
+    
+                    self.Label_Select.configure(text=f"SELECIONADO: {len(selected_item)}")
+
+    def todos(self):
+        self.Reexibir_treeview(self.ListaClientes)
+
+    def PesquisarCliente(self):
+        cliente_digitado = str(self.Entry_Pesquisar.get())
+        if cliente_digitado:
+            
+            self.cursor.execute(f"select * from Clientes WHERE razao_social LIKE'%{cliente_digitado}%' OR cpf LIKE'%{cliente_digitado}%' OR cnpj LIKE'%{cliente_digitado}%' OR id LIKE'%{cliente_digitado}%'")
+            lista = self.cursor.fetchall()
+            print(lista)
+            self.tree.delete(*self.tree.get_children())
+            self.Reexibir_treeview(lista=lista)
 
 class InterfaceNovoUsuario: 
 
@@ -541,7 +720,7 @@ class InterfaceNovoUsuario:
 
     def interface(self):
 
-        Painel_NovoUsuario = ctk.CTkButton(self.frame_resp, text="", width=1200, height=90, border_width=3,
+        Painel_NovoUsuario = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth)-270, height=90, border_width=3,
                                            fg_color="transparent", hover_color=("#FBECEC", "gray14"))
         Painel_NovoUsuario.place(relx=0.02, rely=0.1, anchor="w")
 
@@ -579,7 +758,7 @@ class InterfaceNovoUsuario:
 
 
 
-        PainelBotoes = ctk.CTkFrame(self.frame_resp, width=1200, height=50, corner_radius=0, fg_color="transparent")
+        PainelBotoes = ctk.CTkFrame(self.frame_resp, width=(self.main_app.screen_wedth)-270, height=50, corner_radius=0, fg_color="transparent")
         PainelBotoes.place(relx=0.02, rely=0.19)
 
         self.BT_ModuloEstoque = ctk.CTkButton(PainelBotoes, image=EstoqueIcon, text="Estoque",
@@ -629,7 +808,7 @@ class InterfaceNovoUsuario:
                          self.BT_ModuloUsuarios, self.BT_ModuloConfiguracoes]
 
 
-        self.FrameModuloResp = ctk.CTkFrame(self.frame_resp, width=1200, height=900, corner_radius=0)
+        self.FrameModuloResp = ctk.CTkFrame(self.frame_resp, width=(self.main_app.screen_wedth)-270, height=900, corner_radius=0)
         self.FrameModuloResp.place(relx=0.02, rely=0.24)
 
     def AtivarSwitch(self, principal, visualizar, novo, editar, remover):
@@ -862,7 +1041,7 @@ class InterfaceNovoUsuario:
 
         if self.FrameModuloEstoqueResp is None:
 
-            self.FrameModuloEstoqueResp = ctk.CTkFrame(self.frame_resp, width=1200, height=900, corner_radius=0)
+            self.FrameModuloEstoqueResp = ctk.CTkFrame(self.frame_resp, width=(self.main_app.screen_wedth)-270, height=900, corner_radius=0)
             self.FrameModuloEstoqueResp.place(relx=0.02, rely=0.24)
 
             self.main_app.destacar(self.listaBTS, botão=self.BT_ModuloEstoque, cor=self.cor_destaque)
@@ -992,7 +1171,7 @@ class InterfaceNovoUsuario:
 
         if self.FrameModuloCadastroResp is None:
 
-            self.FrameModuloCadastroResp = ctk.CTkFrame(self.frame_resp, width=1200, height=900, corner_radius=0)
+            self.FrameModuloCadastroResp = ctk.CTkFrame(self.frame_resp, width=(self.main_app.screen_wedth)-270, height=900, corner_radius=0)
             self.FrameModuloCadastroResp.place(relx=0.02, rely=0.24)
 
             self.main_app.destacar(self.listaBTS, botão=self.BT_ModuloCadastro, cor=self.cor_destaque)
@@ -1163,7 +1342,7 @@ class InterfaceNovoUsuario:
 
         if self.FrameModuloAgendaResp is None:
 
-            self.FrameModuloAgendaResp = ctk.CTkFrame(self.frame_resp, width=1200, height=900, corner_radius=0)
+            self.FrameModuloAgendaResp = ctk.CTkFrame(self.frame_resp, width=(self.main_app.screen_wedth)-270, height=900, corner_radius=0)
             self.FrameModuloAgendaResp.place(relx=0.02, rely=0.24)
 
             self.main_app.destacar(self.listaBTS, botão=self.BT_ModuloAgenda, cor=self.cor_destaque)
@@ -1212,7 +1391,7 @@ class InterfaceNovoUsuario:
 
         if self.FrameModuloCarteiraResp is None:
 
-            self.FrameModuloCarteiraResp = ctk.CTkFrame(self.frame_resp, width=1200, height=900, corner_radius=0)
+            self.FrameModuloCarteiraResp = ctk.CTkFrame(self.frame_resp, width=(self.main_app.screen_wedth)-270, height=900, corner_radius=0)
             self.FrameModuloCarteiraResp.place(relx=0.02, rely=0.24)
 
             self.main_app.destacar(self.listaBTS, botão=self.BT_ModuloCarteira, cor=self.cor_destaque)
@@ -1302,7 +1481,7 @@ class InterfaceNovoUsuario:
 
         if self.FrameModuloFinancasResp is None:
 
-            self.FrameModuloFinancasResp = ctk.CTkFrame(self.frame_resp, width=1200, height=900, corner_radius=0)
+            self.FrameModuloFinancasResp = ctk.CTkFrame(self.frame_resp, width=(self.main_app.screen_wedth)-270, height=900, corner_radius=0)
             self.FrameModuloFinancasResp.place(relx=0.02, rely=0.24)
 
             self.main_app.destacar(self.listaBTS, botão=self.BT_ModuloFinancas, cor=self.cor_destaque)
@@ -1390,7 +1569,7 @@ class InterfaceNovoUsuario:
     def Modulo_Usuario(self, frame_resp):
 
         if self.FrameModuloUsuarioResp is None:
-            self.FrameModuloUsuarioResp = ctk.CTkFrame(self.frame_resp, width=1200, height=900, corner_radius=0)
+            self.FrameModuloUsuarioResp = ctk.CTkFrame(self.frame_resp, width=(self.main_app.screen_wedth)-270, height=900, corner_radius=0)
             self.FrameModuloUsuarioResp.place(relx=0.02, rely=0.24)
 
             self.main_app.destacar(self.listaBTS, botão=self.BT_ModuloUsuarios, cor=self.cor_destaque)
@@ -1439,7 +1618,7 @@ class InterfaceNovoUsuario:
 
         if self.FrameModuloConfiguracoesResp is None:
 
-            self.FrameModuloConfiguracoesResp = ctk.CTkFrame(self.frame_resp, width=1200, height=900, corner_radius=0)
+            self.FrameModuloConfiguracoesResp = ctk.CTkFrame(self.frame_resp, width=(self.main_app.screen_wedth)-270, height=900, corner_radius=0)
             self.FrameModuloConfiguracoesResp.place(relx=0.02, rely=0.24)
 
             self.main_app.destacar(self.listaBTS, botão=self.BT_ModuloConfiguracoes, cor=self.cor_destaque)
@@ -1509,7 +1688,7 @@ class InterfaceUsuario:
 
 
 
-        Painel_FtPerfil = ctk.CTkButton(self.frame_resp, text="", width=1200, height=90, border_width=1,
+        Painel_FtPerfil = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth)-270, height=90, border_width=1,
                                         fg_color="transparent", hover_color=("#FBECEC", "gray14"))
         Painel_FtPerfil.place(relx=0.02, rely=0.1, anchor="w")
 
@@ -1520,7 +1699,7 @@ class InterfaceUsuario:
                            width=80, fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'))
         bt.place(x=10, y=50)
 
-        Painel_Usuario = ctk.CTkButton(self.frame_resp, text="", width=1200, height=90, border_width=1,
+        Painel_Usuario = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth)-270, height=90, border_width=1,
                                        fg_color="transparent", hover_color=("#FBECEC", "gray14"))
         Painel_Usuario.place(relx=0.02, rely=0.25, anchor="w")
 
@@ -1542,7 +1721,7 @@ class InterfaceUsuario:
         BtEditarUser.place(x=165, y=28)
 
 
-        Painel_Senha = ctk.CTkButton(self.frame_resp, text="", width=1200, height=90, border_width=1, fg_color="transparent",
+        Painel_Senha = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth)-270, height=90, border_width=1, fg_color="transparent",
                                      hover_color=("#FBECEC", "gray14"))
         Painel_Senha.place(relx=0.02, rely=0.4, anchor="w")
 
@@ -1555,7 +1734,7 @@ class InterfaceUsuario:
         BtTrocarSenha.place(x=10, y=50)
 
 
-        Painel_Excluir = ctk.CTkButton(self.frame_resp, text="", width=1200, height=90, border_width=1,
+        Painel_Excluir = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth)-270, height=90, border_width=1,
                                        fg_color="transparent", hover_color=("#FBECEC", "gray14"))
         Painel_Excluir.place(relx=0.02, rely=0.55, anchor="w")
 
@@ -2036,7 +2215,7 @@ class MenuOpcoes:
                                    font=self.main_app.SubTitle, corner_radius=6)
         LabelTitulo.place(relx=0.001, rely=0.02, anchor="w")
 
-        # self.novo_cliente(self.frame_resposta)
+        self.main_app.exibir_novocliente(self.frame_resposta)
 
     def frame_novo_user(self):
         
@@ -2215,6 +2394,8 @@ class TelaLogin:
                 self.main_app.msgbox("Login", "Login ou senha incorretos, Tente novamente", 0)
 
 class MainApp:
+    ArqJson = r'liftam.JSON'
+    ctk.set_default_color_theme(ArqJson)
 
     @staticmethod
     def _conectaBD(database, host, port, user, password):
@@ -2235,14 +2416,17 @@ class MainApp:
         self.SubTitle = ctk.CTkFont(size=14, weight="bold")
         self.FontBody = ctk.CTkFont(size=12)
 
+        self.screen_height = self.root.winfo_screenheight()
+        self.screen_wedth = self.root.winfo_screenwidth()
+
         self.ModulosDoUsuario = None
 
         self.usuario_logado = None
 
         self.acesso_usuario = None
         
-        self.ArqJson = r'liftam.JSON'
-        ctk.set_default_color_theme(self.ArqJson)
+        # self.ArqJson = r'liftam.JSON'
+        # ctk.set_default_color_theme(self.ArqJson)
 
 
         self.ConexaoPrincipal = MainApp._conectaBD(database='railway', host='containers-us-west-1.railway.app', 
@@ -2276,6 +2460,11 @@ class MainApp:
     def exibir_gerenciarusuarios(self, frame_resposta):
         if self.acesso_usuario == "ADM":
             self.gerenciarusuarios = InterfaceGerenciarUsuarios(self, frame_resp=frame_resposta)
+
+
+    def exibir_novocliente(self, frame_resposta):
+        self.interface_NovoUsuario = InterfaceNovoCliente(self, frame_resp=frame_resposta)
+
 
     def exibir_novousuario(self, frame_resposta):
         self.interface_NovoUsuario = InterfaceNovoUsuario(self, frame_resp=frame_resposta)
@@ -2483,5 +2672,5 @@ class MainApp:
 if __name__ == "__main__":
     root = ctk.CTk()
     app = MainApp(root)
-    
+
     root.mainloop()
