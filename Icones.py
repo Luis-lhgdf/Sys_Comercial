@@ -16,6 +16,10 @@ HomeIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "home_bl
 FotoPerfil = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "perfil.jpg")),
                     dark_image=Image.open(os.path.join(image_path, "perfil.jpg")), size=(100, 100))
 
+img_apresentacao = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "apresentacao.jpg")),
+                    dark_image=Image.open(os.path.join(image_path, "apresentacao.jpg")), size=(1500, 1125))
+
+
 
 SeuLogo = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "logo1.png")),
                     dark_image=Image.open(os.path.join(image_path, "logo1.png")), size=(100, 100))
