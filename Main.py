@@ -63,10 +63,10 @@ class InterfaceEstoque:
         self.entry_produto.grid(row=0, column=1)
 
         self.btn_adicionar = ctk.Button(root, text="Adicionar Produto", command=self.adicionar_produto)
-        self.btn_adicionar.grid(row=1, column=0, columnspan=2)
+        self.btn_adicionar.grid(row=1, column=0, )
 
         self.btn_listar = ctk.Button(root, text="Listar Produtos", command=self.listar_produtos)
-        self.btn_listar.grid(row=2, column=0, columnspan=2)
+        self.btn_listar.grid(row=2, column=0, )
 
     def adicionar_produto(self):
         produto = self.entry_produto.get()
@@ -527,91 +527,75 @@ class InterfaceNovoCliente:
     
     def interface_tabela(self): 
         
-
         self.LabelTitulo =ctk.CTkLabel(self.frame_resp, text=f"CLIENTES",fg_color="transparent", text_color=("black", "white"),  font=(ctk.CTkFont(size=14, weight="bold")), corner_radius=6)
-        self.LabelTitulo.place(relx=0.001, rely=0.02, anchor="w")
+        self.LabelTitulo.place(x=1,y=1)
 
+        print(self.LabelTitulo.cget("font"))
 
-        # Criando o widget Treeview
         self.tree = ttk.Treeview(self.frame_resp, show="headings")
-        self.tree.place(relx=0.048, rely=0.60, anchor="w", width=1450, height=450)
+        self.tree.place(x=50,y=300, width=1050, height=300)
 
-        # Adicionando uma barra de rolagem ao Treeview
         scroll_y = ttk.Scrollbar(self.frame_resp, orient="vertical", command=self.tree.yview)
         self.tree.configure(yscrollcommand=scroll_y.set)
-        scroll_y.place(relx=0.80, rely=0.3921, height=450)
+        scroll_y.place(x=1100,y=300, height=300)
 
-        # Adicionando uma barra de rolagem horizontal ao Treeview
         scroll_x = ttk.Scrollbar(self.frame_resp, orient="horizontal", command=self.tree.xview)
         self.tree.configure(xscrollcommand=scroll_x.set)
-        scroll_x.place(relx=0.048, rely=0.80, width=1450)
+        scroll_x.place(x=50,y=600,  width=1050)
+
+        self.LabelPesquisar = ctk.CTkLabel(self.frame_resp, text="Busca rapida", fg_color="transparent",font=(ctk.CTkFont(size=14, weight="bold")))
+        self.LabelPesquisar.place(x=575,y=100, anchor="center")
 
 
-        self.LabelPesquisar = ctk.CTkLabel(self.frame_resp, text="Busca rapida", fg_color="transparent",font=(ctk.CTkFont(size=14, weight="bold")) )
-        self.LabelPesquisar.place(relx=0.36, rely=0.13, anchor="w")
-
-    
         self.Label_Select = ctk.CTkLabel(self.frame_resp, text=f"SELECIONADO: ", height=37, width=250, fg_color="white", text_color="black", 
                                          font=(ctk.CTkFont(size=12, weight="bold")), corner_radius=6, anchor="w")
-        self.Label_Select.place(relx=0.13, rely=0.35, anchor="center")
-
-
+        self.Label_Select.place(x=50,y=250)
         self.Label_LimiteView = ctk.CTkLabel(self.frame_resp,  height=37, text=f"01 A {self.limite_view} DE {self.totalClientes}", 
                                         font=(ctk.CTkFont(size=12, weight="bold")), anchor="w")
-        self.Label_LimiteView.place(relx=0.59, rely=0.35, anchor="w")
+        self.Label_LimiteView.place(x=820,y=255)
 
-
-    
         self.Entry_Pesquisar = ctk.CTkEntry(self.frame_resp, placeholder_text="Pesquise por ID, CNPJ, CPF, ou razão social:", width=550, height=40)
-        self.Entry_Pesquisar.place(relx=0.2, rely=0.18, anchor="w")
-
+        self.Entry_Pesquisar.place(x=575,y=130, anchor="center")
 
         self.Bt_Todos = ctk.CTkButton(self.frame_resp, text="TODOS", image=EntradaIcon, text_color=("black","white"), 
                                     width=80,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=self.todos)
-        self.Bt_Todos.place(relx=0.7, rely=0.18, anchor="w")
-
+        self.Bt_Todos.place(x=1050,y=130, anchor="center")
 
         self.Bt_Pesquisar = ctk.CTkButton(self.frame_resp, image=VisualizarIcon, text_color=("black","white"), text="PESQUISAR",
                                         width=80, fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=self.Pesquisar_Cliente)
-        self.Bt_Pesquisar.place(relx=0.612, rely=0.18, anchor="w")       
+        self.Bt_Pesquisar.place(x=950,y=130, anchor="center")
 
-     
+
+
         self.Bt_EditarCliente = ctk.CTkButton(self.frame_resp, text="Editar", text_color=("black","white"), image=EditarIcon,  
                                          width=40, fg_color=("transparent"), hover_color=("white", '#191919'), state="disabled", command=self.editar_Cliente)
-        self.Bt_EditarCliente.place(relx=0.26, rely=0.35, anchor="center")
-
+        self.Bt_EditarCliente.place(x=320,y=250)
 
         self.Bt_ExcluirCliente = ctk.CTkButton(self.frame_resp, text="Excluir", text_color=("black","white"), image=DeletarIcon,  
                                          width=40, fg_color=("transparent"), hover_color=("white", '#191919'), state="disabled")
-        self.Bt_ExcluirCliente.place(relx=0.34, rely=0.35, anchor="center")
-
+        self.Bt_ExcluirCliente.place(x=420,y=250)
 
         self.Bt_Excel = ctk.CTkButton(self.frame_resp, text="Excel", text_color=("black","white"), image=ExcelIcon,  
                                  width=40, fg_color=("transparent"), hover_color=("white", '#191919'))
-        self.Bt_Excel.place(relx=0.77, rely=0.35, anchor="center")
-
+        self.Bt_Excel.place(x=1020,y=250)
 
         self.Bt_NovoCLiente = ctk.CTkButton(self.frame_resp, text="NOVO CLIENTE",  image=AdicionarIcon, text_color=("black","white"), 
                                     width=100,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=lambda: self.interface_create('CREATE'))       
-        self.Bt_NovoCLiente.place(relx=0.35, rely=0.85, anchor="w")
-
+        self.Bt_NovoCLiente.place(x=575,y=640, anchor="center")
 
         self.Bt_Sincronizar = ctk.CTkButton(self.tree, text="",  image=sincronizar, text_color=("black","white"),
                                              bg_color="white",fg_color=("white", "white"), hover_color=("gray80", 'gray80'), command=self.sincronizar_tabela)
-        
-        self.Bt_Sincronizar.place(relx=0.40, rely=0.5, anchor="w")
-
-
+        self.Bt_Sincronizar.place(x=525,y=150, anchor="center")
 
         self.Menu_LimiteView = ctk.CTkOptionMenu(self.frame_resp,  height=37, width=80, font=(ctk.CTkFont(size=11, weight="bold")), values=['10','100','1000','10000'], command=self.Atualizar_limiteView)
-        self.Menu_LimiteView.place(relx=0.70, rely=0.35, anchor="center")
+        self.Menu_LimiteView.place(x=920,y=250)
 
    
         style = ttk.Style()
         # style.theme_use("clam")
         style.configure('Treeview.Heading', background="white")
-        style.configure("Treeview.Heading", font=(None, 11, "bold"))
-        style.configure('Treeview', font=(None, 12))
+        style.configure("Treeview.Heading", font=('Roboto', 11, "bold"))
+        style.configure('Treeview', font=('Roboto', 12))
         style.map("Treeview", background=[('selected', 'gray90')], foreground=[('selected', 'black')])  
         self.tree.bind("<<TreeviewSelect>>", self.click_select)
 
@@ -644,7 +628,7 @@ class InterfaceNovoCliente:
 
             largura = int(self.cursor.fetchone()[0])
             self.tree.column(coluna, width=largura*9)
-            self.tree.heading(coluna, text=f"{str(self.column_names[i]).upper()}")
+            self.tree.heading(coluna, text=f"{str(self.column_names[i]).capitalize()}")
             self.tree.column(coluna, stretch=False)
 
     def Atualizar_limiteView(self, novo_limite):
@@ -701,7 +685,7 @@ class InterfaceNovoCliente:
         info_digitada = str(self.Entry_Pesquisar.get())
         if info_digitada:
             
-            self.cursor.execute(f"select * from Clientes WHERE razao_social LIKE'%{info_digitada}%' OR cpf LIKE'%{info_digitada}%' OR cnpj LIKE'%{info_digitada}%' OR id LIKE'%{info_digitada}%'")
+            self.cursor.execute(f"select * from Clientes WHERE razao_social LIKE'%{info_digitada}%' OR cpf LIKE'%{info_digitada}%' OR cnpj LIKE'%{info_digitada}%' OR id LIKE'%{info_digitada}%' OR nome LIKE'%{info_digitada}%' ")
             lista = self.cursor.fetchall()
             print(lista)
             self.tree.delete(*self.tree.get_children())
@@ -719,108 +703,113 @@ class InterfaceNovoCliente:
                                     else ''))
         # Crie o widget para a opção 'tipo_de_cliente'
 
+
         self.label_tipo_cliente = ctk.CTkLabel(self.frame_resp, text='Tipo de Cliente:', font=(None, 12, "bold"))
-        self.label_tipo_cliente.place(relx=0.1, rely=0.1, anchor="w")
+        self.label_tipo_cliente.place(x=50, y=50, anchor="w")
 
-        self.menu_tipocliente = ctk.CTkOptionMenu(self.frame_resp, values=['PESSOA FISICA', 'PESSOA JURIDICA'])
-        self.menu_tipocliente.place(relx=0.3, rely=0.1, anchor="w")
+        self.menu_tipocliente = ctk.CTkOptionMenu(self.frame_resp, values=['PESSOA FISICA', 'PESSOA JURIDICA'], command=self.definir_cliente)
+        self.menu_tipocliente.place(x=50, y=80, anchor="w")
 
-        self.label_cpf = ctk.CTkLabel(self.frame_resp, text='CPF:', font=(None, 12, "bold"))
-        self.label_cpf.place(relx=0.1, rely=0.2, anchor="w")
 
-        self.entry_cpf = ctk.CTkEntry(self.frame_resp)
-        self.entry_cpf.place(relx=0.3, rely=0.2, anchor="w")
+        self.label_cpf_cnpj = ctk.CTkLabel(self.frame_resp, text='CPF/CNPJ:', font=(None, 12, "bold"))
+        self.label_cpf_cnpj.place(x=250, y=50, anchor="w")
 
-        self.label_cnpj = ctk.CTkLabel(self.frame_resp, text='CNPJ:', font=(None, 12, "bold"))
-        self.label_cnpj.place(relx=0.5, rely=0.1, anchor="w")
+        self.entry_cpf_cnpj = ctk.CTkEntry(self.frame_resp,  width=150)
+        self.entry_cpf_cnpj.place(x=250, y=80, anchor="w")
 
-        self.entry_cnpj = ctk.CTkEntry(self.frame_resp)
-        self.entry_cnpj.place(relx=0.7, rely=0.1, anchor="w")
 
         self.label_email = ctk.CTkLabel(self.frame_resp, text='Email:', font=(None, 12, "bold"))
-        self.label_email.place(relx=0.5, rely=0.2, anchor="w")
+        self.label_email.place(x=450, y=50, anchor="w")
+        self.entry_email = ctk.CTkEntry(self.frame_resp, width=300)
+        self.entry_email.place(x=450, y=80, anchor="w")
 
-        self.entry_email = ctk.CTkEntry(self.frame_resp)
-        self.entry_email.place(relx=0.7, rely=0.2, anchor="w")
 
         self.label_razao_social = ctk.CTkLabel(self.frame_resp, text='Razão Social:', font=(None, 12, "bold"))
-        self.label_razao_social.place(relx=0.1, rely=0.3, anchor="w")
+        self.label_razao_social.place(x=800, y=50, anchor="w")
+        self.entry_razao_social = ctk.CTkEntry(self.frame_resp, width=300)
+        self.entry_razao_social.place(x=800, y=80, anchor="w")
 
-        self.entry_razao_social = ctk.CTkEntry(self.frame_resp)
-        self.entry_razao_social.place(relx=0.3, rely=0.3, anchor="w")
 
-        self.label_nome_fantasia = ctk.CTkLabel(self.frame_resp, text='Nome Fantasia:', font=(None, 12, "bold"))
-        self.label_nome_fantasia.place(relx=0.5, rely=0.3, anchor="w")
+        self.label_nome = ctk.CTkLabel(self.frame_resp, text='Nome Fantasia:', font=(None, 12, "bold"))
+        self.label_nome.place(x=50, y=140, anchor="w")
+        self.entry_nome = ctk.CTkEntry(self.frame_resp, width=300)
+        self.entry_nome.place(x=50, y=170, anchor="w")
 
-        self.entry_nome_fantasia = ctk.CTkEntry(self.frame_resp)
-        self.entry_nome_fantasia.place(relx=0.7, rely=0.3, anchor="w")
 
         self.label_cep = ctk.CTkLabel(self.frame_resp, text='CEP:', font=(None, 12, "bold"))
-        self.label_cep.place(relx=0.1, rely=0.4, anchor="w")
+        self.label_cep.place(x=400, y=140, anchor="w")
 
-        self.entry_cep = ctk.CTkEntry(self.frame_resp)
-        self.entry_cep.place(relx=0.3, rely=0.4, anchor="w")
+        self.entry_cpf = ctk.CTkEntry(self.frame_resp)
+        self.entry_cpf.place(x=400, y=170, anchor="w")
+
 
         self.label_endereco = ctk.CTkLabel(self.frame_resp, text='Endereço:', font=(None, 12, "bold"))
-        self.label_endereco.place(relx=0.5, rely=0.4, anchor="w")
+        self.label_endereco.place(x=600, y=140, anchor="w")
+        self.entry_endereco = ctk.CTkEntry(self.frame_resp, width=300)
+        self.entry_endereco.place(x=600, y=170, anchor="w")
 
-        self.entry_endereco = ctk.CTkEntry(self.frame_resp)
-        self.entry_endereco.place(relx=0.7, rely=0.4, anchor="w")
 
-        # Continue with the rest of the labels and entries following the same pattern.
-        self.label_numero = ctk.CTkLabel(self.frame_resp, text='Número:', font=(None, 12, "bold"))
-        self.label_numero.place(relx=0.1, rely=0.5, anchor="w")
+        self.label_numero = ctk.CTkLabel(self.frame_resp, text='N°:', font=(None, 12, "bold"))
+        self.label_numero.place(x=950, y=140, anchor="w")
+        self.entry_numero = ctk.CTkEntry(self.frame_resp, width=50)
+        self.entry_numero.place(x=950, y=170, anchor="w")
 
-        self.entry_numero = ctk.CTkEntry(self.frame_resp)
-        self.entry_numero.place(relx=0.3, rely=0.5, anchor="w")
 
         self.label_complemento = ctk.CTkLabel(self.frame_resp, text='Complemento:', font=(None, 12, "bold"))
-        self.label_complemento.place(relx=0.5, rely=0.5, anchor="w")
+        self.label_complemento.place(x=50, y=230, anchor="w")
 
-        self.entry_complemento = ctk.CTkEntry(self.frame_resp)
-        self.entry_complemento.place(relx=0.7, rely=0.5, anchor="w")
+        self.entry_complemento = ctk.CTkEntry(self.frame_resp,  width=300)
+        self.entry_complemento.place(x=50, y=260, anchor="w")
+
 
         self.label_bairro = ctk.CTkLabel(self.frame_resp, text='Bairro:', font=(None, 12, "bold"))
-        self.label_bairro.place(relx=0.1, rely=0.6, anchor="w")
-
+        self.label_bairro.place(x=400, y=230, anchor="w")
         self.entry_bairro = ctk.CTkEntry(self.frame_resp)
-        self.entry_bairro.place(relx=0.3, rely=0.6, anchor="w")
+        self.entry_bairro.place(x=400, y=260, anchor="w")
+
 
         self.label_cidade = ctk.CTkLabel(self.frame_resp, text='Cidade:', font=(None, 12, "bold"))
-        self.label_cidade.place(relx=0.5, rely=0.6, anchor="w")
+        self.label_cidade.place(x=600, y=230, anchor="w")
 
         self.entry_cidade = ctk.CTkEntry(self.frame_resp)
-        self.entry_cidade.place(relx=0.7, rely=0.6, anchor="w")
+        self.entry_cidade.place(x=600, y=260, anchor="w")
+
 
         self.label_uf = ctk.CTkLabel(self.frame_resp, text='UF:', font=(None, 12, "bold"))
-        self.label_uf.place(relx=0.1, rely=0.7, anchor="w")
+        self.label_uf.place(x=800, y=230, anchor="w")
+        self.entry_uf = ctk.CTkEntry(self.frame_resp,width=50)
+        self.entry_uf.place(x=800, y=260, anchor="w")
 
-        self.entry_uf = ctk.CTkEntry(self.frame_resp)
-        self.entry_uf.place(relx=0.3, rely=0.7, anchor="w")
 
         self.label_fone = ctk.CTkLabel(self.frame_resp, text='Telefone:', font=(None, 12, "bold"))
-        self.label_fone.place(relx=0.5, rely=0.7, anchor="w")
-
+        self.label_fone.place(x=900, y=230, anchor="w")
         self.entry_fone = ctk.CTkEntry(self.frame_resp)
-        self.entry_fone.place(relx=0.7, rely=0.7, anchor="w")
+        self.entry_fone.place(x=900, y=260, anchor="w")
+
 
         self.label_celular = ctk.CTkLabel(self.frame_resp, text='Celular:', font=(None, 12, "bold"))
-        self.label_celular.place(relx=0.1, rely=0.8, anchor="w")
-
+        self.label_celular.place(x=50, y=320, anchor="w")
         self.entry_celular = ctk.CTkEntry(self.frame_resp)
-        self.entry_celular.place(relx=0.3, rely=0.8, anchor="w")
+        self.entry_celular.place(x=50, y=360, anchor="w")
 
-        self.label_questionario = ctk.CTkLabel(self.frame_resp, text='Questionário:', font=(None, 12, "bold"))
-        self.label_questionario.place(relx=0.5, rely=0.8, anchor="w")
 
-        self.entry_questionario = ctk.CTkEntry(self.frame_resp)
-        self.entry_questionario.place(relx=0.7, rely=0.8, anchor="w")
+        self.label_questionario = ctk.CTkLabel(self.frame_resp, text='Como conheceu a empresa:', font=(None, 12, "bold"))
+        self.label_questionario.place(x=250, y=320, anchor="w")
+        self.menu_questionario = ctk.CTkOptionMenu(self.frame_resp, values=['INSTAGRAM', 'FACEBOOK', 'SITE', 'TIKTOK', 'INDICAÇÃO', 'OUTRO'])
+        self.menu_questionario.place(x=250, y=360, anchor="w")
+
 
         self.label_observacoes = ctk.CTkLabel(self.frame_resp, text='Observações:', font=(None, 12, "bold"))
-        self.label_observacoes.place(relx=0.1, rely=0.9, anchor="w")
+        self.label_observacoes.place(x=50, y=420, anchor="w")
+        self.entry_observacoes = ctk.CTkTextbox(self.frame_resp, width=(self.main_app.screen_wedth)-310, height=100) 
+        self.entry_observacoes.place(x=50, y=450)
 
-        self.entry_observacoes = ctk.CTkEntry(self.frame_resp)
-        self.entry_observacoes.place(relx=0.3, rely=0.9, anchor="w")
+
+        self.Bt_NovoCLiente = ctk.CTkButton(self.frame_resp, text="SALVAR",  image=SalvarIcon, text_color=("black","white"), 
+                                    width=100,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'))       
+        self.Bt_NovoCLiente.place(x=575,y=640, anchor="center")
+
+        self.definir_cliente(resposta="PESSOA FISICA")
 
     def salvar(self, tipo):
         if tipo == 'CREATE':
@@ -829,6 +818,20 @@ class InterfaceNovoCliente:
             pass
         else:
             pass
+
+    def definir_cliente(self, resposta):
+        print("função chamada", resposta)
+        if resposta == 'PESSOA FISICA':
+             
+             self.entry_cpf_cnpj.configure(validate="key", validatecommand=(self.main_app.validate_cmd, "%P", 11))
+
+
+        elif resposta == "PESSOA JURIDICA":
+            self.entry_cpf_cnpj.configure(validate="key", validatecommand=(self.main_app.validate_cmd, "%P", 14))
+        
+        
+
+
 class InterfaceNovoUsuario: 
 
     def __init__(self, main_app, frame_resp):
@@ -1833,6 +1836,7 @@ class InterfaceUsuario:
 
         TituloUsuario = ctk.CTkLabel(Painel_Usuario, text="Usuario", font=self.main_app.FontTitle, fg_color="transparent")
         TituloUsuario.place(x=10, y=5)
+
         self.LabelUsuario = ctk.CTkLabel(Painel_Usuario, text=f"{self.main_app.usuario_logado}", font=self.main_app.FontBody, fg_color="transparent")
         self.LabelUsuario.place(x=10, y=50)
 
@@ -1853,8 +1857,10 @@ class InterfaceUsuario:
                                      hover=False)
         Painel_Senha.place(relx=0.02, rely=0.4, anchor="w")
 
+
         LabelSenha = ctk.CTkLabel(Painel_Senha, text="Senha", font=self.main_app.FontTitle, fg_color="transparent")
         LabelSenha.place(x=10, y=5)
+
 
         BtTrocarSenha = ctk.CTkButton(Painel_Senha, image=SenhaIcon, text="Alterar", text_color=("black", "white"),
                                       width=80, fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'),
@@ -1865,6 +1871,7 @@ class InterfaceUsuario:
         Painel_Excluir = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth)-270, height=90, border_width=1,
                                        fg_color="transparent", hover=False)
         Painel_Excluir.place(relx=0.02, rely=0.55, anchor="w")
+
 
         LabelExcluir = ctk.CTkLabel(Painel_Excluir, text="Conta", font=self.main_app.FontTitle, fg_color="transparent")
         LabelExcluir.place(x=10, y=5)
@@ -2339,9 +2346,6 @@ class MenuOpcoes:
         self.limpar_frames(self.frame_MenuLateralDir, self.frame_resposta, pos=0, excluir=True)
 
         self.main_app.destacar(lista=self.listaBTS, botão=self.BtCadastros, cor=self.cor_destaque)
-        LabelTitulo = ctk.CTkLabel(self.frame_resposta, text=f"CLIENTE",fg_color="transparent", text_color=("black", "white"), 
-                                   font=self.main_app.SubTitle, corner_radius=6)
-        LabelTitulo.place(relx=0.001, rely=0.02, anchor="w")
 
         self.main_app.exibir_novocliente(self.frame_resposta)
 
@@ -2543,6 +2547,8 @@ class MainApp:
         self.FontTitle = ctk.CTkFont(size=20, weight="bold")
         self.SubTitle = ctk.CTkFont(size=14, weight="bold")
         self.FontBody = ctk.CTkFont(size=12)
+
+        self.validate_cmd = root.register(self.validate_numeric_input)
 
         self.screen_height = self.root.winfo_screenheight()
         self.screen_wedth = self.root.winfo_screenwidth()
@@ -2796,6 +2802,11 @@ class MainApp:
         if resp == 6:
             self.ConexaoPrincipal.close()
             self.root.destroy()
+
+    def validate_numeric_input(self,P, max_length):
+        # Verifica se P é vazio ou um número decimal válido
+        return P == "" or P.replace(".", "", 1).isdigit() and len(P) <= int(max_length)
+
 
 if __name__ == "__main__":
     root = ctk.CTk()
