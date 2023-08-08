@@ -521,6 +521,7 @@ class InterfaceNovoCliente:
         self.limite_view = 10
         self.ListaClientes = None
         self.totalClientes = 0
+        self.Cliente_select = None
 
         self.interface_tabela()
     
@@ -533,17 +534,18 @@ class InterfaceNovoCliente:
 
         # Criando o widget Treeview
         self.tree = ttk.Treeview(self.frame_resp, show="headings")
-        self.tree.place(x=50,y=300, width=1050, height=300)  
+        self.tree.place(relx=0.048, rely=0.60, anchor="w", width=1450, height=450)
 
         # Adicionando uma barra de rolagem ao Treeview
         scroll_y = ttk.Scrollbar(self.frame_resp, orient="vertical", command=self.tree.yview)
         self.tree.configure(yscrollcommand=scroll_y.set)
-        scroll_y.place(x=1100, y=300, height=300)  # Ajuste a posição x para 850
+        scroll_y.place(relx=0.80, rely=0.3921, height=450)
 
         # Adicionando uma barra de rolagem horizontal ao Treeview
         scroll_x = ttk.Scrollbar(self.frame_resp, orient="horizontal", command=self.tree.xview)
         self.tree.configure(xscrollcommand=scroll_x.set)
-        scroll_x.place(x=50, y=600, width=1050) 
+        scroll_x.place(relx=0.048, rely=0.80, width=1450)
+
 
         self.LabelPesquisar = ctk.CTkLabel(self.frame_resp, text="Busca rapida", fg_color="transparent",font=(ctk.CTkFont(size=14, weight="bold")) )
         self.LabelPesquisar.place(relx=0.36, rely=0.13, anchor="w")
@@ -565,17 +567,17 @@ class InterfaceNovoCliente:
 
 
         self.Bt_Todos = ctk.CTkButton(self.frame_resp, text="TODOS", image=EntradaIcon, text_color=("black","white"), 
-                                    width=80,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'))
+                                    width=80,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=self.todos)
         self.Bt_Todos.place(relx=0.7, rely=0.18, anchor="w")
 
 
         self.Bt_Pesquisar = ctk.CTkButton(self.frame_resp, image=VisualizarIcon, text_color=("black","white"), text="PESQUISAR",
-                                        width=80, fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=self.PesquisarCliente)
+                                        width=80, fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=self.Pesquisar_Cliente)
         self.Bt_Pesquisar.place(relx=0.612, rely=0.18, anchor="w")       
 
      
         self.Bt_EditarCliente = ctk.CTkButton(self.frame_resp, text="Editar", text_color=("black","white"), image=EditarIcon,  
-                                         width=40, fg_color=("transparent"), hover_color=("white", '#191919'), state="disabled")
+                                         width=40, fg_color=("transparent"), hover_color=("white", '#191919'), state="disabled", command=self.editar_Cliente)
         self.Bt_EditarCliente.place(relx=0.26, rely=0.35, anchor="center")
 
 
@@ -590,12 +592,12 @@ class InterfaceNovoCliente:
 
 
         self.Bt_NovoCLiente = ctk.CTkButton(self.frame_resp, text="NOVO CLIENTE",  image=AdicionarIcon, text_color=("black","white"), 
-                                    width=100,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'))       
+                                    width=100,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=lambda: self.interface_create('CREATE'))       
         self.Bt_NovoCLiente.place(relx=0.35, rely=0.85, anchor="w")
 
 
         self.Bt_Sincronizar = ctk.CTkButton(self.tree, text="",  image=sincronizar, text_color=("black","white"),
-                                            fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=self.sincronizar_tabela)
+                                             bg_color="white",fg_color=("white", "white"), hover_color=("gray80", 'gray80'), command=self.sincronizar_tabela)
         
         self.Bt_Sincronizar.place(relx=0.40, rely=0.5, anchor="w")
 
@@ -606,9 +608,10 @@ class InterfaceNovoCliente:
 
    
         style = ttk.Style()
-        style.theme_use("clam")
+        # style.theme_use("clam")
         style.configure('Treeview.Heading', background="white")
-        style.configure("Treeview.Heading", font=("calibri", 11, "bold"))
+        style.configure("Treeview.Heading", font=(None, 11, "bold"))
+        style.configure('Treeview', font=(None, 12))
         style.map("Treeview", background=[('selected', 'gray90')], foreground=[('selected', 'black')])  
         self.tree.bind("<<TreeviewSelect>>", self.click_select)
 
@@ -618,19 +621,13 @@ class InterfaceNovoCliente:
 
         self.ListaClientes = self.cursor.fetchall()
         self.column_names = self.cursor.column_names
+        print(self.column_names)
 
         self.cursor.execute("SELECT COUNT(*) AS total_linhas FROM Clientes ")
-        self.totalClientes = len(self.cursor.fetchall())
-
+        self.totalClientes = int((self.cursor.fetchone()[0]))
 
         self.tree.configure(columns=([f'coluna{c}' for c in range(1,len(self.column_names)+1)]))
         
-        print(self.ListaClientes)
-
-        print(self.column_names)
-
-
-
         self.Atualizar_limiteView(10)
 
     def Reexibir_treeview(self, lista):
@@ -647,7 +644,7 @@ class InterfaceNovoCliente:
 
             largura = int(self.cursor.fetchone()[0])
             self.tree.column(coluna, width=largura*9)
-            self.tree.heading(coluna, text=f"{self.column_names[i]}")
+            self.tree.heading(coluna, text=f"{str(self.column_names[i]).upper()}")
             self.tree.column(coluna, stretch=False)
 
     def Atualizar_limiteView(self, novo_limite):
@@ -673,7 +670,8 @@ class InterfaceNovoCliente:
         selected_item = self.tree.selection()
         if selected_item:
             if len(selected_item) ==1:
-                unico = self.tree.item(selected_item, "values") 
+                unico = self.tree.item(selected_item, "values")
+                self.Cliente_select = unico
                 self.Label_Select.configure(text=f"SELECIONADO: {unico[5][0:20]}")
                 self.Bt_EditarCliente.configure(state="normal")
                 self.Bt_ExcluirCliente.configure(state="normal")
@@ -684,22 +682,153 @@ class InterfaceNovoCliente:
                 self.Bt_ExcluirCliente.configure(state="normal")
                 for item_id in selected_item:
                     valor = self.tree.item(item_id, "values")
-    
                     self.Label_Select.configure(text=f"SELECIONADO: {len(selected_item)}")
 
     def todos(self):
-        self.Reexibir_treeview(self.ListaClientes)
-
-    def PesquisarCliente(self):
-        cliente_digitado = str(self.Entry_Pesquisar.get())
-        if cliente_digitado:
+        info_digitada = str(self.Entry_Pesquisar.get())
+        if info_digitada:
+            try:
+                self.tree.delete(*self.tree.get_children())      
+            except:
+                pass
+            self.Reexibir_treeview(self.ListaClientes)
             
-            self.cursor.execute(f"select * from Clientes WHERE razao_social LIKE'%{cliente_digitado}%' OR cpf LIKE'%{cliente_digitado}%' OR cnpj LIKE'%{cliente_digitado}%' OR id LIKE'%{cliente_digitado}%'")
+    def editar_Cliente(self):
+        lista = self.Cliente_select
+        self.interface_create('UPDATE')
+        
+    def Pesquisar_Cliente(self):
+        info_digitada = str(self.Entry_Pesquisar.get())
+        if info_digitada:
+            
+            self.cursor.execute(f"select * from Clientes WHERE razao_social LIKE'%{info_digitada}%' OR cpf LIKE'%{info_digitada}%' OR cnpj LIKE'%{info_digitada}%' OR id LIKE'%{info_digitada}%'")
             lista = self.cursor.fetchall()
             print(lista)
             self.tree.delete(*self.tree.get_children())
             self.Reexibir_treeview(lista=lista)
 
+    def interface_create(self, tipo=str):
+        # Esconder os widgets em vez de destruí-los
+        for widget in self.frame_resp.winfo_children():
+            if widget != self.LabelTitulo:
+                widget.place_forget()
+
+        
+        self.LabelTitulo.configure(text=('CADASTRAR CLIENTE' if tipo.upper() == "CREATE"
+                                    else 'EDITAR CLIENTE' if tipo.upper() == "UPDATE"
+                                    else ''))
+        # Crie o widget para a opção 'tipo_de_cliente'
+
+        self.label_tipo_cliente = ctk.CTkLabel(self.frame_resp, text='Tipo de Cliente:', font=(None, 12, "bold"))
+        self.label_tipo_cliente.place(relx=0.1, rely=0.1, anchor="w")
+
+        self.menu_tipocliente = ctk.CTkOptionMenu(self.frame_resp, values=['PESSOA FISICA', 'PESSOA JURIDICA'])
+        self.menu_tipocliente.place(relx=0.3, rely=0.1, anchor="w")
+
+        self.label_cpf = ctk.CTkLabel(self.frame_resp, text='CPF:', font=(None, 12, "bold"))
+        self.label_cpf.place(relx=0.1, rely=0.2, anchor="w")
+
+        self.entry_cpf = ctk.CTkEntry(self.frame_resp)
+        self.entry_cpf.place(relx=0.3, rely=0.2, anchor="w")
+
+        self.label_cnpj = ctk.CTkLabel(self.frame_resp, text='CNPJ:', font=(None, 12, "bold"))
+        self.label_cnpj.place(relx=0.5, rely=0.1, anchor="w")
+
+        self.entry_cnpj = ctk.CTkEntry(self.frame_resp)
+        self.entry_cnpj.place(relx=0.7, rely=0.1, anchor="w")
+
+        self.label_email = ctk.CTkLabel(self.frame_resp, text='Email:', font=(None, 12, "bold"))
+        self.label_email.place(relx=0.5, rely=0.2, anchor="w")
+
+        self.entry_email = ctk.CTkEntry(self.frame_resp)
+        self.entry_email.place(relx=0.7, rely=0.2, anchor="w")
+
+        self.label_razao_social = ctk.CTkLabel(self.frame_resp, text='Razão Social:', font=(None, 12, "bold"))
+        self.label_razao_social.place(relx=0.1, rely=0.3, anchor="w")
+
+        self.entry_razao_social = ctk.CTkEntry(self.frame_resp)
+        self.entry_razao_social.place(relx=0.3, rely=0.3, anchor="w")
+
+        self.label_nome_fantasia = ctk.CTkLabel(self.frame_resp, text='Nome Fantasia:', font=(None, 12, "bold"))
+        self.label_nome_fantasia.place(relx=0.5, rely=0.3, anchor="w")
+
+        self.entry_nome_fantasia = ctk.CTkEntry(self.frame_resp)
+        self.entry_nome_fantasia.place(relx=0.7, rely=0.3, anchor="w")
+
+        self.label_cep = ctk.CTkLabel(self.frame_resp, text='CEP:', font=(None, 12, "bold"))
+        self.label_cep.place(relx=0.1, rely=0.4, anchor="w")
+
+        self.entry_cep = ctk.CTkEntry(self.frame_resp)
+        self.entry_cep.place(relx=0.3, rely=0.4, anchor="w")
+
+        self.label_endereco = ctk.CTkLabel(self.frame_resp, text='Endereço:', font=(None, 12, "bold"))
+        self.label_endereco.place(relx=0.5, rely=0.4, anchor="w")
+
+        self.entry_endereco = ctk.CTkEntry(self.frame_resp)
+        self.entry_endereco.place(relx=0.7, rely=0.4, anchor="w")
+
+        # Continue with the rest of the labels and entries following the same pattern.
+        self.label_numero = ctk.CTkLabel(self.frame_resp, text='Número:', font=(None, 12, "bold"))
+        self.label_numero.place(relx=0.1, rely=0.5, anchor="w")
+
+        self.entry_numero = ctk.CTkEntry(self.frame_resp)
+        self.entry_numero.place(relx=0.3, rely=0.5, anchor="w")
+
+        self.label_complemento = ctk.CTkLabel(self.frame_resp, text='Complemento:', font=(None, 12, "bold"))
+        self.label_complemento.place(relx=0.5, rely=0.5, anchor="w")
+
+        self.entry_complemento = ctk.CTkEntry(self.frame_resp)
+        self.entry_complemento.place(relx=0.7, rely=0.5, anchor="w")
+
+        self.label_bairro = ctk.CTkLabel(self.frame_resp, text='Bairro:', font=(None, 12, "bold"))
+        self.label_bairro.place(relx=0.1, rely=0.6, anchor="w")
+
+        self.entry_bairro = ctk.CTkEntry(self.frame_resp)
+        self.entry_bairro.place(relx=0.3, rely=0.6, anchor="w")
+
+        self.label_cidade = ctk.CTkLabel(self.frame_resp, text='Cidade:', font=(None, 12, "bold"))
+        self.label_cidade.place(relx=0.5, rely=0.6, anchor="w")
+
+        self.entry_cidade = ctk.CTkEntry(self.frame_resp)
+        self.entry_cidade.place(relx=0.7, rely=0.6, anchor="w")
+
+        self.label_uf = ctk.CTkLabel(self.frame_resp, text='UF:', font=(None, 12, "bold"))
+        self.label_uf.place(relx=0.1, rely=0.7, anchor="w")
+
+        self.entry_uf = ctk.CTkEntry(self.frame_resp)
+        self.entry_uf.place(relx=0.3, rely=0.7, anchor="w")
+
+        self.label_fone = ctk.CTkLabel(self.frame_resp, text='Telefone:', font=(None, 12, "bold"))
+        self.label_fone.place(relx=0.5, rely=0.7, anchor="w")
+
+        self.entry_fone = ctk.CTkEntry(self.frame_resp)
+        self.entry_fone.place(relx=0.7, rely=0.7, anchor="w")
+
+        self.label_celular = ctk.CTkLabel(self.frame_resp, text='Celular:', font=(None, 12, "bold"))
+        self.label_celular.place(relx=0.1, rely=0.8, anchor="w")
+
+        self.entry_celular = ctk.CTkEntry(self.frame_resp)
+        self.entry_celular.place(relx=0.3, rely=0.8, anchor="w")
+
+        self.label_questionario = ctk.CTkLabel(self.frame_resp, text='Questionário:', font=(None, 12, "bold"))
+        self.label_questionario.place(relx=0.5, rely=0.8, anchor="w")
+
+        self.entry_questionario = ctk.CTkEntry(self.frame_resp)
+        self.entry_questionario.place(relx=0.7, rely=0.8, anchor="w")
+
+        self.label_observacoes = ctk.CTkLabel(self.frame_resp, text='Observações:', font=(None, 12, "bold"))
+        self.label_observacoes.place(relx=0.1, rely=0.9, anchor="w")
+
+        self.entry_observacoes = ctk.CTkEntry(self.frame_resp)
+        self.entry_observacoes.place(relx=0.3, rely=0.9, anchor="w")
+
+    def salvar(self, tipo):
+        if tipo == 'CREATE':
+            pass
+        elif tipo == 'UPDATE':
+            pass
+        else:
+            pass
 class InterfaceNovoUsuario: 
 
     def __init__(self, main_app, frame_resp):
@@ -721,7 +850,7 @@ class InterfaceNovoUsuario:
     def interface(self):
 
         Painel_NovoUsuario = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth)-270, height=90, border_width=3,
-                                           fg_color="transparent", hover_color=("#FBECEC", "gray14"))
+                                           fg_color="transparent",hover=False)
         Painel_NovoUsuario.place(relx=0.02, rely=0.1, anchor="w")
 
         TituloUsuario = ctk.CTkLabel(Painel_NovoUsuario, text="USUARIO")
@@ -1687,9 +1816,8 @@ class InterfaceUsuario:
     def interface(self):
 
 
-
         Painel_FtPerfil = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth)-270, height=90, border_width=1,
-                                        fg_color="transparent", hover_color=("#FBECEC", "gray14"))
+                                        fg_color="transparent",hover=False)
         Painel_FtPerfil.place(relx=0.02, rely=0.1, anchor="w")
 
         Label_FtPerfil = ctk.CTkLabel(Painel_FtPerfil, text="Foto de perfil", font=self.main_app.FontTitle, fg_color="transparent")
@@ -1700,7 +1828,7 @@ class InterfaceUsuario:
         bt.place(x=10, y=50)
 
         Painel_Usuario = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth)-270, height=90, border_width=1,
-                                       fg_color="transparent", hover_color=("#FBECEC", "gray14"))
+                                       fg_color="transparent",hover=False)
         Painel_Usuario.place(relx=0.02, rely=0.25, anchor="w")
 
         TituloUsuario = ctk.CTkLabel(Painel_Usuario, text="Usuario", font=self.main_app.FontTitle, fg_color="transparent")
@@ -1722,7 +1850,7 @@ class InterfaceUsuario:
 
 
         Painel_Senha = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth)-270, height=90, border_width=1, fg_color="transparent",
-                                     hover_color=("#FBECEC", "gray14"))
+                                     hover=False)
         Painel_Senha.place(relx=0.02, rely=0.4, anchor="w")
 
         LabelSenha = ctk.CTkLabel(Painel_Senha, text="Senha", font=self.main_app.FontTitle, fg_color="transparent")
@@ -1735,7 +1863,7 @@ class InterfaceUsuario:
 
 
         Painel_Excluir = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth)-270, height=90, border_width=1,
-                                       fg_color="transparent", hover_color=("#FBECEC", "gray14"))
+                                       fg_color="transparent", hover=False)
         Painel_Excluir.place(relx=0.02, rely=0.55, anchor="w")
 
         LabelExcluir = ctk.CTkLabel(Painel_Excluir, text="Conta", font=self.main_app.FontTitle, fg_color="transparent")

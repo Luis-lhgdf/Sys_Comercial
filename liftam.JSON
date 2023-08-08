@@ -1,9 +1,9 @@
 {
   "CTk": {
-    "fg_color": ["#FBECEC", "gray14"]
+    "fg_color": ["#FBECEC", "gray18"]
   },
   "CTkToplevel": {
-    "fg_color": ["#FBECEC", "gray14"]
+    "fg_color": ["#FBECEC", "gray18"]
   },
   "CTkFrame": {
     "corner_radius": 6,
