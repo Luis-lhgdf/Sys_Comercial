@@ -154,7 +154,7 @@ class InterfaceGerenciarUsuarios:
 
 
         self.cabeçalho = ctk.CTkLabel(self.frame_resp, text="     Usuario             Acesso             Status", 
-                                width=1123,corner_radius=5, fg_color=("white", "gray10"), text_color=("black", "white"), anchor="w", font=self.main_app.SubTitle)
+                                width=(self.main_app.screen_wedth)-270,corner_radius=5, fg_color=("white", "gray10"), text_color=("black", "white"), anchor="w", font=self.main_app.SubTitle)
         self.cabeçalho.place(relx=0.01, rely=0.443, anchor="w")
 
 
@@ -532,19 +532,21 @@ class InterfaceNovoCliente:
 
         print(self.LabelTitulo.cget("font"))
 
-        self.tree = ttk.Treeview(self.frame_resp, show="headings")
-        self.tree.place(x=50,y=300, width=1050, height=300)
 
-        scroll_y = ttk.Scrollbar(self.frame_resp, orient="vertical", command=self.tree.yview)
-        self.tree.configure(yscrollcommand=scroll_y.set)
-        scroll_y.place(x=1100,y=300, height=300)
 
-        scroll_x = ttk.Scrollbar(self.frame_resp, orient="horizontal", command=self.tree.xview)
-        self.tree.configure(xscrollcommand=scroll_x.set)
-        scroll_x.place(x=50,y=600,  width=1050)
+        frame = ctk.CTkFrame(self.frame_resp, width=(self.main_app.screen_wedth)-270, height=305, corner_radius=0)
+        frame.place(x=25, y=300)
+
+        self.tree = ttk.Treeview(frame, show="headings")
+        self.tree.place(x=0, y=0, width=2000, height=330)
+
+
+        self.scroll_x = ttk.Scrollbar(frame, orient="horizontal", command=self.tree.xview)
+        self.tree.configure(xscrollcommand=self.scroll_x.set)
+        self.scroll_x.place(x=0,y=305, width=2000)
 
         self.LabelPesquisar = ctk.CTkLabel(self.frame_resp, text="Busca rapida", fg_color="transparent",font=(ctk.CTkFont(size=14, weight="bold")))
-        self.LabelPesquisar.place(x=575,y=100, anchor="center")
+        self.LabelPesquisar.place(x=600,y=100)
 
 
         self.Label_Select = ctk.CTkLabel(self.frame_resp, text=f"SELECIONADO: ", height=37, width=250, fg_color="white", text_color="black", 
@@ -555,15 +557,15 @@ class InterfaceNovoCliente:
         self.Label_LimiteView.place(x=820,y=255)
 
         self.Entry_Pesquisar = ctk.CTkEntry(self.frame_resp, placeholder_text="Pesquise por ID, CNPJ, CPF, ou razão social:", width=550, height=40)
-        self.Entry_Pesquisar.place(x=575,y=130, anchor="center")
+        self.Entry_Pesquisar.place(x=370,y=130)
 
         self.Bt_Todos = ctk.CTkButton(self.frame_resp, text="TODOS", image=EntradaIcon, text_color=("black","white"), 
                                     width=80,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=self.todos)
-        self.Bt_Todos.place(x=1050,y=130, anchor="center")
+        self.Bt_Todos.place(x=680,y=170)
 
         self.Bt_Pesquisar = ctk.CTkButton(self.frame_resp, image=VisualizarIcon, text_color=("black","white"), text="PESQUISAR",
                                         width=80, fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=self.Pesquisar_Cliente)
-        self.Bt_Pesquisar.place(x=950,y=130, anchor="center")
+        self.Bt_Pesquisar.place(x=510,y=170)
 
 
 
@@ -579,13 +581,12 @@ class InterfaceNovoCliente:
                                  width=40, fg_color=("transparent"), hover_color=("white", '#191919'))
         self.Bt_Excel.place(x=1020,y=250)
 
-        self.Bt_NovoCLiente = ctk.CTkButton(self.frame_resp, text="NOVO CLIENTE",  image=AdicionarIcon, text_color=("black","white"), 
+        self.Bt_NovoCLiente = ctk.CTkButton(self.frame_resp, text="NOVO",  image=AdicionarIcon, text_color=("black","white"), 
                                     width=100,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=lambda: self.interface_create('CREATE'))       
-        self.Bt_NovoCLiente.place(x=575,y=640, anchor="center")
+        self.Bt_NovoCLiente.place(x=600,y=640)
 
-        self.Bt_Sincronizar = ctk.CTkButton(self.tree, text="",  image=sincronizar, text_color=("black","white"),
-                                             bg_color="white",fg_color=("white", "white"), hover_color=("gray80", 'gray80'), command=self.sincronizar_tabela)
-        self.Bt_Sincronizar.place(x=525,y=150, anchor="center")
+        self.Bt_Sincronizar = ctk.CTkButton(self.frame_resp, text="",  image=sincronizar, text_color=("black","white"),fg_color=('transparent'), hover_color=("white", '#191919'), command=self.sincronizar_tabela)
+        self.Bt_Sincronizar.place(x=575,y=250)
 
         self.Menu_LimiteView = ctk.CTkOptionMenu(self.frame_resp,  height=37, width=80, font=(ctk.CTkFont(size=11, weight="bold")), values=['10','100','1000','10000'], command=self.Atualizar_limiteView)
         self.Menu_LimiteView.place(x=920,y=250)
@@ -2810,6 +2811,9 @@ class MainApp:
 
 if __name__ == "__main__":
     root = ctk.CTk()
+    # ctk.set_widget_scaling(1.2)  # widget dimensions and text size
+    # ctk.set_window_scaling(1.2)  # window geometry dimensions
+    # ctk.deactivate_automatic_dpi_awareness()
     app = MainApp(root)
 
     root.mainloop()

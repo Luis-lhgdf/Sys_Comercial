@@ -86,7 +86,7 @@ EditarIcon2 = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "edit
 
 
 sincronizar = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "sincronizar_black.png")),
-                    dark_image=Image.open(os.path.join(image_path, "sincronizar_black.png")), size=(50, 50))
+                    dark_image=Image.open(os.path.join(image_path, "sincronizar_light.png")), size=(30, 30))
 
 
 ItemIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "item_black.png")),
