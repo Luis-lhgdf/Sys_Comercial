@@ -8,6 +8,7 @@ import ctypes
 from Icones import *
 from tkinter import ttk
 
+
 class Pessoa:
     def __init__(self, nome, idade, email):
         self.nome = nome
@@ -175,7 +176,7 @@ class InterfaceGerenciarUsuarios:
         self.scrol.place(relx=0.01, rely=0.6, anchor="w")
 
 
-        print(self.usuarios)
+        
     # adicionado nas lista os botoes com cada usuario cadastrado no banco de dados
         for i in range(len(self.usuarios)):
             self.usuario_label.append(ctk.CTkLabel(self.scrol, text=self.usuarios[i], fg_color="white", anchor="w", width=100, corner_radius=6, text_color=("black")))
@@ -406,7 +407,7 @@ class InterfaceGerenciarUsuarios:
         if resp == 6:
             self.editar_button[i].configure(state="normal")
             # Salva as alterações nas listas
-            print(self.usuarios[i])
+          
 
             self.cursor.execute(f"delete from Usuarios where binary usuario ='{self.usuarios[i]}' ")
 
@@ -522,31 +523,39 @@ class InterfaceNovoCliente:
         self.ListaClientes = None
         self.totalClientes = 0
         self.Cliente_select = None
-
-        self.interface_tabela()
-    
-    def interface_tabela(self): 
         
+
         self.LabelTitulo =ctk.CTkLabel(self.frame_resp, text=f"CLIENTES",fg_color="transparent", text_color=("black", "white"),  font=(ctk.CTkFont(size=14, weight="bold")), corner_radius=6)
         self.LabelTitulo.place(x=1,y=1)
 
-        print(self.LabelTitulo.cget("font"))
-
+        self.interface_tabela()
+    
+    def acao_widget(self, acao):
+        if acao == 'ocultar':
+            for widget in self.frame_resp.winfo_children():
+                    if widget != self.LabelTitulo:
+                        widget.place_forget()
+        if acao == 'reexibir':
+            for widget in self.frame_resp.winfo_children():
+                if widget != self.LabelTitulo:
+                    widget.place(x=widget.winfo_x(), y=widget.winfo_y())
+                
+    def interface_tabela(self): 
+        
 
 
         frame = ctk.CTkFrame(self.frame_resp, width=(self.main_app.screen_wedth)-270, height=305, corner_radius=0)
         frame.place(x=25, y=300)
 
         self.tree = ttk.Treeview(frame, show="headings")
-        self.tree.place(x=0, y=0, width=2000, height=330)
-
+        self.tree.place(x=0, y=0, width=(self.main_app.screen_wedth)-270, height=390)  # Adjust width and height as needed
 
         self.scroll_x = ttk.Scrollbar(frame, orient="horizontal", command=self.tree.xview)
         self.tree.configure(xscrollcommand=self.scroll_x.set)
-        self.scroll_x.place(x=0,y=305, width=2000)
+        self.scroll_x.place(x=0, y=290, width=(self.main_app.screen_wedth)-270, height=15) 
 
         self.LabelPesquisar = ctk.CTkLabel(self.frame_resp, text="Busca rapida", fg_color="transparent",font=(ctk.CTkFont(size=14, weight="bold")))
-        self.LabelPesquisar.place(x=600,y=100)
+        self.LabelPesquisar.place(relx=0.36, rely=0.13, anchor="w")
 
 
         self.Label_Select = ctk.CTkLabel(self.frame_resp, text=f"SELECIONADO: ", height=37, width=250, fg_color="white", text_color="black", 
@@ -557,15 +566,15 @@ class InterfaceNovoCliente:
         self.Label_LimiteView.place(x=820,y=255)
 
         self.Entry_Pesquisar = ctk.CTkEntry(self.frame_resp, placeholder_text="Pesquise por ID, CNPJ, CPF, ou razão social:", width=550, height=40)
-        self.Entry_Pesquisar.place(x=370,y=130)
+        self.Entry_Pesquisar.place(relx=0.2, rely=0.18, anchor="w")
 
         self.Bt_Todos = ctk.CTkButton(self.frame_resp, text="TODOS", image=EntradaIcon, text_color=("black","white"), 
                                     width=80,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=self.todos)
-        self.Bt_Todos.place(x=680,y=170)
+        self.Bt_Todos.place(relx=0.7, rely=0.18, anchor="w")
 
         self.Bt_Pesquisar = ctk.CTkButton(self.frame_resp, image=VisualizarIcon, text_color=("black","white"), text="PESQUISAR",
                                         width=80, fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=self.Pesquisar_Cliente)
-        self.Bt_Pesquisar.place(x=510,y=170)
+        self.Bt_Pesquisar.place(relx=0.612, rely=0.18, anchor="w")
 
 
 
@@ -583,7 +592,7 @@ class InterfaceNovoCliente:
 
         self.Bt_NovoCLiente = ctk.CTkButton(self.frame_resp, text="NOVO",  image=AdicionarIcon, text_color=("black","white"), 
                                     width=100,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=lambda: self.interface_create('CREATE'))       
-        self.Bt_NovoCLiente.place(x=600,y=640)
+        self.Bt_NovoCLiente.place(relx=0.36, rely=0.85, anchor="w")
 
         self.Bt_Sincronizar = ctk.CTkButton(self.frame_resp, text="",  image=sincronizar, text_color=("black","white"),fg_color=('transparent'), hover_color=("white", '#191919'), command=self.sincronizar_tabela)
         self.Bt_Sincronizar.place(x=575,y=250)
@@ -596,7 +605,7 @@ class InterfaceNovoCliente:
         # style.theme_use("clam")
         style.configure('Treeview.Heading', background="white")
         style.configure("Treeview.Heading", font=('Roboto', 11, "bold"))
-        style.configure('Treeview', font=('Roboto', 12))
+        style.configure('Treeview', font=('Roboto', 11))
         style.map("Treeview", background=[('selected', 'gray90')], foreground=[('selected', 'black')])  
         self.tree.bind("<<TreeviewSelect>>", self.click_select)
 
@@ -606,7 +615,7 @@ class InterfaceNovoCliente:
 
         self.ListaClientes = self.cursor.fetchall()
         self.column_names = self.cursor.column_names
-        print(self.column_names)
+        
 
         self.cursor.execute("SELECT COUNT(*) AS total_linhas FROM Clientes ")
         self.totalClientes = int((self.cursor.fetchone()[0]))
@@ -616,6 +625,10 @@ class InterfaceNovoCliente:
         self.Atualizar_limiteView(10)
 
     def Reexibir_treeview(self, lista):
+        self.tree.column("coluna1", width=50)
+        self.tree.column("coluna10", width=50)
+        self.tree.column("coluna14", width=50)
+
 
        
         for cliente in lista:
@@ -624,13 +637,13 @@ class InterfaceNovoCliente:
 
       
         for i, coluna in enumerate(self.tree['columns']):
+            nome = str(self.column_names[i]).capitalize()
+            
+            self.tree.heading(coluna, text=f"{nome}")
 
-            self.cursor.execute(f"select max(length(`{self.column_names[i]}`)) from Clientes limit {self.limite_view}")
-
-            largura = int(self.cursor.fetchone()[0])
-            self.tree.column(coluna, width=largura*9)
-            self.tree.heading(coluna, text=f"{str(self.column_names[i]).capitalize()}")
             self.tree.column(coluna, stretch=False)
+
+
 
     def Atualizar_limiteView(self, novo_limite):
         try:
@@ -638,7 +651,7 @@ class InterfaceNovoCliente:
         except:
             pass
 
-        print("novo limente é", novo_limite)
+        
 
 
 
@@ -657,7 +670,7 @@ class InterfaceNovoCliente:
             if len(selected_item) ==1:
                 unico = self.tree.item(selected_item, "values")
                 self.Cliente_select = unico
-                self.Label_Select.configure(text=f"SELECIONADO: {unico[5][0:20]}")
+                self.Label_Select.configure(text=f"SELECIONADO: {unico[6][0:20]}")
                 self.Bt_EditarCliente.configure(state="normal")
                 self.Bt_ExcluirCliente.configure(state="normal")
 
@@ -680,23 +693,75 @@ class InterfaceNovoCliente:
             
     def editar_Cliente(self):
         lista = self.Cliente_select
-        self.interface_create('UPDATE')
+        tipo_cliente = str(lista[1])
         
+
+
+        ('id', 'tipo_de_cliente', 'cpf', 'cnpj', 'email', 
+         'razao_social', 'nome', 'cep', 'endereco', 'numero', 
+         'complemento', 'bairro', 'cidade', 'uf', 'fone', 
+         'celular', 'questionario', 'observacoes')   
+
+
+        ('143', 'Pessoa Jurídica', 'None', '12.345.678/0001-99', 'empresa1@example.com', 
+         'Empresa XYZ Ltda.', 'Empresa XYZ', '54321-876', 'Avenida dos Negócios', '456', 
+         'None', 'Bairro Comercial', 'Rio de Janeiro', 'RJ', '(21) 2222-2222', 
+         '(21) 98888-8888', 'Respondeu parcialmente ao questionário.', 'Informações adicionais importantes.')
+        
+        self.interface_create('UPDATE')
+
+        self.menu_tipocliente.set(f'{str(lista[1]).upper()}')
+        self.entry_nome.insert(0, f'{lista[6]}')
+
+        
+        if tipo_cliente == 'PESSOA FISICA':
+            cpf = int(str(lista[2]).replace(".", "").replace("-",""))
+
+            self.entry_cpf_cnpj.insert(0,f'{cpf}')
+
+
+            
+    
+
+        elif tipo_cliente == 'PESSOA JURIDICA':
+            cnpj = int(str(lista[3]).replace(".", "").replace("-","").replace("/",""))
+
+            self.entry_cpf_cnpj.insert(0, f'{cnpj}')
+            self.entry_razao_social.inset(0,f'{str(lista[5])}')
+
+        self.entry_email.insert(0, f'{str(lista[4])}')
+
+        self.entry_cep.insert(0, f"{int(str(lista[7]).replace('-',''))}")
+
+        self.entry_endereco.insert(0, f"{str(lista[8])}")
+        self.entry_numero.insert(0, f"{int(lista[9])}")
+        self.entry_complemento.insert(0,f"{str(lista[10])}")
+        self.entry_bairro.insert(0,f"{str(lista[11])}")
+        self.entry_cidade.insert(0,f"{str(lista[12])}")
+        self.entry_uf.insert(0,f"{str(lista[13])}")
+
+        self.entry_fone.insert(0,f"{int(str(lista[14]).replace('(','').replace(')','').replace(' ','').replace('-',''))}")
+
+        self.entry_celular.insert(0,f"{int(str(lista[15]).replace('(','').replace(')','').replace(' ','').replace('-',''))}")
+
+        self.menu_questionario.set(f'{str(lista[16])}')
+
+        self.entry_observacoes.insert('1.0',f"{str(lista[17])}")
+
+      
     def Pesquisar_Cliente(self):
         info_digitada = str(self.Entry_Pesquisar.get())
         if info_digitada:
             
             self.cursor.execute(f"select * from Clientes WHERE razao_social LIKE'%{info_digitada}%' OR cpf LIKE'%{info_digitada}%' OR cnpj LIKE'%{info_digitada}%' OR id LIKE'%{info_digitada}%' OR nome LIKE'%{info_digitada}%' ")
             lista = self.cursor.fetchall()
-            print(lista)
+            
             self.tree.delete(*self.tree.get_children())
             self.Reexibir_treeview(lista=lista)
 
     def interface_create(self, tipo=str):
         # Esconder os widgets em vez de destruí-los
-        for widget in self.frame_resp.winfo_children():
-            if widget != self.LabelTitulo:
-                widget.place_forget()
+        self.acao_widget('ocultar')
 
         
         self.LabelTitulo.configure(text=('CADASTRAR CLIENTE' if tipo.upper() == "CREATE"
@@ -731,7 +796,7 @@ class InterfaceNovoCliente:
         self.entry_razao_social.place(x=800, y=80, anchor="w")
 
 
-        self.label_nome = ctk.CTkLabel(self.frame_resp, text='Nome Fantasia:', font=(None, 12, "bold"))
+        self.label_nome = ctk.CTkLabel(self.frame_resp, text='Nome:', font=(None, 12, "bold"))
         self.label_nome.place(x=50, y=140, anchor="w")
         self.entry_nome = ctk.CTkEntry(self.frame_resp, width=300)
         self.entry_nome.place(x=50, y=170, anchor="w")
@@ -740,8 +805,8 @@ class InterfaceNovoCliente:
         self.label_cep = ctk.CTkLabel(self.frame_resp, text='CEP:', font=(None, 12, "bold"))
         self.label_cep.place(x=400, y=140, anchor="w")
 
-        self.entry_cpf = ctk.CTkEntry(self.frame_resp)
-        self.entry_cpf.place(x=400, y=170, anchor="w")
+        self.entry_cep = ctk.CTkEntry(self.frame_resp, validate="key", validatecommand=(self.main_app.validate_cmd_numeric, "%P", 8))
+        self.entry_cep.place(x=400, y=170, anchor="w")
 
 
         self.label_endereco = ctk.CTkLabel(self.frame_resp, text='Endereço:', font=(None, 12, "bold"))
@@ -752,7 +817,7 @@ class InterfaceNovoCliente:
 
         self.label_numero = ctk.CTkLabel(self.frame_resp, text='N°:', font=(None, 12, "bold"))
         self.label_numero.place(x=950, y=140, anchor="w")
-        self.entry_numero = ctk.CTkEntry(self.frame_resp, width=50)
+        self.entry_numero = ctk.CTkEntry(self.frame_resp, width=50, validate="key", validatecommand=(self.main_app.validate_cmd_numeric, "%P", 5))
         self.entry_numero.place(x=950, y=170, anchor="w")
 
 
@@ -778,19 +843,19 @@ class InterfaceNovoCliente:
 
         self.label_uf = ctk.CTkLabel(self.frame_resp, text='UF:', font=(None, 12, "bold"))
         self.label_uf.place(x=800, y=230, anchor="w")
-        self.entry_uf = ctk.CTkEntry(self.frame_resp,width=50)
+        self.entry_uf = ctk.CTkEntry(self.frame_resp,width=50, validate="key", validatecommand=(self.main_app.validade_cmd_text, "%P", 2))
         self.entry_uf.place(x=800, y=260, anchor="w")
 
 
         self.label_fone = ctk.CTkLabel(self.frame_resp, text='Telefone:', font=(None, 12, "bold"))
         self.label_fone.place(x=900, y=230, anchor="w")
-        self.entry_fone = ctk.CTkEntry(self.frame_resp)
+        self.entry_fone = ctk.CTkEntry(self.frame_resp,placeholder_text="(xx) 0000-0000", validate="key", validatecommand=(self.main_app.validate_cmd_numeric, "%P", 10))
         self.entry_fone.place(x=900, y=260, anchor="w")
 
 
         self.label_celular = ctk.CTkLabel(self.frame_resp, text='Celular:', font=(None, 12, "bold"))
         self.label_celular.place(x=50, y=320, anchor="w")
-        self.entry_celular = ctk.CTkEntry(self.frame_resp)
+        self.entry_celular = ctk.CTkEntry(self.frame_resp, placeholder_text="(xx)9 0000-0000",validate="key", validatecommand=(self.main_app.validate_cmd_numeric, "%P", 11))
         self.entry_celular.place(x=50, y=360, anchor="w")
 
 
@@ -806,12 +871,27 @@ class InterfaceNovoCliente:
         self.entry_observacoes.place(x=50, y=450)
 
 
+
+        self.Bt_Voltar = ctk.CTkButton(self.frame_resp, text="Voltar",  image=
+                                            VoltarIcon, text_color=("black","white"), 
+                                    width=100,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), anchor="w", command= lambda: self.voltar('ocultar'))
+        
+        self.Bt_Voltar.place(relx=0.3, rely=0.85, anchor="w")
+
+
+
         self.Bt_NovoCLiente = ctk.CTkButton(self.frame_resp, text="SALVAR",  image=SalvarIcon, text_color=("black","white"), 
                                     width=100,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'))       
-        self.Bt_NovoCLiente.place(x=575,y=640, anchor="center")
+        self.Bt_NovoCLiente.place(relx=0.4, rely=0.85, anchor="w")
 
         self.definir_cliente(resposta="PESSOA FISICA")
 
+    def voltar(self, opcao):
+        
+        self.acao_widget(acao=opcao)
+        self.interface_tabela()
+        self.LabelTitulo.configure(text=('CLIENTES'))
+        
     def salvar(self, tipo):
         if tipo == 'CREATE':
             pass
@@ -821,18 +901,16 @@ class InterfaceNovoCliente:
             pass
 
     def definir_cliente(self, resposta):
-        print("função chamada", resposta)
+        
+    
         if resposta == 'PESSOA FISICA':
              
-             self.entry_cpf_cnpj.configure(validate="key", validatecommand=(self.main_app.validate_cmd, "%P", 11))
+             self.entry_cpf_cnpj.configure(validate="key", validatecommand=(self.main_app.validate_cmd_numeric, "%P", 11))
 
 
         elif resposta == "PESSOA JURIDICA":
-            self.entry_cpf_cnpj.configure(validate="key", validatecommand=(self.main_app.validate_cmd, "%P", 14))
+            self.entry_cpf_cnpj.configure(validate="key", validatecommand=(self.main_app.validate_cmd_numeric, "%P", 14))
         
-        
-
-
 class InterfaceNovoUsuario: 
 
     def __init__(self, main_app, frame_resp):
@@ -963,7 +1041,7 @@ class InterfaceNovoUsuario:
                 novo.configure(state="disabled")
                 editar.configure(state="disabled")
                 remover.configure(state='disabled')
-                print(valor)
+             
         except Exception as erro:
             print(erro)
 
@@ -1804,6 +1882,8 @@ class InterfaceNovoUsuario:
             self.main_app.destacar(self.listaBTS, botão=self.BT_ModuloConfiguracoes, cor=self.cor_destaque)
     
 
+
+
         print("em construção")
 
 class InterfaceUsuario:
@@ -1896,7 +1976,7 @@ class InterfaceUsuario:
         if usuarioDigitado != None:
 
             if len(usuarioDigitado) >= 3:
-                print(usuarioDigitado, len(usuarioDigitado))
+                
                 cursor = self.main_app.ConexaoPrincipal.cursor()
                 cursor.execute(f"SELECT usuario FROM Usuarios WHERE BINARY usuario = '{usuarioDigitado}'")
                 respostaBD = cursor.fetchall()
@@ -1911,7 +1991,7 @@ class InterfaceUsuario:
 
                 else:
                     self.main_app.msgbox("USUARIO", "Ja existe um usuario com este nome!!!", 0)
-                    print(self.main_app.usuario_logado)
+                   
 
             elif 1 <= len(usuarioDigitado) <= 2:
                 self.main_app.msgbox("USUARIO", "Seu novo nome de usuario deve conter pelo menos 3 caracteres", 0)
@@ -2265,6 +2345,7 @@ class MenuOpcoes:
         self.LabelLogo = ctk.CTkLabel(self.frame_MenuLateralEsq, text="", image=SeuLogo2)
         self.LabelLogo.place(x=-10, y=(self.screen_height - 300))
 
+
         
         appearance_mode_optionemenu = ctk.CTkOptionMenu(self.frame_MenuLateralEsq, font=self.main_app.FontBody, width=150,
                                                         height=30, values=["Dark", "light"], command=self.main_app.aparencia)
@@ -2471,7 +2552,7 @@ class TelaLogin:
 
             # Aqui você pode adicionar a lógica que deseja executar quando a tecla Enter for pressionada
             # Por exemplo, você pode chamar uma função de verificação de login ou qualquer outra ação desejada
-            print("Tecla Enter pressionada!")
+            
 
         self.LoginDigitado = ctk.CTkEntry(self.Root_login, placeholder_text="Digite seu login", width=200)
         self.LoginDigitado.place(relx=0.5, rely=0.3, anchor='center')
@@ -2495,6 +2576,7 @@ class TelaLogin:
 
         self.LabelTxt2 = ctk.CTkLabel(self.Root_login, text="Modo")
         self.LabelTxt2.place(relx=0.15, rely=0.90, anchor="center")
+
 
         self.appearance_mode_optionemenu = ctk.CTkOptionMenu(self.Root_login, font= self.main_app.FontBody, width=100, height=20,
                                                         values=["Dark", "light"], command= self.main_app.aparencia)
@@ -2549,7 +2631,8 @@ class MainApp:
         self.SubTitle = ctk.CTkFont(size=14, weight="bold")
         self.FontBody = ctk.CTkFont(size=12)
 
-        self.validate_cmd = root.register(self.validate_numeric_input)
+        self.validate_cmd_numeric = root.register(self.validate_numeric_input)
+        self.validade_cmd_text = root.register(self.validate_text_input)
 
         self.screen_height = self.root.winfo_screenheight()
         self.screen_wedth = self.root.winfo_screenwidth()
@@ -2576,7 +2659,7 @@ class MainApp:
     def login_sucesso(self):
         self.clear_screen()
         self.menu_lateral = MenuOpcoes(self.root, self)
-        print("muito bem vindo ao sistema")
+        
 
     def clear_screen(self):
         for widget in self.root.winfo_children():
@@ -2596,10 +2679,8 @@ class MainApp:
         if self.acesso_usuario == "ADM":
             self.gerenciarusuarios = InterfaceGerenciarUsuarios(self, frame_resp=frame_resposta)
 
-
     def exibir_novocliente(self, frame_resposta):
         self.interface_NovoUsuario = InterfaceNovoCliente(self, frame_resp=frame_resposta)
-
 
     def exibir_novousuario(self, frame_resposta):
         self.interface_NovoUsuario = InterfaceNovoUsuario(self, frame_resp=frame_resposta)
@@ -2625,6 +2706,13 @@ class MainApp:
     def aparencia(self, new_appearance_mode: str):
         # função que altera o modo de aparencia da janela entre ligth e dark
         ctk.set_appearance_mode(new_appearance_mode)
+
+    def change_scaling_event(self, new_scaling: str):
+        try:
+            new_scaling_float = int(new_scaling.replace("%", "")) / 100
+            ctk.set_widget_scaling(new_scaling_float)
+        except:
+            pass
 
     def desativar_modulos(self):
         estoque = 0
@@ -2808,12 +2896,14 @@ class MainApp:
         # Verifica se P é vazio ou um número decimal válido
         return P == "" or P.replace(".", "", 1).isdigit() and len(P) <= int(max_length)
 
+    def validate_text_input(self, P, max_length):
+            return P == "" or (isinstance(P, str) and P.isalpha() and len(P) <= int(max_length))
+
+
 
 if __name__ == "__main__":
     root = ctk.CTk()
-    # ctk.set_widget_scaling(1.2)  # widget dimensions and text size
-    # ctk.set_window_scaling(1.2)  # window geometry dimensions
-    # ctk.deactivate_automatic_dpi_awareness()
+
     app = MainApp(root)
 
     root.mainloop()
