@@ -4,7 +4,7 @@ from PIL import ImageDraw
 import base64
 import binascii
 import io
-import ctypes
+
 import sys
 from Icones import *
 
@@ -13,7 +13,7 @@ from Icones import *
 local = r'liftam.JSON'
 ctk.set_default_color_theme(local)
 
-
+import ctypes
 def msgbox(title, text, style):
     #  Styles:
     #  0 : OK
@@ -26,9 +26,9 @@ def msgbox(title, text, style):
     return ctypes.windll.user32.MessageBoxW(0, text, title, style)
 
 
-def fechar_sistema():
-    resp = msgbox("Confirmação",
-                  "Deseja encerrar o sistema?", 4)
+
+resp = msgbox("seu titulo", "pergunta ou aviso...", 0)
+                
     if resp == 6:
         sys.exit()
 
