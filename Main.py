@@ -7,6 +7,7 @@ import io
 import ctypes
 from Icones import *
 from tkinter import ttk
+import pandas as pd
 
 
 class Pessoa:
@@ -587,7 +588,7 @@ class InterfaceNovoCliente:
         self.Bt_ExcluirCliente.place(x=420,y=250)
 
         self.Bt_Excel = ctk.CTkButton(self.frame_resp, text="Excel", text_color=("black","white"), image=ExcelIcon,  
-                                 width=40, fg_color=("transparent"), hover_color=("white", '#191919'))
+                                 width=40, fg_color=("transparent"), hover_color=("white", '#191919'), command=self.excel)
         self.Bt_Excel.place(x=1020,y=250)
 
         self.Bt_NovoCLiente = ctk.CTkButton(self.frame_resp, text="NOVO",  image=AdicionarIcon, text_color=("black","white"), 
@@ -642,8 +643,6 @@ class InterfaceNovoCliente:
             self.tree.heading(coluna, text=f"{nome}")
 
             self.tree.column(coluna, stretch=False)
-
-
 
     def Atualizar_limiteView(self, novo_limite):
         try:
@@ -747,8 +746,7 @@ class InterfaceNovoCliente:
         self.menu_questionario.set(f'{str(lista[16])}')
 
         self.entry_observacoes.insert('1.0',f"{str(lista[17])}")
-
-      
+   
     def Pesquisar_Cliente(self):
         info_digitada = str(self.Entry_Pesquisar.get())
         if info_digitada:
@@ -892,6 +890,45 @@ class InterfaceNovoCliente:
         self.interface_tabela()
         self.LabelTitulo.configure(text=('CLIENTES'))
         
+    def excel(self):
+        resp = self.main_app.msgbox("Excel", "Deseja exportar todos os registros?",4)
+
+
+        def destino(df):
+            folder_path = filedialog.asksaveasfilename(defaultextension='.xlsx')
+        
+            if folder_path:
+                # Definir o nome do arquivo
+                file_path = folder_path
+                
+                # Verificar se a extensão .xlsx foi adicionada
+                if not file_path.endswith('.xlsx'):
+                    file_path += '.xlsx'
+                    
+                df.to_excel(file_path, index=False)
+                self.main_app.msgbox("Excel", "Arquivo salvo com sucesso",0)
+                
+
+
+        if resp ==6 :
+           print("esta vazio, puxando valores no banco de dados")
+           if self.ListaClientes == None:
+            self.cursor.execute("SELECT * FROM Clientes")
+            self.ListaClientes = self.cursor.fetchall()
+            self.column_names = self.cursor.column_names
+            df = pd.DataFrame(self.ListaClientes, columns=self.column_names)    
+            destino(df=df)
+
+           else:
+                print("NAO ESTA VAZIA")
+                df = pd.DataFrame(self.ListaClientes, columns=self.column_names)    
+                destino(df=df)
+
+           
+    
+
+
+
     def salvar(self, tipo):
         if tipo == 'CREATE':
             pass
