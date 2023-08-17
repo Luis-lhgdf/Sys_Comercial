@@ -879,7 +879,7 @@ class InterfaceNovoCliente:
 
 
         self.Bt_NovoCLiente = ctk.CTkButton(self.frame_resp, text="SALVAR",  image=SalvarIcon, text_color=("black","white"), 
-                                    width=100,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'))       
+                                    width=100,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'),  command= lambda: self.salvar(tipo))       
         self.Bt_NovoCLiente.place(relx=0.4, rely=0.85, anchor="w")
 
         self.definir_cliente(resposta="PESSOA FISICA")
@@ -924,18 +924,16 @@ class InterfaceNovoCliente:
                 df = pd.DataFrame(self.ListaClientes, columns=self.column_names)    
                 destino(df=df)
 
-           
-    
-
-
-
     def salvar(self, tipo):
-        if tipo == 'CREATE':
-            pass
-        elif tipo == 'UPDATE':
-            pass
-        else:
-            pass
+        resp = self.main_app.msgbox("SALVAR","Deseja salvar todas as informações passadas?",4)
+        if resp == 6:
+            if tipo == 'CREATE':
+                print("CRIANDO NOVO USUARIO")
+               
+            elif tipo == 'UPDATE':
+                print("ATUALIZADNO USUARIO ATUAL")
+            else:
+                pass
 
     def definir_cliente(self, resposta):
         
