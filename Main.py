@@ -224,7 +224,7 @@ class InterfaceGerenciarUsuarios:
                 
     def modulos_usuario(self, indice, usuario_entry, status_menu, acesso_menu):
         
-        self.cursor.execute(f"select * from modulos where id = '{self.usuarios[indice]}'")
+        self.cursor.execute(f"select * from modulos where usuario = '{usuario_entry.get()}'")
 
         self.indice_usuario = indice
         self.ModulosDoUsuario = self.cursor.fetchall()
@@ -412,6 +412,8 @@ class InterfaceGerenciarUsuarios:
 
             self.cursor.execute(f"delete from Usuarios where binary usuario ='{self.usuarios[i]}' ")
 
+            self.cursor.execute(f"delete from modulos where binary usuario ='{self.usuarios[i]}' ")
+
             self.main_app.ConexaoPrincipal.commit()
             self.usuarios.pop(i)
             self.acesso.pop(i) 
@@ -442,7 +444,7 @@ class InterfaceGerenciarUsuarios:
             self.excluir_button[i].destroy()
             self.editar_button[i].destroy()
 
-            self.gerenciar_user(frame_resp=self.frame_resp)
+            InterfaceGerenciarUsuarios(main_app=self.main_app, frame_resp=self.frame_resp)
 
     def cancelar_usuario(self, i, usuario_entry, status_menu,acesso_menu ):
         self.editar_button[i].configure(state="normal")
@@ -524,6 +526,7 @@ class InterfaceNovoCliente:
         self.ListaClientes = None
         self.totalClientes = 0
         self.Cliente_select = None
+        self.Cliente_select_list = None
         
 
         self.LabelTitulo =ctk.CTkLabel(self.frame_resp, text=f"CLIENTES",fg_color="transparent", text_color=("black", "white"),  font=(ctk.CTkFont(size=14, weight="bold")), corner_radius=6)
@@ -584,7 +587,7 @@ class InterfaceNovoCliente:
         self.Bt_EditarCliente.place(x=320,y=250)
 
         self.Bt_ExcluirCliente = ctk.CTkButton(self.frame_resp, text="Excluir", text_color=("black","white"), image=DeletarIcon,  
-                                         width=40, fg_color=("transparent"), hover_color=("white", '#191919'), state="disabled")
+                                         width=40, fg_color=("transparent"), hover_color=("white", '#191919'), state="disabled", command=self.excluir)
         self.Bt_ExcluirCliente.place(x=420,y=250)
 
         self.Bt_Excel = ctk.CTkButton(self.frame_resp, text="Excel", text_color=("black","white"), image=ExcelIcon,  
@@ -610,7 +613,7 @@ class InterfaceNovoCliente:
         style.map("Treeview", background=[('selected', 'gray90')], foreground=[('selected', 'black')])  
         self.tree.bind("<<TreeviewSelect>>", self.click_select)
 
-    def sincronizar_tabela(self):
+    def sincronizar_tabela(self, attlimite=True):
         self.Bt_Sincronizar.destroy()
         self.cursor.execute("SELECT * FROM Clientes limit 10")
 
@@ -622,8 +625,8 @@ class InterfaceNovoCliente:
         self.totalClientes = int((self.cursor.fetchone()[0]))
 
         self.tree.configure(columns=([f'coluna{c}' for c in range(1,len(self.column_names)+1)]))
-        
-        self.Atualizar_limiteView(10)
+        if attlimite:
+            self.Atualizar_limiteView(10)
 
     def Reexibir_treeview(self, lista):
         self.tree.column("coluna1", width=50)
@@ -650,10 +653,6 @@ class InterfaceNovoCliente:
         except:
             pass
 
-        
-
-
-
         self.cursor.execute(f"SELECT * FROM Clientes limit {int(novo_limite)}")
         self.ListaClientes = self.cursor.fetchall()
 
@@ -665,6 +664,7 @@ class InterfaceNovoCliente:
   
     def click_select(self, event):
         selected_item = self.tree.selection()
+        lista = []
         if selected_item:
             if len(selected_item) ==1:
                 unico = self.tree.item(selected_item, "values")
@@ -673,14 +673,19 @@ class InterfaceNovoCliente:
                 self.Bt_EditarCliente.configure(state="normal")
                 self.Bt_ExcluirCliente.configure(state="normal")
 
-                                        
+                              
             else:
                 self.Bt_EditarCliente.configure(state="disabled")
                 self.Bt_ExcluirCliente.configure(state="normal")
+                
                 for item_id in selected_item:
                     valor = self.tree.item(item_id, "values")
+                    lista.append(valor)
+                    
                     self.Label_Select.configure(text=f"SELECIONADO: {len(selected_item)}")
 
+                self.Cliente_select_list = lista
+          
     def todos(self):
         info_digitada = str(self.Entry_Pesquisar.get())
         if info_digitada:
@@ -709,6 +714,7 @@ class InterfaceNovoCliente:
         
         self.interface_create('UPDATE')
 
+
         self.menu_tipocliente.set(f'{str(lista[1]).upper()}')
         self.entry_nome.insert(0, f'{lista[6]}')
 
@@ -726,7 +732,7 @@ class InterfaceNovoCliente:
             cnpj = int(str(lista[3]).replace(".", "").replace("-","").replace("/",""))
 
             self.entry_cpf_cnpj.insert(0, f'{cnpj}')
-            self.entry_razao_social.inset(0,f'{str(lista[5])}')
+            self.entry_razao_social.insert(0,f'{str(lista[5])}')
 
         self.entry_email.insert(0, f'{str(lista[4])}')
 
@@ -790,30 +796,30 @@ class InterfaceNovoCliente:
 
         self.label_razao_social = ctk.CTkLabel(self.frame_resp, text='Razão Social:', font=(None, 12, "bold"))
         self.label_razao_social.place(x=800, y=50, anchor="w")
-        self.entry_razao_social = ctk.CTkEntry(self.frame_resp, width=300)
+        self.entry_razao_social = ctk.CTkEntry(self.frame_resp, width=300, validate="key", validatecommand=(self.main_app.validade_cmd_text, "%P", 500))
         self.entry_razao_social.place(x=800, y=80, anchor="w")
 
 
-        self.label_nome = ctk.CTkLabel(self.frame_resp, text='Nome:', font=(None, 12, "bold"))
+        self.label_nome = ctk.CTkLabel(self.frame_resp, text='Nome:*', font=(None, 12, "bold"))
         self.label_nome.place(x=50, y=140, anchor="w")
-        self.entry_nome = ctk.CTkEntry(self.frame_resp, width=300)
+        self.entry_nome = ctk.CTkEntry(self.frame_resp, width=300, validate="key", validatecommand=(self.main_app.validade_cmd_text, "%P", 500))
         self.entry_nome.place(x=50, y=170, anchor="w")
 
 
-        self.label_cep = ctk.CTkLabel(self.frame_resp, text='CEP:', font=(None, 12, "bold"))
+        self.label_cep = ctk.CTkLabel(self.frame_resp, text='CEP:*', font=(None, 12, "bold"))
         self.label_cep.place(x=400, y=140, anchor="w")
 
         self.entry_cep = ctk.CTkEntry(self.frame_resp, validate="key", validatecommand=(self.main_app.validate_cmd_numeric, "%P", 8))
         self.entry_cep.place(x=400, y=170, anchor="w")
 
 
-        self.label_endereco = ctk.CTkLabel(self.frame_resp, text='Endereço:', font=(None, 12, "bold"))
+        self.label_endereco = ctk.CTkLabel(self.frame_resp, text='Endereço:*', font=(None, 12, "bold"))
         self.label_endereco.place(x=600, y=140, anchor="w")
-        self.entry_endereco = ctk.CTkEntry(self.frame_resp, width=300)
+        self.entry_endereco = ctk.CTkEntry(self.frame_resp, width=300, validate="key", validatecommand=(self.main_app.validade_cmd_text, "%P", 500))
         self.entry_endereco.place(x=600, y=170, anchor="w")
 
 
-        self.label_numero = ctk.CTkLabel(self.frame_resp, text='N°:', font=(None, 12, "bold"))
+        self.label_numero = ctk.CTkLabel(self.frame_resp, text='N°:*', font=(None, 12, "bold"))
         self.label_numero.place(x=950, y=140, anchor="w")
         self.entry_numero = ctk.CTkEntry(self.frame_resp, width=50, validate="key", validatecommand=(self.main_app.validate_cmd_numeric, "%P", 5))
         self.entry_numero.place(x=950, y=170, anchor="w")
@@ -822,26 +828,26 @@ class InterfaceNovoCliente:
         self.label_complemento = ctk.CTkLabel(self.frame_resp, text='Complemento:', font=(None, 12, "bold"))
         self.label_complemento.place(x=50, y=230, anchor="w")
 
-        self.entry_complemento = ctk.CTkEntry(self.frame_resp,  width=300)
+        self.entry_complemento = ctk.CTkEntry(self.frame_resp,  width=300, validate="key", validatecommand=(self.main_app.validade_cmd_text, "%P", 500))
         self.entry_complemento.place(x=50, y=260, anchor="w")
 
 
-        self.label_bairro = ctk.CTkLabel(self.frame_resp, text='Bairro:', font=(None, 12, "bold"))
+        self.label_bairro = ctk.CTkLabel(self.frame_resp, text='Bairro:*', font=(None, 12, "bold"))
         self.label_bairro.place(x=400, y=230, anchor="w")
-        self.entry_bairro = ctk.CTkEntry(self.frame_resp)
+        self.entry_bairro = ctk.CTkEntry(self.frame_resp, validate="key", validatecommand=(self.main_app.validade_cmd_text, "%P", 500))
         self.entry_bairro.place(x=400, y=260, anchor="w")
 
 
-        self.label_cidade = ctk.CTkLabel(self.frame_resp, text='Cidade:', font=(None, 12, "bold"))
+        self.label_cidade = ctk.CTkLabel(self.frame_resp, text='Cidade:*', font=(None, 12, "bold"))
         self.label_cidade.place(x=600, y=230, anchor="w")
 
-        self.entry_cidade = ctk.CTkEntry(self.frame_resp)
+        self.entry_cidade = ctk.CTkEntry(self.frame_resp, validate="key", validatecommand=(self.main_app.validade_cmd_text, "%P", 500))
         self.entry_cidade.place(x=600, y=260, anchor="w")
 
 
-        self.label_uf = ctk.CTkLabel(self.frame_resp, text='UF:', font=(None, 12, "bold"))
+        self.label_uf = ctk.CTkLabel(self.frame_resp, text='UF:*', font=(None, 12, "bold"))
         self.label_uf.place(x=800, y=230, anchor="w")
-        self.entry_uf = ctk.CTkEntry(self.frame_resp,width=50, validate="key", validatecommand=(self.main_app.validade_cmd_text, "%P", 2))
+        self.entry_uf = ctk.CTkEntry(self.frame_resp,width=50, validate="key", validatecommand=(self.main_app.validade_cmd_text, "%P", 2, False))
         self.entry_uf.place(x=800, y=260, anchor="w")
 
 
@@ -859,7 +865,7 @@ class InterfaceNovoCliente:
 
         self.label_questionario = ctk.CTkLabel(self.frame_resp, text='Como conheceu a empresa:', font=(None, 12, "bold"))
         self.label_questionario.place(x=250, y=320, anchor="w")
-        self.menu_questionario = ctk.CTkOptionMenu(self.frame_resp, values=['INSTAGRAM', 'FACEBOOK', 'SITE', 'TIKTOK', 'INDICAÇÃO', 'OUTRO'])
+        self.menu_questionario = ctk.CTkOptionMenu(self.frame_resp, values=['', 'INSTAGRAM', 'FACEBOOK', 'SITE', 'TIKTOK', 'INDICAÇÃO', 'OUTRO'])
         self.menu_questionario.place(x=250, y=360, anchor="w")
 
 
@@ -924,14 +930,99 @@ class InterfaceNovoCliente:
                 df = pd.DataFrame(self.ListaClientes, columns=self.column_names)    
                 destino(df=df)
 
-    def salvar(self, tipo):
-        resp = self.main_app.msgbox("SALVAR","Deseja salvar todas as informações passadas?",4)
+    def excluir(self):
+        resp = self.main_app.msgbox("EXCLUIR", "Tem certeza que deseja excluir este cliente?", 4)
         if resp == 6:
-            if tipo == 'CREATE':
-                print("CRIANDO NOVO USUARIO")
-               
-            elif tipo == 'UPDATE':
-                print("ATUALIZADNO USUARIO ATUAL")
+            lista = self.Cliente_select_list
+            for cliente in lista:
+                id_cliente = int(cliente[0])
+                
+                query = f"DELETE FROM Clientes WHERE id = {id_cliente}"
+                self.cursor.execute(query)
+                self.main_app.ConexaoPrincipal.commit()
+            self.main_app.msgbox("EXCLUIR", "Cliente excluído com sucesso!", 0)
+            self.sincronizar_tabela(attlimite=False)
+            self.Atualizar_limiteView(self.limite_view)
+
+    def salvar(self, tipo):
+        resp = self.main_app.msgbox("SALVAR", "Deseja salvar todas as informações passadas?", 4)
+        if resp == 6:
+
+            "id, tipo_de_cliente, cpf, cnpj, email, razao_social, nome, cep, endereco, numero, complemento, bairro, cidade, uf, fone, celular, questionario, observacoes"
+
+            tipo_cliente = self.menu_tipocliente.get()
+            entry_cpf_cnpj = self.entry_cpf_cnpj.get()
+            entry_email = self.entry_email.get()
+            entry_razao_social = self.entry_razao_social.get()
+            entry_nome = self.entry_nome.get()
+            entry_cep = self.entry_cep.get()
+            entry_endereco = self.entry_endereco.get()
+            entry_numero = self.entry_numero.get()
+            entry_complemento = self.entry_complemento.get()
+            entry_bairro = self.entry_bairro.get()
+            entry_cidade = self.entry_cidade.get()
+            entry_uf = self.entry_uf.get()
+            entry_fone = self.entry_fone.get()
+            entry_celular = self.entry_celular.get()
+            menu_questionario = self.menu_questionario.get()
+            entry_observacoes = self.entry_observacoes.get("0.0", "end")
+
+            # Verifica se os campos obrigatórios estão preenchidos
+            if not entry_nome or not entry_cep or not entry_endereco or not entry_numero or not entry_bairro or not entry_cidade or not entry_uf:
+                self.entry_nome.configure(border_color="red")
+                self.entry_cep.configure(border_color="red")
+                self.entry_endereco.configure(border_color="red")
+                self.entry_numero.configure(border_color="red")
+                self.entry_bairro.configure(border_color="red")
+                self.entry_cidade.configure(border_color="red")
+                self.entry_uf.configure(border_color="red")
+
+
+                self.main_app.msgbox("Campos obrigatórios não preenchidos", "Por favor, preencha todos os campos obrigatórios antes de salvar.", 0)
+                return
+
+            if tipo == 'CREATE' or tipo == 'UPDATE':
+                if tipo_cliente == 'PESSOA FISICA':
+                    cpf = entry_cpf_cnpj
+                    cnpj = None
+                elif tipo_cliente == 'PESSOA JURIDICA':
+                    cnpj = entry_cpf_cnpj
+                    cpf = None
+
+                if tipo == 'CREATE':
+                    query = """INSERT INTO Clientes (tipo_de_cliente, cpf, cnpj, email, razao_social, nome, cep, endereco, numero, complemento, bairro, cidade, uf, fone, celular, questionario, observacoes)
+                            VALUES (%s, %s, %s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s, %s, %s, %s) """
+                    values = (tipo_cliente, cpf, cnpj, entry_email, entry_razao_social, entry_nome, entry_cep, entry_endereco, entry_numero, entry_complemento, entry_bairro, entry_cidade, entry_uf, entry_fone, entry_celular, menu_questionario, entry_observacoes)
+                
+                elif tipo == 'UPDATE':
+
+                    lista = self.Cliente_select
+                    id_cliente = lista[0]
+                    # You need to implement this method to get the selected client's ID
+                    query = """UPDATE Clientes SET tipo_de_cliente = %s, cpf = %s, cnpj = %s, email = %s, razao_social = %s, nome = %s, cep = %s, endereco = %s, numero = %s, complemento = %s, bairro = %s, cidade = %s, uf = %s, fone = %s, celular = %s, questionario = %s, observacoes = %s
+                            WHERE id = %s"""
+                    values = (tipo_cliente, cpf, cnpj, entry_email, entry_razao_social, entry_nome, entry_cep, entry_endereco, entry_numero, entry_complemento, entry_bairro, entry_cidade, entry_uf, entry_fone, entry_celular, menu_questionario, entry_observacoes, id_cliente)
+
+
+
+
+                self.cursor.execute(query, values)
+                # Commit the changes to the database
+                self.main_app.ConexaoPrincipal.commit()
+
+                self.entry_nome.configure(border_color=("#979DA2", "#565B5E"))
+                self.entry_cep.configure(border_color=("#979DA2", "#565B5E"))
+                self.entry_endereco.configure(border_color=("#979DA2", "#565B5E"))
+                self.entry_numero.configure(border_color=("#979DA2", "#565B5E"))
+                self.entry_bairro.configure(border_color=("#979DA2", "#565B5E"))
+                self.entry_cidade.configure(border_color=("#979DA2", "#565B5E"))
+                self.entry_uf.configure(border_color=("#979DA2", "#565B5E"))
+
+                if tipo == 'CREATE':
+                    self.main_app.msgbox("NOVO CLIENTE", "Novo cliente adicionado com sucesso!", 0)
+                elif tipo == 'UPDATE':
+                    self.main_app.msgbox("ATUALIZAR", "Informações do cliente atualizadas com sucesso!", 0)
+        
             else:
                 pass
 
@@ -1261,6 +1352,12 @@ class InterfaceNovoUsuario:
 
                         cursor.execute("""INSERT INTO Usuarios(usuario, senha, acesso, status)
                                         VALUES(%s, %s, %s, %s )""", (login_digitado, senha_digitada, acesso, status))
+                        
+
+
+                        cursor.execute(f"SELECT id FROM Usuarios WHERE usuario ='{login_digitado}'")
+                        id_criado = cursor.fetchone()[0]
+                        print(id_criado)
                         self.main_app.ConexaoPrincipal.commit()
 
                         # Itera sobre os dados do dicionário e insere no banco de dados
@@ -1271,14 +1368,14 @@ class InterfaceNovoUsuario:
                                 editar = permissoes['editar']
                                 remover = permissoes['remover']
                                 cursor.execute("""
-                                    INSERT INTO modulos (usuario, modulo, submodulo, visualizar, novo, editar, remover)
-                                    VALUES (%s, %s, %s, %s, %s, %s, %s)
-                                """, (login_digitado, modulo, submodulo, visualizar, novo, editar, remover))
+                                    INSERT INTO modulos (usuario, modulo, submodulo, visualizar, novo, editar, remover, id_usuario)
+                                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                                """, (login_digitado, modulo, submodulo, visualizar, novo, editar, remover, id_criado))
 
                         # Efetua o commit da transação
                         self.main_app.ConexaoPrincipal.commit()
 
-                        self.novo_user(frame_resp=self.frame_resp)
+                        InterfaceNovoUsuario(main_app=self.main_app, frame_resp = self.frame_resp)
                         self.main_app.msgbox("SALVAR", "Usuario criado com sucesso!!!", 0)
         except Exception as erro:
             print(erro)
@@ -2386,7 +2483,7 @@ class MenuOpcoes:
                                                         height=30, values=["Dark", "light"], command=self.main_app.aparencia)
         appearance_mode_optionemenu.place(x=10, y=(self.screen_height - 100))
         
-        self.main_app.desativar_modulos()
+        self.desativar_modulos()
         CarregarIMG(main_app=self.main_app).verificar_foto(self.Btfoto_perfil, self.main_app.usuario_logado)
         self.frame_home()
 
@@ -2421,7 +2518,7 @@ class MenuOpcoes:
                                         hover_color=("#ff9ea2", "black"))
         self.BTInventario.place(x=10, y=200)
 
-        self.main_app.desativar_submodulos(modulo='Estoque')
+        self.desativar_submodulos(modulo='Estoque')
 
     def frame_cadastro(self):
         self.limpar_frames(self.frame_MenuLateralDir, self.frame_resposta, pos=138)
@@ -2454,7 +2551,7 @@ class MenuOpcoes:
                                                 hover_color=("#ff9ea2", "black"),
                                                 command=lambda: self.frame_gerenciar_user())
         
-        self.main_app.desativar_submodulos(modulo='Cadastro')
+        self.desativar_submodulos(modulo='Cadastro')
 
         self.BTGerenciarUsuario.place(x=10, y=280)
 
@@ -2518,7 +2615,7 @@ class MenuOpcoes:
                                            hover_color=("#ff9ea2", "black"))
         self.BTFaturamento.place(x=10, y=320)
 
-        self.main_app.desativar_submodulos(modulo='carteira')
+        self.desativar_submodulos(modulo='carteira')
 
     def frame_financas(self):
         self.limpar_frames(self.frame_MenuLateralDir, self.frame_resposta, pos=138)
@@ -2539,7 +2636,7 @@ class MenuOpcoes:
                                             text_color=("black", "white"),
                                             hover_color=("#ff9ea2", "black"))
         self.BTOutrasRendas.place(x=10, y=360)
-        self.main_app.desativar_submodulos(modulo='Finanças')
+        self.desativar_submodulos(modulo='Finanças')
 
     def frame_usuario(self):
         self.limpar_frames(self.frame_MenuLateralDir, self.frame_resposta, excluir=True)
@@ -2561,6 +2658,167 @@ class MenuOpcoes:
         LabelTitulo = ctk.CTkLabel(self.frame_resposta, text=f"CONFIGURAÇÕES",fg_color="transparent", text_color=("black", "white"), 
                                    font=self.main_app.SubTitle, corner_radius=6)
         LabelTitulo.place(relx=0.001, rely=0.02, anchor="w")
+
+    def desativar_modulos(self):
+        estoque = 0
+        cadastro = 0
+        carteira = 0
+        financas = 0
+
+        resultado = self.main_app.ModulosDoUsuario
+        for tupla in resultado:
+
+            if tupla[2] == 'Agenda' and tupla[3] == 'AGENDA':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                    self.BtAgenda.configure(state="disabled")
+
+
+
+            elif tupla[2] == 'Usuario' and tupla[3] == 'USUARIO':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                    self.BtUsuario.configure(state="disabled")
+
+
+            elif tupla[2] == 'Configurações' and tupla[3] == 'CONFIGURACOES':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                    self.BtConfiguracoes.configure(state="disabled")
+
+
+
+
+            elif tupla[2] == 'Estoque' and tupla[3] == 'ENTRADA':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                    estoque += 1
+
+            elif tupla[2] == 'Estoque' and tupla[3] == 'SAIDA':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                    estoque += 1
+
+            elif tupla[2] == 'Estoque' and tupla[3] == 'INVENTARIO':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                    estoque += 1
+
+
+
+
+            elif tupla[2] == 'Cadastro' and tupla[3] == 'CAD ITEM':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                    cadastro += 1
+
+            elif tupla[2] == 'Cadastro' and tupla[3] == 'CAD CLIENTE':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                    cadastro += 1
+
+            elif tupla[2] == 'Cadastro' and tupla[3] == 'CAD USUARIO':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                    cadastro += 1
+
+            elif tupla[2] == 'Cadastro' and tupla[3] == 'GERENCIAR USER':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                    cadastro += 1
+
+
+
+
+
+            elif tupla[2] == 'Carteira' and tupla[3] == 'VENDAS':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                    carteira += 1
+
+
+            elif tupla[2] == 'Carteira' and tupla[3] == 'FATURAMENTO':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                    carteira += 1
+
+
+
+
+            elif tupla[2] == 'Finanças' and tupla[3] == 'DESPESAS':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                    financas += 1
+
+
+            elif tupla[2] == 'Finanças' and tupla[3] == 'OUTRAS RENDAS':
+                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                    financas += 1
+
+        if estoque == 3:
+            self.BtEstoque.configure(state='disabled')
+
+        if cadastro == 4:
+            self.BtCadastros.configure(state='disabled')
+
+        if carteira == 2:
+            self.Btcarteira.configure(state='disabled')
+
+        if financas == 2:
+            self.BtFinancas.configure(state='disabled')
+
+    def desativar_submodulos(self, modulo):
+        resultado = self.main_app.ModulosDoUsuario
+        try:
+            if modulo == 'Estoque':
+                for tupla in resultado:
+
+                    if tupla[2] == 'Estoque' and tupla[3] == 'ENTRADA':
+                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                            self.BTEntrada.configure(state="disabled")
+
+                    elif tupla[2] == 'Estoque' and tupla[3] == 'SAIDA':
+                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                            self.BTSaida.configure(state="disabled")
+
+                    elif tupla[2] == 'Estoque' and tupla[3] == 'INVENTARIO':
+                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                            self.BTInventario.configure(state="disabled")
+
+            elif modulo == 'Cadastro':
+                for tupla in resultado:
+                    if tupla[2] == 'Cadastro' and tupla[3] == 'CAD ITEM':
+                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                            self.BTCadastrarItens.configure(state="disabled")
+
+
+                    elif tupla[2] == 'Cadastro' and tupla[3] == 'CAD CLIENTE':
+                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                            self.BTCadastrarClientes.configure(state="disabled")
+
+
+                    elif tupla[2] == 'Cadastro' and tupla[3] == 'CAD USUARIO':
+                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                            self.BTCriarNovoUsuario.configure(state="disabled")
+
+
+                    elif tupla[2] == 'Cadastro' and tupla[3] == 'GERENCIAR USER':
+                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                            self.BTGerenciarUsuario.configure(state="disabled")
+
+            elif modulo == 'Carteira':
+                for tupla in resultado:
+
+                    if tupla[2] == 'Carteira' and tupla[3] == 'VENDAS':
+                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                            self.BTRegistrarVenda.configure(state="disabled")
+
+
+                    elif tupla[2] == 'Carteira' and tupla[3] == 'FATURAMENTO':
+                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                            self.BTFaturamento.configure(state="disabled")
+
+            elif modulo == 'Finanças':
+                for tupla in resultado:
+
+                    if tupla[2] == 'Finanças' and tupla[3] == 'DESPESAS':
+                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                            self.BTRegistrarDespesas.configure(state="disabled")
+
+
+                    elif tupla[2] == 'Finanças' and tupla[3] == 'OUTRAS RENDAS':
+                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
+                            self.BTOutrasRendas.configure(state="disabled")
+
+        except Exception as erro:
+            print(erro)
 
 class TelaLogin:
     def __init__(self, root, main_app):
@@ -2695,7 +2953,6 @@ class MainApp:
         self.clear_screen()
         self.menu_lateral = MenuOpcoes(self.root, self)
         
-
     def clear_screen(self):
         for widget in self.root.winfo_children():
             widget.destroy()
@@ -2749,167 +3006,6 @@ class MainApp:
         except:
             pass
 
-    def desativar_modulos(self):
-        estoque = 0
-        cadastro = 0
-        carteira = 0
-        financas = 0
-
-        resultado = self.ModulosDoUsuario
-        for tupla in resultado:
-
-            if tupla[2] == 'Agenda' and tupla[3] == 'AGENDA':
-                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                    self.BtAgenda.configure(state="disabled")
-
-
-
-            elif tupla[2] == 'Usuario' and tupla[3] == 'USUARIO':
-                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                    self.BtUsuario.configure(state="disabled")
-
-
-            elif tupla[2] == 'Configurações' and tupla[3] == 'CONFIGURACOES':
-                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                    self.BtConfiguracoes.configure(state="disabled")
-
-
-
-
-            elif tupla[2] == 'Estoque' and tupla[3] == 'ENTRADA':
-                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                    estoque += 1
-
-            elif tupla[2] == 'Estoque' and tupla[3] == 'SAIDA':
-                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                    estoque += 1
-
-            elif tupla[2] == 'Estoque' and tupla[3] == 'INVENTARIO':
-                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                    estoque += 1
-
-
-
-
-            elif tupla[2] == 'Cadastro' and tupla[3] == 'CAD ITEM':
-                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                    cadastro += 1
-
-            elif tupla[2] == 'Cadastro' and tupla[3] == 'CAD CLIENTE':
-                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                    cadastro += 1
-
-            elif tupla[2] == 'Cadastro' and tupla[3] == 'CAD USUARIO':
-                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                    cadastro += 1
-
-            elif tupla[2] == 'Cadastro' and tupla[3] == 'GERENCIAR USER':
-                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                    cadastro += 1
-
-
-
-
-
-            elif tupla[2] == 'Carteira' and tupla[3] == 'VENDAS':
-                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                    carteira += 1
-
-
-            elif tupla[2] == 'Carteira' and tupla[3] == 'FATURAMENTO':
-                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                    carteira += 1
-
-
-
-
-            elif tupla[2] == 'Finanças' and tupla[3] == 'DESPESAS':
-                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                    financas += 1
-
-
-            elif tupla[2] == 'Finanças' and tupla[3] == 'OUTRAS RENDAS':
-                if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                    financas += 1
-
-        if estoque == 3:
-            self.BtEstoque.configure(state='disabled')
-
-        if cadastro == 4:
-            self.BtCadastros.configure(state='disabled')
-
-        if carteira == 2:
-            self.Btcarteira.configure(state='disabled')
-
-        if financas == 2:
-            self.BtFinancas.configure(state='disabled')
-
-    def desativar_submodulos(self, modulo):
-        resultado = self.ModulosDoUsuario
-        try:
-            if modulo == 'Estoque':
-                for tupla in resultado:
-
-                    if tupla[2] == 'Estoque' and tupla[3] == 'ENTRADA':
-                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                            self.BTEntrada.configure(state="disabled")
-
-                    elif tupla[2] == 'Estoque' and tupla[3] == 'SAIDA':
-                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                            self.BTSaida.configure(state="disabled")
-
-                    elif tupla[2] == 'Estoque' and tupla[3] == 'INVENTARIO':
-                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                            self.BTInventario.configure(state="disabled")
-
-            elif modulo == 'Cadastro':
-                for tupla in resultado:
-                    if tupla[2] == 'Cadastro' and tupla[3] == 'CAD ITEM':
-                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                            self.BTCadastrarItens.configure(state="disabled")
-
-
-                    elif tupla[2] == 'Cadastro' and tupla[3] == 'CAD CLIENTE':
-                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                            self.BTCadastrarClientes.configure(state="disabled")
-
-
-                    elif tupla[2] == 'Cadastro' and tupla[3] == 'CAD USUARIO':
-                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                            self.BTCriarNovoUsuario.configure(state="disabled")
-
-
-                    elif tupla[2] == 'Cadastro' and tupla[3] == 'GERENCIAR USER':
-                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                            self.BTGerenciarUsuario.configure(state="disabled")
-
-            elif modulo == 'Carteira':
-                for tupla in resultado:
-
-                    if tupla[2] == 'Carteira' and tupla[3] == 'VENDAS':
-                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                            self.BTRegistrarVenda.configure(state="disabled")
-
-
-                    elif tupla[2] == 'Carteira' and tupla[3] == 'FATURAMENTO':
-                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                            self.BTFaturamento.configure(state="disabled")
-
-            elif modulo == 'Finanças':
-                for tupla in resultado:
-
-                    if tupla[2] == 'Finanças' and tupla[3] == 'DESPESAS':
-                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                            self.BTRegistrarDespesas.configure(state="disabled")
-
-
-                    elif tupla[2] == 'Finanças' and tupla[3] == 'OUTRAS RENDAS':
-                        if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
-                            self.BTOutrasRendas.configure(state="disabled")
-
-        except Exception as erro:
-            print(erro)
-
     def destacar(self, lista = list, botão = object, cor = tuple, fg2 = "transparent"):
         
         for valor in lista:
@@ -2931,8 +3027,12 @@ class MainApp:
         # Verifica se P é vazio ou um número decimal válido
         return P == "" or P.replace(".", "", 1).isdigit() and len(P) <= int(max_length)
 
-    def validate_text_input(self, P, max_length):
+    def validate_text_input(self, P, max_length, allow_spaces=True):
+        if allow_spaces:
+            return P == "" or (isinstance(P, str) and P.replace(" ", "").isalpha() and len(P) <= int(max_length))
+        else:
             return P == "" or (isinstance(P, str) and P.isalpha() and len(P) <= int(max_length))
+
 
 
 
