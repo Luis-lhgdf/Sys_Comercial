@@ -2,12 +2,14 @@ from tkinter import filedialog
 import mysql.connector
 from PIL import ImageDraw
 import base64
+import pkg_resources
 import binascii
 import io
 import ctypes
 from Icones import *
 from tkinter import ttk
 import pandas as pd
+import json
 
 
 class Pessoa:
@@ -162,12 +164,12 @@ class InterfaceGerenciarUsuarios:
 
 
         self.Bt_Todos = ctk.CTkButton(self.frame_resp, text="TODOS", image=EntradaIcon, text_color=("black","white"), 
-                                    width=80,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'))
+                                    width=80,)
         self.Bt_Todos.place(relx=0.7, rely=0.18, anchor="w")
 
 
         self.Bt_Pesquisar = ctk.CTkButton(self.frame_resp, image=VisualizarIcon, text_color=("black","white"), text="PESQUISAR",
-                                        width=80, fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=self.busca_rapida)
+                                        width=80,  command=self.busca_rapida)
         self.Bt_Pesquisar.place(relx=0.612, rely=0.18, anchor="w")
 
         self.Pesquisar = ctk.CTkEntry(self.frame_resp, placeholder_text="Digite o nome do usuario aqui:", width=550, height=40)
@@ -189,7 +191,7 @@ class InterfaceGerenciarUsuarios:
             self.status_label.append(ctk.CTkLabel(self.scrol, text=self.status[i], fg_color="white", anchor="w", width=100, corner_radius=6, text_color=("black")))
             self.status_label[i].grid(padx=2, pady=5, row=i, column=2)
     
-            self.editar_button.append(ctk.CTkButton(self.scrol, text="Editar", text_color=("black","white"), image=EditarIcon, width=60, fg_color=("transparent"), hover_color=("white", '#191919'), command=lambda i=i: self.editar_usuario(i)))
+            self.editar_button.append(ctk.CTkButton(self.scrol, text="Editar", text_color=("black","white"), image=EditarIcon, width=60, fg_color=("transparent"), command=lambda i=i: self.editar_usuario(i)))
             self.editar_button[i].grid(padx=60,pady=5, row=i, column=3)
 
     def buscar_usuarios(self):
@@ -326,14 +328,14 @@ class InterfaceGerenciarUsuarios:
 
 
         Bt_Salvar_modulo = ctk.CTkButton(self.frame_resp, text="Salvar",  image=SalvarIcon, text_color=("black","white"), 
-                                    width=100,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=lambda:salvar())
+                                    width=100, command=lambda:salvar())
         
         Bt_Salvar_modulo.place(relx=0.4, rely=0.8, anchor="w")
 
 
         Bt_Cancelar_modulo = ctk.CTkButton(self.frame_resp, text="Voltar",  image=
                                             VoltarIcon, text_color=("black","white"), 
-                                    width=100,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), anchor="w", command= lambda: cancelar())
+                                    width=100, anchor="w", command= lambda: cancelar())
         
         Bt_Cancelar_modulo.place(relx=0.3, rely=0.8, anchor="w")
 
@@ -499,16 +501,16 @@ class InterfaceGerenciarUsuarios:
 
         
         # Cria os botões Salvar e Cancelar
-        self.salvar_button[i] = ctk.CTkButton(self.scrol, text="Salvar", text_color=("black","white"), image=SalvarIcon, width=60,  fg_color=("transparent"), hover_color=("white", '#191919'), command=lambda:  self.salvar_usuario(i, usuario_entry, status_menu, acesso_menu))
+        self.salvar_button[i] = ctk.CTkButton(self.scrol, text="Salvar", text_color=("black","white"), image=SalvarIcon, width=60,  fg_color=("transparent"), command=lambda:  self.salvar_usuario(i, usuario_entry, status_menu, acesso_menu))
         self.salvar_button[i].grid(row=i, column=4)
         
-        self.cancelar_button[i] =ctk.CTkButton(self.scrol, text="Cancelar", text_color=("black","white"), image=VoltarIcon, width=60,  fg_color=("transparent"), hover_color=("white", '#191919'), command=lambda:  self.cancelar_usuario(i, usuario_entry, status_menu, acesso_menu))
+        self.cancelar_button[i] =ctk.CTkButton(self.scrol, text="Cancelar", text_color=("black","white"), image=VoltarIcon, width=60,  fg_color=("transparent"), command=lambda:  self.cancelar_usuario(i, usuario_entry, status_menu, acesso_menu))
         self.cancelar_button[i].grid(padx=5, row=i, column=5)
 
-        self.Editar_Modulos[i] =ctk.CTkButton(self.scrol, text="Modulos", text_color=("black","white"),image=EditarIcon, width=60,  fg_color=("transparent"), hover_color=("white", '#191919'), command=lambda:  self.modulos_usuario(i, usuario_entry, status_menu, acesso_menu))
+        self.Editar_Modulos[i] =ctk.CTkButton(self.scrol, text="Modulos", text_color=("black","white"),image=EditarIcon, width=60,  fg_color=("transparent"), command=lambda:  self.modulos_usuario(i, usuario_entry, status_menu, acesso_menu))
         self.Editar_Modulos[i].grid(padx=5, row=i, column=6)
 
-        self.excluir_button[i] =ctk.CTkButton(self.scrol, text="Deletar", text_color=("black","white"),image=DeletarIcon, width=60, fg_color=("transparent"), hover_color=("white", '#191919'), command=lambda:  self.excluir_usuario(i, usuario_entry, status_menu, acesso_menu))
+        self.excluir_button[i] =ctk.CTkButton(self.scrol, text="Deletar", text_color=("black","white"),image=DeletarIcon, width=60, fg_color=("transparent"), command=lambda:  self.excluir_usuario(i, usuario_entry, status_menu, acesso_menu))
         self.excluir_button[i].grid(padx=5, row=i, column=7)
         
         # Esconde os rótulos e o botão Editar
@@ -573,32 +575,32 @@ class InterfaceNovoCliente:
         self.Entry_Pesquisar.place(relx=0.2, rely=0.18, anchor="w")
 
         self.Bt_Todos = ctk.CTkButton(self.frame_resp, text="TODOS", image=EntradaIcon, text_color=("black","white"), 
-                                    width=80,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=self.todos)
+                                    width=80, command=self.todos)
         self.Bt_Todos.place(relx=0.7, rely=0.18, anchor="w")
 
         self.Bt_Pesquisar = ctk.CTkButton(self.frame_resp, image=VisualizarIcon, text_color=("black","white"), text="PESQUISAR",
-                                        width=80, fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=self.Pesquisar_Cliente)
+                                        width=80,  command=self.Pesquisar_Cliente)
         self.Bt_Pesquisar.place(relx=0.612, rely=0.18, anchor="w")
 
 
 
         self.Bt_EditarCliente = ctk.CTkButton(self.frame_resp, text="Editar", text_color=("black","white"), image=EditarIcon,  
-                                         width=40, fg_color=("transparent"), hover_color=("white", '#191919'), state="disabled", command=self.editar_Cliente)
+                                         width=40, fg_color=("transparent"), state="disabled", command=self.editar_Cliente)
         self.Bt_EditarCliente.place(x=320,y=250)
 
         self.Bt_ExcluirCliente = ctk.CTkButton(self.frame_resp, text="Excluir", text_color=("black","white"), image=DeletarIcon,  
-                                         width=40, fg_color=("transparent"), hover_color=("white", '#191919'), state="disabled", command=self.excluir)
+                                         width=40, fg_color=("transparent"), state="disabled", command=self.excluir)
         self.Bt_ExcluirCliente.place(x=420,y=250)
 
         self.Bt_Excel = ctk.CTkButton(self.frame_resp, text="Excel", text_color=("black","white"), image=ExcelIcon,  
-                                 width=40, fg_color=("transparent"), hover_color=("white", '#191919'), command=self.excel)
+                                 width=40, fg_color=("transparent"), command=self.excel)
         self.Bt_Excel.place(x=1020,y=250)
 
         self.Bt_NovoCLiente = ctk.CTkButton(self.frame_resp, text="NOVO",  image=AdicionarIcon, text_color=("black","white"), 
-                                    width=100,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), command=lambda: self.interface_create('CREATE'))       
+                                    width=100, command=lambda: self.interface_create('CREATE'))       
         self.Bt_NovoCLiente.place(relx=0.36, rely=0.85, anchor="w")
 
-        self.Bt_Sincronizar = ctk.CTkButton(self.frame_resp, text="",  image=sincronizar, text_color=("black","white"),fg_color=('transparent'), hover_color=("white", '#191919'), command=self.sincronizar_tabela)
+        self.Bt_Sincronizar = ctk.CTkButton(self.frame_resp, text="",  image=sincronizar, text_color=("black","white"),fg_color=('transparent'), command=self.sincronizar_tabela)
         self.Bt_Sincronizar.place(x=575,y=250)
 
         self.Menu_LimiteView = ctk.CTkOptionMenu(self.frame_resp,  height=37, width=80, font=(ctk.CTkFont(size=11, weight="bold")), values=['10','100','1000','10000'], command=self.Atualizar_limiteView)
@@ -878,14 +880,14 @@ class InterfaceNovoCliente:
 
         self.Bt_Voltar = ctk.CTkButton(self.frame_resp, text="Voltar",  image=
                                             VoltarIcon, text_color=("black","white"), 
-                                    width=100,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'), anchor="w", command= lambda: self.voltar('ocultar'))
+                                    width=100, anchor="w", command= lambda: self.voltar('ocultar'))
         
         self.Bt_Voltar.place(relx=0.3, rely=0.85, anchor="w")
 
 
 
         self.Bt_NovoCLiente = ctk.CTkButton(self.frame_resp, text="SALVAR",  image=SalvarIcon, text_color=("black","white"), 
-                                    width=100,fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'),  command= lambda: self.salvar(tipo))       
+                                    width=100,  command= lambda: self.salvar(tipo))       
         self.Bt_NovoCLiente.place(relx=0.4, rely=0.85, anchor="w")
 
         self.definir_cliente(resposta="PESSOA FISICA")
@@ -1050,12 +1052,16 @@ class InterfaceNovoUsuario:
         self.FrameModuloFinancasResp = None
         self.FrameModuloUsuarioResp = None
         self.FrameModuloConfiguracoesResp = None
-        self.cor_destaque = ("#FFD6D6", "gray17")
+
+        self.cor_destaque =  self.main_app.chave_customjson("CTkFrame","fg_color")
         self.listaBTS = []
 
         self.interface()
 
     def interface(self):
+
+        self.LabelTitulo =ctk.CTkLabel(self.frame_resp, text=f"NOVO USUARIO",fg_color="transparent", text_color=("black", "white"),  font=(ctk.CTkFont(size=14, weight="bold")), corner_radius=6)
+        self.LabelTitulo.place(x=1,y=1)
 
         Painel_NovoUsuario = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth)-270, height=90, border_width=3,
                                            fg_color="transparent",hover=False)
@@ -1088,7 +1094,7 @@ class InterfaceNovoUsuario:
 
         self.Bt_SalvarModulos = ctk.CTkButton(Painel_NovoUsuario, image=SalvarIcon, text_color=("black", "white"),
                                               text="Salvar Alterações",
-                                              width=80, fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'),
+                                              width=80, 
                                               command=self.SalvarGetSwitch)
         self.Bt_SalvarModulos.place(x=900, y=25)
 
@@ -1098,45 +1104,47 @@ class InterfaceNovoUsuario:
         PainelBotoes = ctk.CTkFrame(self.frame_resp, width=(self.main_app.screen_wedth)-270, height=50, corner_radius=0, fg_color="transparent")
         PainelBotoes.place(relx=0.02, rely=0.19)
 
+        hovercolor = self.cor_destaque
+
         self.BT_ModuloEstoque = ctk.CTkButton(PainelBotoes, image=EstoqueIcon, text="Estoque",
                                               text_color=("black", "white"), fg_color="transparent",
-                                              hover_color=("#FFD6D6", "gray17"), corner_radius=0, height=40, width=100,
+                                              hover_color=hovercolor, corner_radius=0, height=40, width=100,
                                               anchor="w", command=lambda: self.Modulo_Estoque(frame_resp=self.frame_resp))
         self.BT_ModuloEstoque.place(relx=0.0, rely=0.5, anchor="w", )
 
         self.BT_ModuloCadastro = ctk.CTkButton(PainelBotoes, image=CadastroIcon, text="Cadastro",
                                                text_color=("black", "white"), fg_color="transparent",
-                                               hover_color=("#FFD6D6", "gray17"), corner_radius=0, height=40, width=100,
+                                               hover_color=hovercolor, corner_radius=0, height=40, width=100,
                                                anchor="w", command=lambda: self.Modulo_Cadastro(frame_resp=self.frame_resp))
         self.BT_ModuloCadastro.place(relx=0.1, rely=0.5, anchor="w", )
 
         self.BT_ModuloAgenda = ctk.CTkButton(PainelBotoes, image=AgendaIcon, text="Agenda",
                                              text_color=("black", "white"), fg_color="transparent",
-                                             hover_color=("#FFD6D6", "gray17"), corner_radius=0, height=40, width=100,
+                                             hover_color=hovercolor, corner_radius=0, height=40, width=100,
                                              anchor="w", command=lambda: self.Modulo_Agenda(frame_resp=self.frame_resp))
         self.BT_ModuloAgenda.place(relx=0.2, rely=0.5, anchor="w", )
 
         self.BT_ModuloCarteira = ctk.CTkButton(PainelBotoes, image=carteiraIcon, text="Carteira",
                                                text_color=("black", "white"), fg_color="transparent",
-                                               hover_color=("#FFD6D6", "gray17"), corner_radius=0, height=40, width=100,
+                                               hover_color=hovercolor, corner_radius=0, height=40, width=100,
                                                anchor="w", command=lambda: self.Modulo_Carteira(frame_resp=self.frame_resp))
         self.BT_ModuloCarteira.place(relx=0.3, rely=0.5, anchor="w", )
 
         self.BT_ModuloFinancas = ctk.CTkButton(PainelBotoes, image=FinancasIcon, text="Finanças",
                                                text_color=("black", "white"), fg_color="transparent",
-                                               hover_color=("#FFD6D6", "gray17"), corner_radius=0, height=40, width=100,
+                                               hover_color=hovercolor, corner_radius=0, height=40, width=100,
                                                anchor="w", command=lambda: self.Modulo_Financas(frame_resp=self.frame_resp))
         self.BT_ModuloFinancas.place(relx=0.4, rely=0.5, anchor="w", )
 
         self.BT_ModuloUsuarios = ctk.CTkButton(PainelBotoes, image=UsuarioIcon, text="Usuarios",
                                                text_color=("black", "white"), fg_color="transparent",
-                                               hover_color=("#FFD6D6", "gray17"), corner_radius=0, height=40, width=100,
+                                               hover_color=hovercolor, corner_radius=0, height=40, width=100,
                                                anchor="w", command=lambda: self.Modulo_Usuario(frame_resp=self.frame_resp))
         self.BT_ModuloUsuarios.place(relx=0.5, rely=0.5, anchor="w", )
 
         self.BT_ModuloConfiguracoes = ctk.CTkButton(PainelBotoes, image=ConfiguracoesIcon, text="Configurações",
                                                     text_color=("black", "white"), fg_color="transparent",
-                                                    hover_color=("#FFD6D6", "gray17"), corner_radius=0, height=40,
+                                                    hover_color=hovercolor, corner_radius=0, height=40,
                                                     width=100, anchor="w",
                                                     command=lambda: self.Modulo_Configuracoes(frame_resp=self.frame_resp))
         self.BT_ModuloConfiguracoes.place(relx=0.6, rely=0.5, anchor="w", )
@@ -2012,12 +2020,7 @@ class InterfaceNovoUsuario:
         else:
             self.FrameModuloConfiguracoesResp.tkraise()
             self.main_app.destacar(self.listaBTS, botão=self.BT_ModuloConfiguracoes, cor=self.cor_destaque)
-    
-
-
-
-        print("em construção")
-
+      
 class InterfaceUsuario:
 
     def __init__(self, main_app, frame_resp, bt_perfil):
@@ -2040,7 +2043,7 @@ class InterfaceUsuario:
         Label_FtPerfil.place(x=10, y=5)
         bt = ctk.CTkButton(Painel_FtPerfil, image=ImagemIcon, text="Alterar", command=self.Trocar_img,
                            text_color=("black", "white"),
-                           width=80, fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'))
+                           width=80, )
         bt.place(x=10, y=50)
 
         Painel_Usuario = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth)-270, height=90, border_width=1,
@@ -2061,7 +2064,7 @@ class InterfaceUsuario:
         LabelAcesso.place(x=100, y=50)
 
         BtEditarUser = ctk.CTkButton(Painel_Usuario, image=EditarIcon2, text="Editar", text_color=("black", "white"),
-                                     width=80, fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'),
+                                     width=80, 
                                      command=self.Editar_Usuario)
         BtEditarUser.place(x=165, y=28)
 
@@ -2076,7 +2079,7 @@ class InterfaceUsuario:
 
 
         BtTrocarSenha = ctk.CTkButton(Painel_Senha, image=SenhaIcon, text="Alterar", text_color=("black", "white"),
-                                      width=80, fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'),
+                                      width=80, 
                                       command=self.Trocar_senha)
         BtTrocarSenha.place(x=10, y=50)
 
@@ -2091,7 +2094,7 @@ class InterfaceUsuario:
 
         BtExcluir = ctk.CTkButton(Painel_Excluir, image=DeletarIcon2, text="Excluir Conta",
                                   text_color=("black", "white"),
-                                  width=80, fg_color=("white", "gray10"), hover_color=("gray80", 'gray40'),
+                                  width=80, 
                                   command=self.Excluir_conta)
         BtExcluir.place(x=10, y=50)
 
@@ -2101,8 +2104,7 @@ class InterfaceUsuario:
         CarregarIMG(main_app=self.main_app).select_image(imagem, usuario=self.main_app.usuario_logado)
 
     def Editar_Usuario(self):
-        dialog = ctk.CTkInputDialog(text="DIGITE SEU NOVO NOME DE USUARIO:", title="Editar",
-                                    button_fg_color="#323232", button_hover_color='#191919')
+        dialog = ctk.CTkInputDialog(text="DIGITE SEU NOVO NOME DE USUARIO:", title="Editar")
         usuarioDigitado = dialog.get_input()
 
         if usuarioDigitado != None:
@@ -2208,11 +2210,11 @@ class InterfaceUsuario:
         resposta = ctk.CTkLabel(dialog, text="", height=2)
         resposta.place(relx=0.5, rely=0.81, anchor="center")
 
-        Okbt = ctk.CTkButton(dialog, text="SALVAR", fg_color="#323232", hover_color='#191919', command=salvar,
+        Okbt = ctk.CTkButton(dialog, text="SALVAR", command=salvar,
                                 state='disabled')
         Okbt.place(relx=0.25, rely=0.92, anchor="center")
 
-        CancelarBT = ctk.CTkButton(dialog, text="Fechar", fg_color="#323232", hover_color='#191919',
+        CancelarBT = ctk.CTkButton(dialog, text="Fechar",
                                     command=fechar)
         CancelarBT.place(relx=0.75, rely=0.92, anchor="center")
       
@@ -2239,13 +2241,37 @@ class InterfaceUsuario:
         msg = ctk.CTkLabel(dialog, text="DESEJA REALMENTE EXCLUIR SUA CONTA?", font=self.main_app.SubTitle)
         msg.place(relx=0.5, rely=0.1, anchor="center")
 
-        Okbt = ctk.CTkButton(dialog, text="EXCLUIR", fg_color="#323232", hover_color='#191919',
+        Okbt = ctk.CTkButton(dialog, text="EXCLUIR",
                                 command=conta_delete)
         Okbt.place(relx=0.25, rely=0.79, anchor="center")
 
-        CancelarBT = ctk.CTkButton(dialog, text="Fechar", fg_color="#323232", hover_color='#191919',
+        CancelarBT = ctk.CTkButton(dialog, text="Fechar",
                                     command=fechar)
         CancelarBT.place(relx=0.75, rely=0.79, anchor="center")
+
+class InterfaceConfiguracoes:
+
+    def __init__(self, main_app, frame_resp):
+
+        self.main_app = main_app
+        self.frame_resp = frame_resp
+        self.conexao = self.main_app.ConexaoPrincipal
+
+        self.interface()
+
+    def interface(self):
+
+
+        Painel_theme = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth)-270, height=90, border_width=1,
+                                        fg_color="transparent",hover=False)
+        Painel_theme.place(relx=0.02, rely=0.1, anchor="w")
+
+        Label_theme = ctk.CTkLabel(Painel_theme, text="Alterar tema", font=self.main_app.FontTitle, fg_color="transparent")
+        Label_theme.place(x=10, y=5)
+
+        mudarTheme = ctk.CTkOptionMenu(Painel_theme, font= self.main_app.FontBody, width=100,
+                                                        values=["blue", "green", "dark-blue", "personalizado"], command= self.main_app.theme)
+        mudarTheme.place(x=10, y=50)
 
 class CarregarIMG:
 
@@ -2383,26 +2409,26 @@ class MenuOpcoes:
         self.screen_wedth = self.rootHome.winfo_screenwidth()
 
         self.listaBTS = []
-
-        self.cor_destaque = ("white", "#880016")
-
-        
+  
+        self.cor_destaque =self.main_app.chave_customjson("CTkButton","hover_color")
 
         self.frame_MenuLateralEsq = ctk.CTkFrame(self.rootHome, width=176, height=self.screen_height, corner_radius=0)
         self.frame_MenuLateralEsq.grid(row=0, column=0)
 
 
-        self.frame_MenuLateralDir = ctk.CTkFrame(self.rootHome,width=37, height=self.screen_height, corner_radius=0,fg_color=self.cor_destaque)
+        self.frame_MenuLateralDir = ctk.CTkFrame(self.rootHome,width=37, height=self.screen_height, corner_radius=0, fg_color=self.cor_destaque)
         self.frame_MenuLateralDir.grid(row=0, column=1)
 
 
         self.frame_resposta = ctk.CTkFrame(self.rootHome, fg_color="transparent", width=self.screen_wedth, height=self.screen_height, corner_radius=0)
         self.frame_resposta.grid(row=0, column=2)
 
-
         self.BtOcultar = ctk.CTkButton(self.frame_MenuLateralDir, text="", image=MenuIcon, anchor="w", width=23, height=23,
-                                    fg_color="transparent", text_color=("black", "white"),
-                                    command=lambda:self.main_app.ocultar_Janela(self.frame_MenuLateralEsq))
+                            fg_color="transparent", text_color=("black", "white"),
+                            command=lambda:self.main_app.ocultar_Janela(self.frame_MenuLateralEsq))
+
+
+
 
         
 
@@ -2475,12 +2501,12 @@ class MenuOpcoes:
         
 
         self.LabelLogo = ctk.CTkLabel(self.frame_MenuLateralEsq, text="", image=SeuLogo2)
-        self.LabelLogo.place(x=-10, y=(self.screen_height - 300))
+        self.LabelLogo.place(x=0, y=(self.screen_height - 300))
 
 
         
         appearance_mode_optionemenu = ctk.CTkOptionMenu(self.frame_MenuLateralEsq, font=self.main_app.FontBody, width=150,
-                                                        height=30, values=["Dark", "light"], command=self.main_app.aparencia)
+                                                        height=30, values=["system", "light", "Dark"], command=self.main_app.aparencia)
         appearance_mode_optionemenu.place(x=10, y=(self.screen_height - 100))
         
         self.desativar_modulos()
@@ -2493,8 +2519,7 @@ class MenuOpcoes:
 
         self.main_app.destacar(lista=self.listaBTS, botão=self.BtHome, cor=self.cor_destaque)
 
-        texto = ctk.CTkLabel(self.frame_resposta, text="",image=img_apresentacao)
-        texto.place(x=1,y=1)
+
 
     def frame_estoque(self):
 
@@ -2504,18 +2529,18 @@ class MenuOpcoes:
         self.main_app.destacar(lista=self.listaBTS, botão=self.BtEstoque, cor=self.cor_destaque)
 
         self.BTEntrada = ctk.CTkButton(self.frame_MenuLateralDir, text="Entrada", image=EntradaIcon, anchor="w", width=155,
-                                    fg_color=("#FFD6D6", "gray17"), text_color=("black", "white"),
-                                    hover_color=("#ff9ea2", "black"))
+                                     text_color=("black", "white"),
+                                    )
         self.BTEntrada.place(x=10, y=120)
 
         self.BTSaida = ctk.CTkButton(self.frame_MenuLateralDir, text="Saida", image=SaidaIcon, anchor="w", width=155,
-                                    fg_color=("#FFD6D6", "gray17"), text_color=("black", "white"),
-                                    hover_color=("#ff9ea2", "black"))
+                                     text_color=("black", "white"),
+                                    )
         self.BTSaida.place(x=10, y=160)
 
         self.BTInventario = ctk.CTkButton(self.frame_MenuLateralDir, text="Inventario", image=InventarioIcon, anchor="w",
-                                        width=155, fg_color=("#FFD6D6", "gray17"), text_color=("black", "white"),
-                                        hover_color=("#ff9ea2", "black"))
+                                        width=155,  text_color=("black", "white"),
+                                        )
         self.BTInventario.place(x=10, y=200)
 
         self.desativar_submodulos(modulo='Estoque')
@@ -2527,28 +2552,28 @@ class MenuOpcoes:
         self.main_app.destacar(lista=self.listaBTS, botão=self.BtCadastros, cor=self.cor_destaque)
 
         self.BTCadastrarItens = ctk.CTkButton(self.frame_MenuLateralDir, text="Cadastrar Itens", image=EstoqueIcon,
-                                              anchor="w", width=155, fg_color=("#FFD6D6", "gray17"),
+                                              anchor="w", width=155, 
                                               text_color=("black", "white"),
-                                              hover_color=("#ff9ea2", "black"))
+                                              )
         self.BTCadastrarItens.place(x=10, y=160)
 
         self.BTCadastrarClientes = ctk.CTkButton(self.frame_MenuLateralDir, text="Cadastrar Clientes", image=CadastroIcon,
-                                                 anchor="w", width=155, fg_color=("#FFD6D6", "gray17"),
+                                                 anchor="w", width=155, 
                                                  text_color=("black", "white"),
-                                                 hover_color=("#ff9ea2", "black"),
+                                                 
                                                  command=lambda: self.frame_novocliente())
         self.BTCadastrarClientes.place(x=10, y=200)
 
         self.BTCriarNovoUsuario = ctk.CTkButton(self.frame_MenuLateralDir, text="Novo Usuario", image=UsuarioIcon,
-                                                anchor="w", width=155, fg_color=("#FFD6D6", "gray17"),
+                                                anchor="w", width=155, 
                                                 text_color=("black", "white"),
-                                                hover_color=("#ff9ea2", "black"), command=lambda: self.frame_novo_user())
+                                                 command=lambda: self.frame_novo_user())
         self.BTCriarNovoUsuario.place(x=10, y=240)
 
         self.BTGerenciarUsuario = ctk.CTkButton(self.frame_MenuLateralDir, text="Gerenciar Usuarios",
                                                 image=GerenciarUserIcon, anchor="w", width=155,
-                                                fg_color=("#FFD6D6", "gray17"), text_color=("black", "white"),
-                                                hover_color=("#ff9ea2", "black"),
+                                                 text_color=("black", "white"),
+                                                
                                                 command=lambda: self.frame_gerenciar_user())
         
         self.desativar_submodulos(modulo='Cadastro')
@@ -2604,15 +2629,15 @@ class MenuOpcoes:
 
 
         self.BTRegistrarVenda = ctk.CTkButton(self.frame_MenuLateralDir, text="Registrar Venda", image=VendasIcon,
-                                              anchor="w", width=155, fg_color=("#FFD6D6", "gray17"),
+                                              anchor="w", width=155, 
                                               text_color=("black", "white"),
-                                              hover_color=("#ff9ea2", "black"))
+                                              )
         self.BTRegistrarVenda.place(x=10, y=280)
 
         self.BTFaturamento = ctk.CTkButton(self.frame_MenuLateralDir, text="Faturamento", image=FaturamentoIcon,
-                                           anchor="w", width=155, fg_color=("#FFD6D6", "gray17"),
+                                           anchor="w", width=155, 
                                            text_color=("black", "white"),
-                                           hover_color=("#ff9ea2", "black"))
+                                           )
         self.BTFaturamento.place(x=10, y=320)
 
         self.desativar_submodulos(modulo='carteira')
@@ -2626,15 +2651,15 @@ class MenuOpcoes:
 
 
         self.BTRegistrarDespesas = ctk.CTkButton(self.frame_MenuLateralDir, text="Registrar Despesas", image=DespesaIcon,
-                                                 anchor="w", width=155, fg_color=("#FFD6D6", "gray17"),
+                                                 anchor="w", width=155, 
                                                  text_color=("black", "white"),
-                                                 hover_color=("#ff9ea2", "black"))
+                                                 )
         self.BTRegistrarDespesas.place(x=10, y=320)
 
         self.BTOutrasRendas = ctk.CTkButton(self.frame_MenuLateralDir, text="Outras Rendas +", image=ReceitaIcon,
-                                            anchor="w", width=155, fg_color=("#FFD6D6", "gray17"),
+                                            anchor="w", width=155, 
                                             text_color=("black", "white"),
-                                            hover_color=("#ff9ea2", "black"))
+                                            )
         self.BTOutrasRendas.place(x=10, y=360)
         self.desativar_submodulos(modulo='Finanças')
 
@@ -2658,6 +2683,8 @@ class MenuOpcoes:
         LabelTitulo = ctk.CTkLabel(self.frame_resposta, text=f"CONFIGURAÇÕES",fg_color="transparent", text_color=("black", "white"), 
                                    font=self.main_app.SubTitle, corner_radius=6)
         LabelTitulo.place(relx=0.001, rely=0.02, anchor="w")
+
+        self.main_app.exibir_configuracoes(self.frame_resposta)
 
     def desativar_modulos(self):
         estoque = 0
@@ -2826,13 +2853,15 @@ class TelaLogin:
         self.main_app = main_app
         self.Root_login.title("Login")
         self.Root_login.geometry(f"400x430")
+        # self.Root_login.resizable(False, False)
+
+
+        
 
         self.conexao = self.main_app.ConexaoPrincipal
+        planodefundo = ctk.CTkLabel(self.Root_login, text="",image=fundoLogin, width=400, height=450)
+        planodefundo.place(relx=0.5,rely=0.5, anchor="center")
 
-
-
-        LabelTxt = ctk.CTkLabel(self.Root_login, text="Bem Vindo", font= self.main_app.FontTitle)
-        LabelTxt.place(relx=0.5, rely=0.2, anchor="center")
 
         def mostrar_senha():
             if self.MostrarSenha.get():
@@ -2842,38 +2871,36 @@ class TelaLogin:
 
         def ativar_enter(Event):
             self.fazer_login()
-
-            # Aqui você pode adicionar a lógica que deseja executar quando a tecla Enter for pressionada
-            # Por exemplo, você pode chamar uma função de verificação de login ou qualquer outra ação desejada
             
 
-        self.LoginDigitado = ctk.CTkEntry(self.Root_login, placeholder_text="Digite seu login", width=200)
+        painel = ctk.CTkButton(self.Root_login, width=320, height=370,corner_radius=2, fg_color="#242A5F", bg_color="#242A5F", hover=False)
+        painel.place(relx=0.5, rely=0.5, anchor="center")
+
+
+        LabelTxt = ctk.CTkLabel(painel, text="",image=UsuarioIcon2, font= self.main_app.FontTitle, fg_color="transparent", bg_color="transparent")
+        LabelTxt.place(relx=0.5, rely=0.1, anchor="center")
+    
+        LabelTxt = ctk.CTkLabel(painel, text="Bem Vindo", font= self.main_app.FontTitle, fg_color="transparent", bg_color="transparent", text_color="white")
+        LabelTxt.place(relx=0.5, rely=0.17, anchor="center")
+
+        self.LoginDigitado = ctk.CTkEntry(painel, placeholder_text="Digite seu login", text_color="black",fg_color="white", width=200, border_color="white")
         self.LoginDigitado.place(relx=0.5, rely=0.3, anchor='center')
 
-        self.SenhaDigitado = ctk.CTkEntry(self.Root_login, placeholder_text="Digite sua senha", width=200, show="*")
+        self.SenhaDigitado = ctk.CTkEntry(painel, placeholder_text="Digite sua senha", text_color="black",fg_color="white", width=200, show="*", border_color="white")
         self.SenhaDigitado.place(relx=0.5, rely=0.4, anchor='center')
 
-        self.MostrarSenha = ctk.CTkCheckBox(self.Root_login, text="Mostrar senha", font= self.main_app.FontBody,
-                                            command=mostrar_senha)
+        self.MostrarSenha = ctk.CTkCheckBox(painel, text="Mostrar senha", font= self.main_app.FontBody,command=mostrar_senha, text_color="white",  border_color="white")
         self.MostrarSenha.place(relx=0.5, rely=0.5, anchor="center")
 
-        self.BtEntrar = ctk.CTkButton(self.Root_login, text="Entrar", command=self.fazer_login,
-                                      hover_color=("#880016", "#880016"),
-                                      text_color=("white", "white"))
+        self.BtEntrar = ctk.CTkButton(painel, text="Entrar", command=self.fazer_login, text_color="black", fg_color="white", hover_color=("gray90"))
         self.BtEntrar.place(relx=0.5, rely=0.6, anchor="center")
         self.BtEntrar.bind("<Return>", ativar_enter)
 
 
-        self.LabelLogo = ctk.CTkLabel(self.Root_login, text="", image=SeuLogo)
-        self.LabelLogo.place(relx=0.5, rely=0.8, anchor="center")
-
-        self.LabelTxt2 = ctk.CTkLabel(self.Root_login, text="Modo")
-        self.LabelTxt2.place(relx=0.15, rely=0.90, anchor="center")
 
 
-        self.appearance_mode_optionemenu = ctk.CTkOptionMenu(self.Root_login, font= self.main_app.FontBody, width=100, height=20,
-                                                        values=["Dark", "light"], command= self.main_app.aparencia)
-        self.appearance_mode_optionemenu.place(relx=0.15, rely=0.95, anchor="center")
+
+
 
     def fazer_login(self):
         self.usuario_logado = self.LoginDigitado.get()
@@ -2902,9 +2929,7 @@ class TelaLogin:
                 self.main_app.msgbox("Login", "Login ou senha incorretos, Tente novamente", 0)
 
 class MainApp:
-    ArqJson = r'liftam.JSON'
-    ctk.set_default_color_theme(ArqJson)
-
+    
     @staticmethod
     def _conectaBD(database, host, port, user, password):
 
@@ -2930,16 +2955,14 @@ class MainApp:
         self.screen_height = self.root.winfo_screenheight()
         self.screen_wedth = self.root.winfo_screenwidth()
 
+        self.themeAtual = 'blue'
+
         self.ModulosDoUsuario = None
 
         self.usuario_logado = None
 
         self.acesso_usuario = None
-        
-        # self.ArqJson = r'liftam.JSON'
-        # ctk.set_default_color_theme(self.ArqJson)
-
-
+    
         self.ConexaoPrincipal = MainApp._conectaBD(database='railway', host='containers-us-west-1.railway.app', 
                                                    port=5474, user='root', password="JThLpvacyDNwzFLPyLhX")
         
@@ -2952,6 +2975,7 @@ class MainApp:
     def login_sucesso(self):
         self.clear_screen()
         self.menu_lateral = MenuOpcoes(self.root, self)
+        # self.root.resizable(True, True)
         
     def clear_screen(self):
         for widget in self.root.winfo_children():
@@ -2980,6 +3004,32 @@ class MainApp:
     def exibir_usuario(self, frame_resposta, bt_perfil):
         self.Interface_Usuario = InterfaceUsuario(self, frame_resposta, bt_perfil)
 
+    def chave_customjson(self, chave, valor):
+
+        nome_do_pacote = "customtkinter"
+        caminho_relativo = f"assets/themes/{self.themeAtual}.json"
+
+        caminho_custom = pkg_resources.resource_filename(nome_do_pacote, caminho_relativo)
+
+        caminho_temas = os.path.join(os.path.dirname(os.path.realpath(__file__)), "temas/personalizado.JSON") 
+
+
+        try:
+
+            with open(caminho_custom) as arquivo_json:
+                data = json.load(arquivo_json)  # Carregue o conteúdo do arquivo JSON
+        except:
+
+            with open(caminho_temas) as arquivo_json:
+                data = json.load(arquivo_json) 
+
+        
+        info = data[f"{chave}"][f"{valor}"]
+        return info
+
+    def exibir_configuracoes(self, frame_resposta):
+        self.Interface_Configuracoes = InterfaceConfiguracoes(self, frame_resposta)
+
     def exibir_estoque(self):
         self.clear_screen()
         self.interface_estoque = InterfaceEstoque(self.root)
@@ -2998,6 +3048,16 @@ class MainApp:
     def aparencia(self, new_appearance_mode: str):
         # função que altera o modo de aparencia da janela entre ligth e dark
         ctk.set_appearance_mode(new_appearance_mode)
+
+    def theme(self, new_appearance_mode: str):
+        # função que altera o modo de aparencia da janela entre ligth e dark
+        if new_appearance_mode.lower() == "personalizado":
+            ctk.set_default_color_theme(os.path.join(os.path.dirname(os.path.realpath(__file__)), "temas/personalizado.JSON"))
+        else:
+            ctk.set_default_color_theme(new_appearance_mode)
+
+        self.themeAtual = str(new_appearance_mode)
+        self.login_sucesso()
 
     def change_scaling_event(self, new_scaling: str):
         try:
@@ -3032,7 +3092,6 @@ class MainApp:
             return P == "" or (isinstance(P, str) and P.replace(" ", "").isalpha() and len(P) <= int(max_length))
         else:
             return P == "" or (isinstance(P, str) and P.isalpha() and len(P) <= int(max_length))
-
 
 
 

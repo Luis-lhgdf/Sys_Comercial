@@ -29,12 +29,8 @@ EntradaIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "entr
                             dark_image=Image.open(os.path.join(image_path, "entrada_light.png")), size=(17, 17))
 
 
-SeuLogo = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "logo1.png")),
-                    dark_image=Image.open(os.path.join(image_path, "logo1.png")), size=(100, 100))
-
-
 SeuLogo2 = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "logo2.png")),
-                    dark_image=Image.open(os.path.join(image_path, "logo2.png")), size=(200, 200))
+                    dark_image=Image.open(os.path.join(image_path, "logo2.png")), size=(170, 170))
 
 
 EstoqueIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "estoque_black.png")),
@@ -54,6 +50,11 @@ carteiraIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "car
 
 UsuarioIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "usuario_black.png")),
                     dark_image=Image.open(os.path.join(image_path, "usuario_light.png")), size=(17, 17))
+
+
+
+UsuarioIcon2 = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "usuario_light.png")),
+                    dark_image=Image.open(os.path.join(image_path, "usuario_light.png")), size=(50, 50))
 
 
 ConfiguracoesIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "configuracoes_black.png")),
@@ -149,3 +150,8 @@ SenhaIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "senha_
 
 perfilIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "perfil.png")),
             dark_image=Image.open(os.path.join(image_path, "perfil.png")), size=(80, 80))
+
+
+
+fundoLogin = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "fundologin.jpg")),
+            dark_image=Image.open(os.path.join(image_path, "fundologin.jpg")),  size=(400, 450))
