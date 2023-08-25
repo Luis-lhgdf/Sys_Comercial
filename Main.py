@@ -226,7 +226,7 @@ class InterfaceGerenciarUsuarios:
                 
     def modulos_usuario(self, indice, usuario_entry, status_menu, acesso_menu):
         
-        self.cursor.execute(f"select * from modulos where usuario = '{usuario_entry.get()}'")
+        self.cursor.execute(f"select * from Modulos where usuario = '{usuario_entry.get()}'")
 
         self.indice_usuario = indice
         self.ModulosDoUsuario = self.cursor.fetchall()
@@ -295,7 +295,7 @@ class InterfaceGerenciarUsuarios:
                     editar = editar_menu_modulo[pos].get()
                     remover =  remover_menu_modulo[pos].get()
                     
-                    self.cursor.execute(f'''UPDATE modulos SET 
+                    self.cursor.execute(f'''UPDATE Modulos SET 
                                     visualizar = "{visualizar}", 
                                     novo = "{novo}", 
                                     editar = "{editar}", 
@@ -414,7 +414,7 @@ class InterfaceGerenciarUsuarios:
 
             self.cursor.execute(f"delete from Usuarios where binary usuario ='{self.usuarios[i]}' ")
 
-            self.cursor.execute(f"delete from modulos where binary usuario ='{self.usuarios[i]}' ")
+            self.cursor.execute(f"delete from Modulos where binary usuario ='{self.usuarios[i]}' ")
 
             self.main_app.ConexaoPrincipal.commit()
             self.usuarios.pop(i)
@@ -518,24 +518,35 @@ class InterfaceGerenciarUsuarios:
         self.status_label[i].grid_remove()
         self.acesso_label[i].grid_remove()
         
-class InterfaceNovoCliente: 
-
-    def __init__(self, main_app, frame_resp):
+class ModeloCadastro:
+    def __init__(self, main_app, frame_resp, tabela_bd: str, titulo_janela: str, placeholder_text_pesquisar: str, colunas_consulta: list,
+                  func_interface, func_editar):
+        
         self.main_app = main_app
         self.frame_resp = frame_resp
+        self.tabela_bd = tabela_bd
+        self.titulo_janela = titulo_janela
+        self.colunas_consulta = colunas_consulta
+        self.placeholder_text_pesquisar = placeholder_text_pesquisar
+        self.func_interface = func_interface
+        self.func_editar = func_editar
+   
+        
         self.cursor =  self.main_app.ConexaoPrincipal.cursor()
         self.limite_view = 10
-        self.ListaClientes = None
-        self.totalClientes = 0
-        self.Cliente_select = None
-        self.Cliente_select_list = None
-        
 
-        self.LabelTitulo =ctk.CTkLabel(self.frame_resp, text=f"CLIENTES",fg_color="transparent", text_color=("black", "white"),  font=(ctk.CTkFont(size=14, weight="bold")), corner_radius=6)
+        self.column_names = None
+        self.lista_valores = None
+        self.total_valores = 0
+        
+        self.valor_unico_selecionado = None
+        self.valor_lista_selecionado = None
+
+        self.LabelTitulo =ctk.CTkLabel(self.frame_resp, text=f"{str(titulo_janela).upper()}",fg_color="transparent", text_color=("black", "white"),  font=(ctk.CTkFont(size=14, weight="bold")), corner_radius=6)
         self.LabelTitulo.place(x=1,y=1)
 
         self.interface_tabela()
-    
+
     def acao_widget(self, acao):
         if acao == 'ocultar':
             for widget in self.frame_resp.winfo_children():
@@ -544,21 +555,21 @@ class InterfaceNovoCliente:
         if acao == 'reexibir':
             for widget in self.frame_resp.winfo_children():
                 if widget != self.LabelTitulo:
-                    widget.place(x=widget.winfo_x(), y=widget.winfo_y())
-                
-    def interface_tabela(self): 
-        
+                    widget.place(x=widget.winfo_x(), y=widget.winfo_y())             
 
+    def interface_tabela(self):
 
-        frame = ctk.CTkFrame(self.frame_resp, width=(self.main_app.screen_wedth)-270, height=305, corner_radius=0)
-        frame.place(x=25, y=300)
+        frame_treeview = ctk.CTkFrame(self.frame_resp, width=(self.main_app.screen_wedth)-270, height=305, corner_radius=0)
+        frame_treeview.place(x=25, y=300)
 
-        self.tree = ttk.Treeview(frame, show="headings")
+        self.tree = ttk.Treeview(frame_treeview, show="headings")
         self.tree.place(x=0, y=0, width=(self.main_app.screen_wedth)-270, height=390)  # Adjust width and height as needed
+        self.tree.bind("<<TreeviewSelect>>", self.click_select)
 
-        self.scroll_x = ttk.Scrollbar(frame, orient="horizontal", command=self.tree.xview)
+        self.scroll_x = ttk.Scrollbar(frame_treeview, orient="horizontal", command=self.tree.xview)
         self.tree.configure(xscrollcommand=self.scroll_x.set)
         self.scroll_x.place(x=0, y=290, width=(self.main_app.screen_wedth)-270, height=15) 
+
 
         self.LabelPesquisar = ctk.CTkLabel(self.frame_resp, text="Busca rapida", fg_color="transparent",font=(ctk.CTkFont(size=14, weight="bold")))
         self.LabelPesquisar.place(relx=0.36, rely=0.13, anchor="w")
@@ -567,78 +578,107 @@ class InterfaceNovoCliente:
         self.Label_Select = ctk.CTkLabel(self.frame_resp, text=f"SELECIONADO: ", height=37, width=250, fg_color="white", text_color="black", 
                                          font=(ctk.CTkFont(size=12, weight="bold")), corner_radius=6, anchor="w")
         self.Label_Select.place(x=50,y=250)
-        self.Label_LimiteView = ctk.CTkLabel(self.frame_resp,  height=37, text=f"01 A {self.limite_view} DE {self.totalClientes}", 
+
+
+        self.Label_LimiteView = ctk.CTkLabel(self.frame_resp,  height=37, text=f"01 A {self.limite_view} DE {self.total_valores}", 
                                         font=(ctk.CTkFont(size=12, weight="bold")), anchor="w")
         self.Label_LimiteView.place(x=820,y=255)
 
-        self.Entry_Pesquisar = ctk.CTkEntry(self.frame_resp, placeholder_text="Pesquise por ID, CNPJ, CPF, ou razão social:", width=550, height=40)
+
+        self.Entry_Pesquisar = ctk.CTkEntry(self.frame_resp, placeholder_text=f"{self.placeholder_text_pesquisar}", width=550, height=40)
         self.Entry_Pesquisar.place(relx=0.2, rely=0.18, anchor="w")
+
+
 
         self.Bt_Todos = ctk.CTkButton(self.frame_resp, text="TODOS", image=EntradaIcon, text_color=("black","white"), 
                                     width=80, command=self.todos)
         self.Bt_Todos.place(relx=0.7, rely=0.18, anchor="w")
 
+
         self.Bt_Pesquisar = ctk.CTkButton(self.frame_resp, image=VisualizarIcon, text_color=("black","white"), text="PESQUISAR",
-                                        width=80,  command=self.Pesquisar_Cliente)
+                                        width=80,  command=lambda: self.pesquisar(self.tabela_bd))
         self.Bt_Pesquisar.place(relx=0.612, rely=0.18, anchor="w")
 
 
+        self.Bt_Editar = ctk.CTkButton(self.frame_resp, text="Editar", text_color=("black","white"), image=EditarIcon,  
+                                         width=40, fg_color=("transparent"), state="disabled", command=self.func_editar)
+        self.Bt_Editar.place(x=320,y=250)
 
-        self.Bt_EditarCliente = ctk.CTkButton(self.frame_resp, text="Editar", text_color=("black","white"), image=EditarIcon,  
-                                         width=40, fg_color=("transparent"), state="disabled", command=self.editar_Cliente)
-        self.Bt_EditarCliente.place(x=320,y=250)
 
-        self.Bt_ExcluirCliente = ctk.CTkButton(self.frame_resp, text="Excluir", text_color=("black","white"), image=DeletarIcon,  
+        self.Bt_Excluir = ctk.CTkButton(self.frame_resp, text="Excluir", text_color=("black","white"), image=DeletarIcon,  
                                          width=40, fg_color=("transparent"), state="disabled", command=self.excluir)
-        self.Bt_ExcluirCliente.place(x=420,y=250)
+        self.Bt_Excluir.place(x=420,y=250)
+        
 
         self.Bt_Excel = ctk.CTkButton(self.frame_resp, text="Excel", text_color=("black","white"), image=ExcelIcon,  
                                  width=40, fg_color=("transparent"), command=self.excel)
         self.Bt_Excel.place(x=1020,y=250)
 
-        self.Bt_NovoCLiente = ctk.CTkButton(self.frame_resp, text="NOVO",  image=AdicionarIcon, text_color=("black","white"), 
-                                    width=100, command=lambda: self.interface_create('CREATE'))       
-        self.Bt_NovoCLiente.place(relx=0.36, rely=0.85, anchor="w")
 
-        self.Bt_Sincronizar = ctk.CTkButton(self.frame_resp, text="",  image=sincronizar, text_color=("black","white"),fg_color=('transparent'), command=self.sincronizar_tabela)
+        self.Bt_Novo = ctk.CTkButton(self.frame_resp, text="NOVO",  image=AdicionarIcon, text_color=("black","white"), 
+                                    width=100, command=lambda: self.interface_create('CREATE'))       
+        self.Bt_Novo.place(relx=0.36, rely=0.85, anchor="w")
+
+
+        self.Bt_Sincronizar = ctk.CTkButton(self.frame_resp, text="",  image=sincronizar, text_color=("black","white"),fg_color=('transparent'), 
+                                            command=self.sincronizar_tabela)
         self.Bt_Sincronizar.place(x=575,y=250)
+
 
         self.Menu_LimiteView = ctk.CTkOptionMenu(self.frame_resp,  height=37, width=80, font=(ctk.CTkFont(size=11, weight="bold")), values=['10','100','1000','10000'], command=self.Atualizar_limiteView)
         self.Menu_LimiteView.place(x=920,y=250)
 
+
    
         style = ttk.Style()
-        # style.theme_use("clam")
         style.configure('Treeview.Heading', background="white")
         style.configure("Treeview.Heading", font=('Roboto', 11, "bold"))
         style.configure('Treeview', font=('Roboto', 11))
         style.map("Treeview", background=[('selected', 'gray90')], foreground=[('selected', 'black')])  
-        self.tree.bind("<<TreeviewSelect>>", self.click_select)
-
+        
     def sincronizar_tabela(self, attlimite=True):
         self.Bt_Sincronizar.destroy()
-        self.cursor.execute("SELECT * FROM Clientes limit 10")
 
-        self.ListaClientes = self.cursor.fetchall()
+        self.cursor.execute(f"SELECT * FROM {self.tabela_bd} limit 10")
+
+        self.lista_valores = self.cursor.fetchall()
         self.column_names = self.cursor.column_names
         
 
-        self.cursor.execute("SELECT COUNT(*) AS total_linhas FROM Clientes ")
-        self.totalClientes = int((self.cursor.fetchone()[0]))
+        self.cursor.execute(f"SELECT COUNT(*) AS total_linhas FROM {self.tabela_bd} ")
 
+        self.total_valores = int((self.cursor.fetchone()[0]))
+  
         self.tree.configure(columns=([f'coluna{c}' for c in range(1,len(self.column_names)+1)]))
+
         if attlimite:
             self.Atualizar_limiteView(10)
 
+    def Atualizar_limiteView(self, novo_limite):
+        try:
+            self.tree.delete(*self.tree.get_children())  # exclui todos os itens de uma treeview
+        except:
+            pass
+
+        self.cursor.execute(f"SELECT * FROM {self.tabela_bd} limit {int(novo_limite)}")
+        self.lista_valores = self.cursor.fetchall()
+
+
+        self.Label_LimiteView.configure(text=f"01 A {novo_limite if int(novo_limite) < self.total_valores else self.total_valores} DE {self.total_valores}")
+        self.limite_view = int(novo_limite)
+
+        self.Reexibir_treeview(self.lista_valores)
+
     def Reexibir_treeview(self, lista):
-        self.tree.column("coluna1", width=50)
-        self.tree.column("coluna10", width=50)
-        self.tree.column("coluna14", width=50)
+        try:
+            self.tree.column("coluna1", width=50)
+            self.tree.column("coluna10", width=50)
+            self.tree.column("coluna14", width=50)
+        except:
+            pass
 
-
-       
-        for cliente in lista:
-            self.tree.insert("", "end", values=cliente)
+        for valor in lista:
+            self.tree.insert("", "end", values=valor)
             self.tree.tag_configure("center", anchor="center")
 
       
@@ -648,21 +688,6 @@ class InterfaceNovoCliente:
             self.tree.heading(coluna, text=f"{nome}")
 
             self.tree.column(coluna, stretch=False)
-
-    def Atualizar_limiteView(self, novo_limite):
-        try:
-            self.tree.delete(*self.tree.get_children())
-        except:
-            pass
-
-        self.cursor.execute(f"SELECT * FROM Clientes limit {int(novo_limite)}")
-        self.ListaClientes = self.cursor.fetchall()
-
-
-        self.Label_LimiteView.configure(text=f"01 A {novo_limite if int(novo_limite) < self.totalClientes else self.totalClientes} DE {self.totalClientes}")
-        self.limite_view = int(novo_limite)
-
-        self.Reexibir_treeview(self.ListaClientes)
   
     def click_select(self, event):
         selected_item = self.tree.selection()
@@ -670,15 +695,15 @@ class InterfaceNovoCliente:
         if selected_item:
             if len(selected_item) ==1:
                 unico = self.tree.item(selected_item, "values")
-                self.Cliente_select = unico
+                self.valor_unico_selecionado = unico
                 self.Label_Select.configure(text=f"SELECIONADO: {unico[6][0:20]}")
-                self.Bt_EditarCliente.configure(state="normal")
-                self.Bt_ExcluirCliente.configure(state="normal")
+                self.Bt_Editar.configure(state="normal")
+                self.Bt_Excluir.configure(state="normal")
 
                               
             else:
-                self.Bt_EditarCliente.configure(state="disabled")
-                self.Bt_ExcluirCliente.configure(state="normal")
+                self.Bt_Editar.configure(state="disabled")
+                self.Bt_Excluir.configure(state="normal")
                 
                 for item_id in selected_item:
                     valor = self.tree.item(item_id, "values")
@@ -686,7 +711,7 @@ class InterfaceNovoCliente:
                     
                     self.Label_Select.configure(text=f"SELECIONADO: {len(selected_item)}")
 
-                self.Cliente_select_list = lista
+                self.valor_lista_selecionado = lista
           
     def todos(self):
         info_digitada = str(self.Entry_Pesquisar.get())
@@ -695,10 +720,274 @@ class InterfaceNovoCliente:
                 self.tree.delete(*self.tree.get_children())      
             except:
                 pass
-            self.Reexibir_treeview(self.ListaClientes)
+            self.Reexibir_treeview(self.lista_valores)
             
+    def pesquisar(self, colunas_consulta):
+        info_digitada = self.Entry_Pesquisar.get()
+        if info_digitada:
+
+            query = "SELECT " + ", ".join(colunas_consulta) + f" FROM {self.tabela_bd} WHERE " + " OR ".join([f"{col} LIKE %s" for col in colunas_consulta])
+            parametros = ['%' + info_digitada + '%' for _ in colunas_consulta]
+
+            self.cursor.execute(query, parametros)
+            lista = self.cursor.fetchall()
+
+            self.tree.delete(*self.tree.get_children())
+            self.reexibir_treeview(lista=lista)
+            
+    def voltar(self, opcao):
+        
+        self.acao_widget(acao=opcao)
+        self.interface_tabela()
+        self.LabelTitulo.configure(text=(f'{self.titulo_janela}'))
+        
+    def excel(self):
+        resp = self.main_app.msgbox("Excel", "Deseja exportar todos os registros?",4)
+
+
+        def destino(df):
+            folder_path = filedialog.asksaveasfilename(defaultextension='.xlsx')
+        
+            if folder_path:
+                # Definir o nome do arquivo
+                file_path = folder_path
+                
+                # Verificar se a extensão .xlsx foi adicionada
+                if not file_path.endswith('.xlsx'):
+                    file_path += '.xlsx'
+                    
+                df.to_excel(file_path, index=False)
+                self.main_app.msgbox("Excel", "Arquivo salvo com sucesso",0)
+                
+
+
+        if resp ==6 :
+           print("esta vazio, puxando valores no banco de dados")
+           if self.lista_valores == None:
+            self.cursor.execute("SELECT * FROM Clientes")
+            self.lista_valores = self.cursor.fetchall()
+            self.column_names = self.cursor.column_names
+            df = pd.DataFrame(self.lista_valores, columns=self.column_names)    
+            destino(df=df)
+
+           else:
+                print("NAO ESTA VAZIA")
+                df = pd.DataFrame(self.lista_valores, columns=self.column_names)    
+                destino(df=df)
+
+    def excluir(self):
+        resp = self.main_app.msgbox("EXCLUIR", "Tem certeza que deseja excluir este cliente?", 4)
+        if resp == 6:
+            lista = self.lista_valores
+            for valor in lista:
+                id_valor = int(valor[0])
+                
+                query = f"DELETE FROM {self.tabela_bd} WHERE id = {id_valor}"
+                self.cursor.execute(query)
+                self.main_app.ConexaoPrincipal.commit()
+            self.main_app.msgbox("EXCLUIR", "Valor excluído com sucesso!", 0)
+            self.sincronizar_tabela(attlimite=False)
+            self.Atualizar_limiteView(self.limite_view)
+           
+class InterfaceNovoItem(ModeloCadastro): 
+
+    def __init__(self, main_app, frame_resp):
+        self.main_app = main_app
+        self.frame_resp = frame_resp
+        self.cursor =  self.main_app.ConexaoPrincipal.cursor()
+        self.placehold = 'Pesquise por Id, Descrição, Marca, Categoria ou Fornecedor'
+        self.colunas_bd = ['Id', 'descricao_produto', 'marca', 'categoria' 'fornecedor']
+        
+        super().__init__(main_app = self.main_app, frame_resp=self.frame_resp, tabela_bd="Produtos", 
+                         titulo_janela="PRODUTOS", placeholder_text_pesquisar=self.placehold, colunas_consulta=self.colunas_bd,
+                         func_interface=self.interface_create, func_editar=self.editar_produto)
+        
+ 
+    def editar_produto(self):
+        lista = self.valor_unico_selecionado
+
+        self.interface_create('UPDATE')
+
+
+    def interface_create(self, tipo=str):
+        # Esconder os widgets em vez de destruí-los
+
+
+        # descricao_produto, unidade_medida, valor_unitario, marca, categoria, Peso, fornecedor, info_adicionais
+
+
+        self.acao_widget('ocultar')
+
+        
+        self.LabelTitulo.configure(text=('CADASTRAR PRODUTO' if tipo.upper() == "CREATE"
+                                    else 'EDITAR PRODUTO' if tipo.upper() == "UPDATE"
+                                    else ''))
+        
+
+
+        self.label_descricao_produto = ctk.CTkLabel(self.frame_resp, text='Descrição do Produto:', font=(None, 12, "bold"))
+        self.label_descricao_produto.place(x=50, y=50, anchor="w")
+        self.entry_descricao_produto = ctk.CTkEntry(self.frame_resp, width=300)
+        self.entry_descricao_produto.place(x=50, y=80, anchor="w")
+
+
+
+        self.label_unidade_medida = ctk.CTkLabel(self.frame_resp, text='Unidade de Medida:', font=(None, 12, "bold"))
+        self.label_unidade_medida.place(x=400, y=50, anchor="w")
+
+        self.entry_unidade_medida = ctk.CTkEntry(self.frame_resp,  width=150)
+        self.entry_unidade_medida.place(x=400, y=80, anchor="w")
+
+
+
+        self.label_valor_unitario = ctk.CTkLabel(self.frame_resp, text='Valor Unitário:', font=(None, 12, "bold"))
+        self.label_valor_unitario.place(x=600, y=50, anchor="w")
+        self.entry_valor_unitario = ctk.CTkEntry(self.frame_resp, width=100)
+        self.entry_valor_unitario.place(x=600, y=80, anchor="w")
+
+
+
+        self.label_marca = ctk.CTkLabel(self.frame_resp, text='Marca:', font=(None, 12, "bold"))
+        self.label_marca.place(x=750, y=50, anchor="w")
+        self.entry_marca = ctk.CTkEntry(self.frame_resp, width=150)
+        self.entry_marca.place(x=750, y=80, anchor="w")
+
+
+        self.label_categoria = ctk.CTkLabel(self.frame_resp, text='Categoria:', font=(None, 12, "bold"))
+        self.label_categoria.place(x=50, y=120, anchor="w")
+        self.entry_categoria = ctk.CTkEntry(self.frame_resp, width=200)
+        self.entry_categoria.place(x=50, y=150, anchor="w")
+
+        self.label_peso = ctk.CTkLabel(self.frame_resp, text='Peso:', font=(None, 12, "bold"))
+        self.label_peso.place(x=300, y=120, anchor="w")
+        self.entry_peso = ctk.CTkEntry(self.frame_resp, width=100)
+        self.entry_peso.place(x=300, y=150, anchor="w")
+
+        self.label_fornecedor = ctk.CTkLabel(self.frame_resp, text='Fornecedor:', font=(None, 12, "bold"))
+        self.label_fornecedor.place(x=450, y=120, anchor="w")
+        self.entry_fornecedor = ctk.CTkEntry(self.frame_resp, width=250, validate="key", validatecommand=(self.main_app.validade_cmd_text, "%P", 500))
+        self.entry_fornecedor.place(x=450, y=150, anchor="w")
+
+
+        self.label_info_adicionais = ctk.CTkLabel(self.frame_resp, text='Informações Adicionais:', font=(None, 12, "bold"))
+        self.label_info_adicionais.place(x=50, y=190, anchor="w")
+        self.entry_info_adicionais = ctk.CTkTextbox(self.frame_resp, width=(self.main_app.screen_wedth)-310, height=100) 
+        self.entry_info_adicionais.place(x=50, y=220)
+
+
+
+        self.Bt_Voltar = ctk.CTkButton(self.frame_resp, text="Voltar",  image=
+                                            VoltarIcon, text_color=("black","white"), 
+                                    width=100, anchor="w", command= lambda: self.voltar('ocultar'))
+        
+        self.Bt_Voltar.place(relx=0.3, rely=0.85, anchor="w")
+
+
+
+        self.Bt_NovoCLiente = ctk.CTkButton(self.frame_resp, text="SALVAR",  image=SalvarIcon, text_color=("black","white"), 
+                                    width=100,  command= lambda: self.salvar_produto(tipo))       
+        self.Bt_NovoCLiente.place(relx=0.4, rely=0.85, anchor="w")
+
+
+
+    def salvar_produto(self, tipo):
+        resp = self.main_app.msgbox("SALVAR", "Deseja salvar todas as informações passadas?", 4)
+        if resp == 6:
+
+            # descricao_produto, unidade_medida, valor_unitario, marca, categoria, Peso, fornecedor, info_adicionais"
+
+            # pegue o valor de cada entry
+            descricao_produto = self.entry_descricao_produto.get()
+            unidade_medida = self.entry_unidade_medida.get()
+            valor_unitario = self.entry_valor_unitario.get()
+            marca = self.entry_marca.get()
+            categoria = self.entry_categoria.get()
+            peso = self.entry_peso.get()
+            fornecedor = self.entry_fornecedor.get()
+            info_adicionais = self.entry_info_adicionais.get("0.0", "end")
+
+
+            # Verifica se os campos obrigatórios estão preenchidos
+
+            if not descricao_produto or not unidade_medida or not valor_unitario:
+                #edite a cor para vermelho das entry
+                self.entry_descricao_produto.configure(border_color="red")
+                self.entry_unidade_medida.configure(border_color="red")
+                self.entry_valor_unitario.configure(border_color="red")
+
+                self.main_app.msgbox("Campos obrigatórios não preenchidos", "Por favor, preencha todos os campos obrigatórios antes de salvar.", 0)
+
+                return
+
+
+            if tipo == 'CREATE':
+
+                # descricao_produto, unidade_medida, valor_unitario, marca, categoria, Peso, fornecedor, info_adicionais"
+
+                query = """INSERT INTO Produtos (descricao_produto, unidade_medida, valor_unitario, marca, categoria, Peso, fornecedor, info_adicionais)
+                        VALUES (%s, %s, %s, %s,%s, %s, %s, %s) """
+                values = (descricao_produto, unidade_medida, valor_unitario, marca, categoria, peso, fornecedor, info_adicionais)
+            
+            elif tipo == 'UPDATE':
+
+                lista = self.valor_unico_selecionado
+                id_produto = lista[0]
+                # You need to implement this method to get the selected client's ID
+                query = """UPDATE Produtos SET descricao_produto = %s, unidade_medida = %s, valor_unitario = %s, marca = %s, categoria = %s, fornecedor = %s, info_adicionais = %s WHERE id = %s"""
+                values =(descricao_produto, unidade_medida, valor_unitario, marca, categoria, peso, fornecedor, info_adicionais, id_produto)
+
+
+
+
+                self.cursor.execute(query, values)
+
+                self.main_app.ConexaoPrincipal.commit()
+
+                self.entry_descricao_produto.configure(border_color=("#979DA2", "#565B5E"))
+                self.entry_unidade_medida.configure(border_color=("#979DA2", "#565B5E"))
+                self.entry_valor_unitario.configure(border_color=("#979DA2", "#565B5E"))
+
+
+            self.cursor.execute(query, values)
+            # Commit the changes to the database
+            self.main_app.ConexaoPrincipal.commit()
+
+
+            
+            if tipo == 'CREATE':
+                self.main_app.msgbox("NOVO PRODUTO", "Novo Produto adicionado com sucesso!", 0)
+            elif tipo == 'UPDATE':
+                self.main_app.msgbox("ATUALIZAR", "Informações do Produto atualizadas com sucesso!", 0)
+
+
+            self.entry_descricao_produto.delete(0,ctk.END)
+            self.entry_unidade_medida.delete(0,ctk.END)
+            self.entry_valor_unitario.delete(0,ctk.END)
+            self.entry_marca.delete(0,ctk.END)
+            self.entry_categoria.delete(0,ctk.END)
+            self.entry_peso.delete(0,ctk.END)
+            self.entry_fornecedor.delete(0,ctk.END)
+            self.entry_info_adicionais.delete("0.0", "end")
+                
+
+
+        
+class InterfaceNovoCliente(ModeloCadastro): 
+
+    def __init__(self, main_app, frame_resp):
+        self.main_app = main_app
+        self.frame_resp = frame_resp
+        self.cursor =  self.main_app.ConexaoPrincipal.cursor()
+        self.placehold = 'Pesquise por ID, CNPJ, CPF, nome ou razão social'
+        self.colunas_bd = ['razao_social', 'cpf', 'cnpj', 'id' 'nome']
+
+        super().__init__(main_app = self.main_app, frame_resp=self.frame_resp, tabela_bd="Clientes", 
+                         titulo_janela="CLIENTES", placeholder_text_pesquisar=self.placehold, colunas_consulta=self.colunas_bd,
+                         func_interface=self.interface_create, func_editar=self.editar_Cliente)
+        
+ 
     def editar_Cliente(self):
-        lista = self.Cliente_select
+        lista = self.valor_unico_selecionado
         tipo_cliente = str(lista[1])
         
 
@@ -755,15 +1044,6 @@ class InterfaceNovoCliente:
 
         self.entry_observacoes.insert('1.0',f"{str(lista[17])}")
    
-    def Pesquisar_Cliente(self):
-        info_digitada = str(self.Entry_Pesquisar.get())
-        if info_digitada:
-            
-            self.cursor.execute(f"select * from Clientes WHERE razao_social LIKE'%{info_digitada}%' OR cpf LIKE'%{info_digitada}%' OR cnpj LIKE'%{info_digitada}%' OR id LIKE'%{info_digitada}%' OR nome LIKE'%{info_digitada}%' ")
-            lista = self.cursor.fetchall()
-            
-            self.tree.delete(*self.tree.get_children())
-            self.Reexibir_treeview(lista=lista)
 
     def interface_create(self, tipo=str):
         # Esconder os widgets em vez de destruí-los
@@ -887,66 +1167,13 @@ class InterfaceNovoCliente:
 
 
         self.Bt_NovoCLiente = ctk.CTkButton(self.frame_resp, text="SALVAR",  image=SalvarIcon, text_color=("black","white"), 
-                                    width=100,  command= lambda: self.salvar(tipo))       
+                                    width=100,  command= lambda: self.salvar_cliente(tipo))       
         self.Bt_NovoCLiente.place(relx=0.4, rely=0.85, anchor="w")
 
         self.definir_cliente(resposta="PESSOA FISICA")
 
-    def voltar(self, opcao):
-        
-        self.acao_widget(acao=opcao)
-        self.interface_tabela()
-        self.LabelTitulo.configure(text=('CLIENTES'))
-        
-    def excel(self):
-        resp = self.main_app.msgbox("Excel", "Deseja exportar todos os registros?",4)
 
-
-        def destino(df):
-            folder_path = filedialog.asksaveasfilename(defaultextension='.xlsx')
-        
-            if folder_path:
-                # Definir o nome do arquivo
-                file_path = folder_path
-                
-                # Verificar se a extensão .xlsx foi adicionada
-                if not file_path.endswith('.xlsx'):
-                    file_path += '.xlsx'
-                    
-                df.to_excel(file_path, index=False)
-                self.main_app.msgbox("Excel", "Arquivo salvo com sucesso",0)
-                
-
-
-        if resp ==6 :
-           print("esta vazio, puxando valores no banco de dados")
-           if self.ListaClientes == None:
-            self.cursor.execute("SELECT * FROM Clientes")
-            self.ListaClientes = self.cursor.fetchall()
-            self.column_names = self.cursor.column_names
-            df = pd.DataFrame(self.ListaClientes, columns=self.column_names)    
-            destino(df=df)
-
-           else:
-                print("NAO ESTA VAZIA")
-                df = pd.DataFrame(self.ListaClientes, columns=self.column_names)    
-                destino(df=df)
-
-    def excluir(self):
-        resp = self.main_app.msgbox("EXCLUIR", "Tem certeza que deseja excluir este cliente?", 4)
-        if resp == 6:
-            lista = self.Cliente_select_list
-            for cliente in lista:
-                id_cliente = int(cliente[0])
-                
-                query = f"DELETE FROM Clientes WHERE id = {id_cliente}"
-                self.cursor.execute(query)
-                self.main_app.ConexaoPrincipal.commit()
-            self.main_app.msgbox("EXCLUIR", "Cliente excluído com sucesso!", 0)
-            self.sincronizar_tabela(attlimite=False)
-            self.Atualizar_limiteView(self.limite_view)
-
-    def salvar(self, tipo):
+    def salvar_Produto(self, tipo):
         resp = self.main_app.msgbox("SALVAR", "Deseja salvar todas as informações passadas?", 4)
         if resp == 6:
 
@@ -998,14 +1225,12 @@ class InterfaceNovoCliente:
                 
                 elif tipo == 'UPDATE':
 
-                    lista = self.Cliente_select
+                    lista = self.valor_unico_selecionado
                     id_cliente = lista[0]
                     # You need to implement this method to get the selected client's ID
                     query = """UPDATE Clientes SET tipo_de_cliente = %s, cpf = %s, cnpj = %s, email = %s, razao_social = %s, nome = %s, cep = %s, endereco = %s, numero = %s, complemento = %s, bairro = %s, cidade = %s, uf = %s, fone = %s, celular = %s, questionario = %s, observacoes = %s
                             WHERE id = %s"""
                     values = (tipo_cliente, cpf, cnpj, entry_email, entry_razao_social, entry_nome, entry_cep, entry_endereco, entry_numero, entry_complemento, entry_bairro, entry_cidade, entry_uf, entry_fone, entry_celular, menu_questionario, entry_observacoes, id_cliente)
-
-
 
 
                 self.cursor.execute(query, values)
@@ -1024,17 +1249,34 @@ class InterfaceNovoCliente:
                     self.main_app.msgbox("NOVO CLIENTE", "Novo cliente adicionado com sucesso!", 0)
                 elif tipo == 'UPDATE':
                     self.main_app.msgbox("ATUALIZAR", "Informações do cliente atualizadas com sucesso!", 0)
-        
+
+         
+                self.menu_tipocliente.set(f'{tipo_cliente}')
+                self.entry_cpf_cnpj.delete(0,ctk.END)
+                self.entry_email.delete(0,ctk.END)
+                self.entry_razao_social.delete(0,ctk.END)
+                self.entry_nome.delete(0,ctk.END)
+                self.entry_cep.delete(0,ctk.END)
+                self.entry_endereco.delete(0,ctk.END)
+                self.entry_numero.delete(0,ctk.END)
+                self.entry_complemento.delete(0,ctk.END)
+                self.entry_bairro.delete(0,ctk.END)
+                self.entry_cidade.delete(0,ctk.END)
+                self.entry_uf.delete(0,ctk.END)
+                self.entry_fone.delete(0,ctk.END)
+                self.entry_celular.delete(0,ctk.END)
+                self.menu_questionario.set(f'')
+                self.entry_observacoes.delete("0.0", "end")
+
             else:
                 pass
 
+
     def definir_cliente(self, resposta):
         
-    
         if resposta == 'PESSOA FISICA':
              
              self.entry_cpf_cnpj.configure(validate="key", validatecommand=(self.main_app.validate_cmd_numeric, "%P", 11))
-
 
         elif resposta == "PESSOA JURIDICA":
             self.entry_cpf_cnpj.configure(validate="key", validatecommand=(self.main_app.validate_cmd_numeric, "%P", 14))
@@ -1376,7 +1618,7 @@ class InterfaceNovoUsuario:
                                 editar = permissoes['editar']
                                 remover = permissoes['remover']
                                 cursor.execute("""
-                                    INSERT INTO modulos (usuario, modulo, submodulo, visualizar, novo, editar, remover, id_usuario)
+                                    INSERT INTO Modulos (usuario, modulo, submodulo, visualizar, novo, editar, remover, id_usuario)
                                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                                 """, (login_digitado, modulo, submodulo, visualizar, novo, editar, remover, id_criado))
 
@@ -2020,7 +2262,7 @@ class InterfaceNovoUsuario:
         else:
             self.FrameModuloConfiguracoesResp.tkraise()
             self.main_app.destacar(self.listaBTS, botão=self.BT_ModuloConfiguracoes, cor=self.cor_destaque)
-      
+
 class InterfaceUsuario:
 
     def __init__(self, main_app, frame_resp, bt_perfil):
@@ -2519,8 +2761,6 @@ class MenuOpcoes:
 
         self.main_app.destacar(lista=self.listaBTS, botão=self.BtHome, cor=self.cor_destaque)
 
-
-
     def frame_estoque(self):
 
         self.limpar_frames(self.frame_MenuLateralDir, self.frame_resposta, pos=138)
@@ -2554,8 +2794,9 @@ class MenuOpcoes:
         self.BTCadastrarItens = ctk.CTkButton(self.frame_MenuLateralDir, text="Cadastrar Itens", image=EstoqueIcon,
                                               anchor="w", width=155, 
                                               text_color=("black", "white"),
-                                              )
+                                              command=lambda: self.frame_novoitem())
         self.BTCadastrarItens.place(x=10, y=160)
+
 
         self.BTCadastrarClientes = ctk.CTkButton(self.frame_MenuLateralDir, text="Cadastrar Clientes", image=CadastroIcon,
                                                  anchor="w", width=155, 
@@ -2579,6 +2820,14 @@ class MenuOpcoes:
         self.desativar_submodulos(modulo='Cadastro')
 
         self.BTGerenciarUsuario.place(x=10, y=280)
+
+    def frame_novoitem(self):
+
+        self.limpar_frames(self.frame_MenuLateralDir, self.frame_resposta, pos=0, excluir=True)
+
+        self.main_app.destacar(lista=self.listaBTS, botão=self.BtCadastros, cor=self.cor_destaque)
+
+        self.main_app.exibir_novoitem(self.frame_resposta)
 
     def frame_novocliente(self):
 
@@ -2919,7 +3168,7 @@ class TelaLogin:
                 cursor.execute(f"SELECT acesso FROM Usuarios  WHERE BINARY  usuario = '{self.usuario_logado}' ")
                 self.acesso_usuario = str(cursor.fetchall()[0][0])
 
-                cursor.execute(f"select * from modulos where usuario = '{self.usuario_logado}'")
+                cursor.execute(f"select * from Modulos where usuario = '{self.usuario_logado}'")
                 self.main_app.ModulosDoUsuario = cursor.fetchall()
                 self.main_app.usuario_logado = self.usuario_logado
                 self.main_app.acesso_usuario = self.acesso_usuario
@@ -2994,6 +3243,10 @@ class MainApp:
     def exibir_gerenciarusuarios(self, frame_resposta):
         if self.acesso_usuario == "ADM":
             self.gerenciarusuarios = InterfaceGerenciarUsuarios(self, frame_resp=frame_resposta)
+
+    def exibir_novoitem(self, frame_resposta):
+        self.interface_Novoitem = InterfaceNovoItem(self, frame_resp=frame_resposta)
+
 
     def exibir_novocliente(self, frame_resposta):
         self.interface_NovoUsuario = InterfaceNovoCliente(self, frame_resp=frame_resposta)
