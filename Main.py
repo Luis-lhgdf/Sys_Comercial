@@ -7,9 +7,44 @@ import binascii
 import io
 import ctypes
 from Icones import *
+import tkinter as tk
 from tkinter import ttk
 import pandas as pd
 import json
+
+
+# Carregar configurações do arquivo JSON
+def load_config(value: bool, localfile=False):
+    local = os.path.join(os.path.dirname(os.path.realpath(__file__)), "temas/config.json")
+    try:
+        with open(local, "r") as config_file:
+            config = json.load(config_file)
+            if value:
+                return config
+            else: 
+                if localfile:
+                    return os.path.join(os.path.dirname(os.path.realpath(__file__)), "temas/personalizado.json")
+                else:
+                    return str(config["theme"]["default_theme"][0])
+
+    except FileNotFoundError:
+        return {
+            "theme": {
+                "default_theme": ["blue"]
+            }
+        }
+
+# Salvar configurações no arquivo JSON
+def save_config(config):
+    local = os.path.join(os.path.dirname(os.path.realpath(__file__)), "temas/config.json")
+    with open(local, "w") as config_file:
+        json.dump(config, config_file, indent=4)
+
+# Função para alterar e salvar o tema
+def change_and_save_theme(new_theme):
+    config = load_config(True)
+    config["theme"]["default_theme"][0] = new_theme
+    save_config(config)
 
 
 class Pessoa:
@@ -558,18 +593,20 @@ class ModeloCadastro:
                     widget.place(x=widget.winfo_x(), y=widget.winfo_y())             
 
     def interface_tabela(self):
-
-        frame_treeview = ctk.CTkFrame(self.frame_resp, width=(self.main_app.screen_wedth)-270, height=305, corner_radius=0)
-        frame_treeview.place(x=25, y=300)
+        frame_treeview = tk.Frame(self.frame_resp)
+        frame_treeview.place(x=25, y=400, width=(self.main_app.screen_wedth), height=305)
 
         self.tree = ttk.Treeview(frame_treeview, show="headings")
-        self.tree.place(x=0, y=0, width=(self.main_app.screen_wedth)-270, height=390)  # Adjust width and height as needed
+        self.tree.place(x=0, y=0, height=305)
         self.tree.bind("<<TreeviewSelect>>", self.click_select)
 
         self.scroll_x = ttk.Scrollbar(frame_treeview, orient="horizontal", command=self.tree.xview)
         self.tree.configure(xscrollcommand=self.scroll_x.set)
-        self.scroll_x.place(x=0, y=290, width=(self.main_app.screen_wedth)-270, height=15) 
+        self.scroll_x.pack(side=tk.BOTTOM, fill=tk.X)
 
+        self.scroll_y = ttk.Scrollbar(frame_treeview, orient="vertical", command=self.tree.yview)
+        self.tree.configure(yscrollcommand=self.scroll_y.set)
+        self.scroll_y.pack(side=tk.RIGHT, fill=tk.Y)
 
         self.LabelPesquisar = ctk.CTkLabel(self.frame_resp, text="Busca rapida", fg_color="transparent",font=(ctk.CTkFont(size=14, weight="bold")))
         self.LabelPesquisar.place(relx=0.36, rely=0.13, anchor="w")
@@ -799,7 +836,7 @@ class InterfaceNovoItem(ModeloCadastro):
         self.colunas_bd = ['Id', 'descricao_produto', 'marca', 'categoria' 'fornecedor']
         
         super().__init__(main_app = self.main_app, frame_resp=self.frame_resp, tabela_bd="Produtos", 
-                         titulo_janela="PRODUTOS", placeholder_text_pesquisar=self.placehold, colunas_consulta=self.colunas_bd,
+                         titulo_janela="ITENS", placeholder_text_pesquisar=self.placehold, colunas_consulta=self.colunas_bd,
                          func_interface=self.interface_create, func_editar=self.editar_produto)
         
  
@@ -807,6 +844,18 @@ class InterfaceNovoItem(ModeloCadastro):
         lista = self.valor_unico_selecionado
 
         self.interface_create('UPDATE')
+
+
+        
+        # pegue o valor de cada entry
+        self.entry_descricao_produto.insert(0, f'{lista[1]}')
+        self.entry_unidade_medida.insert(0, f'{lista[2]}')
+        self.entry_valor_unitario.insert(0, f'{lista[3]}')
+        self.entry_marca.insert(0, f'{lista[4]}')
+        self.entry_categoria.insert(0, f'{lista[5]}')
+        self.entry_peso.insert(0, f'{lista[6]}')
+        self.entry_fornecedor.insert(0, f'{lista[7]}')
+        self.entry_info_adicionais.insert("1.0", f"{lista[8]}")
 
 
     def interface_create(self, tipo=str):
@@ -819,8 +868,8 @@ class InterfaceNovoItem(ModeloCadastro):
         self.acao_widget('ocultar')
 
         
-        self.LabelTitulo.configure(text=('CADASTRAR PRODUTO' if tipo.upper() == "CREATE"
-                                    else 'EDITAR PRODUTO' if tipo.upper() == "UPDATE"
+        self.LabelTitulo.configure(text=('CADASTRAR ITEM' if tipo.upper() == "CREATE"
+                                    else 'EDITAR ITEM' if tipo.upper() == "UPDATE"
                                     else ''))
         
 
@@ -888,8 +937,6 @@ class InterfaceNovoItem(ModeloCadastro):
                                     width=100,  command= lambda: self.salvar_produto(tipo))       
         self.Bt_NovoCLiente.place(relx=0.4, rely=0.85, anchor="w")
 
-
-
     def salvar_produto(self, tipo):
         resp = self.main_app.msgbox("SALVAR", "Deseja salvar todas as informações passadas?", 4)
         if resp == 6:
@@ -900,9 +947,12 @@ class InterfaceNovoItem(ModeloCadastro):
             descricao_produto = self.entry_descricao_produto.get()
             unidade_medida = self.entry_unidade_medida.get()
             valor_unitario = self.entry_valor_unitario.get()
+
+            valor_unitario = float(valor_unitario) if valor_unitario and valor_unitario.replace(".", "").isdigit() else None
             marca = self.entry_marca.get()
             categoria = self.entry_categoria.get()
             peso = self.entry_peso.get()
+            peso = float(peso) if peso and peso.replace(".", "", 1).isdigit() else None
             fornecedor = self.entry_fornecedor.get()
             info_adicionais = self.entry_info_adicionais.get("0.0", "end")
 
@@ -924,7 +974,7 @@ class InterfaceNovoItem(ModeloCadastro):
 
                 # descricao_produto, unidade_medida, valor_unitario, marca, categoria, Peso, fornecedor, info_adicionais"
 
-                query = """INSERT INTO Produtos (descricao_produto, unidade_medida, valor_unitario, marca, categoria, Peso, fornecedor, info_adicionais)
+                query = """INSERT INTO Produtos (descricao_produto, unidade_medida, valor_unitario, marca, categoria, peso, fornecedor, info_adicionais)
                         VALUES (%s, %s, %s, %s,%s, %s, %s, %s) """
                 values = (descricao_produto, unidade_medida, valor_unitario, marca, categoria, peso, fornecedor, info_adicionais)
             
@@ -933,7 +983,7 @@ class InterfaceNovoItem(ModeloCadastro):
                 lista = self.valor_unico_selecionado
                 id_produto = lista[0]
                 # You need to implement this method to get the selected client's ID
-                query = """UPDATE Produtos SET descricao_produto = %s, unidade_medida = %s, valor_unitario = %s, marca = %s, categoria = %s, fornecedor = %s, info_adicionais = %s WHERE id = %s"""
+                query = """UPDATE Produtos SET descricao_produto = %s, unidade_medida = %s, valor_unitario = %s, marca = %s, categoria = %s, peso = %s, fornecedor = %s, info_adicionais = %s WHERE id = %s"""
                 values =(descricao_produto, unidade_medida, valor_unitario, marca, categoria, peso, fornecedor, info_adicionais, id_produto)
 
 
@@ -968,10 +1018,7 @@ class InterfaceNovoItem(ModeloCadastro):
             self.entry_peso.delete(0,ctk.END)
             self.entry_fornecedor.delete(0,ctk.END)
             self.entry_info_adicionais.delete("0.0", "end")
-                
-
-
-        
+                  
 class InterfaceNovoCliente(ModeloCadastro): 
 
     def __init__(self, main_app, frame_resp):
@@ -989,6 +1036,9 @@ class InterfaceNovoCliente(ModeloCadastro):
     def editar_Cliente(self):
         lista = self.valor_unico_selecionado
         tipo_cliente = str(lista[1])
+
+
+
         
 
 
@@ -1173,7 +1223,7 @@ class InterfaceNovoCliente(ModeloCadastro):
         self.definir_cliente(resposta="PESSOA FISICA")
 
 
-    def salvar_Produto(self, tipo):
+    def salvar_cliente(self, tipo):
         resp = self.main_app.msgbox("SALVAR", "Deseja salvar todas as informações passadas?", 4)
         if resp == 6:
 
@@ -2511,8 +2561,18 @@ class InterfaceConfiguracoes:
         Label_theme = ctk.CTkLabel(Painel_theme, text="Alterar tema", font=self.main_app.FontTitle, fg_color="transparent")
         Label_theme.place(x=10, y=5)
 
+        opcoes = ["blue", "green", "dark-blue", "personalizado"]
+        valor_escolhido = self.main_app.themeAtual
+
+        # Encontra a posição do valor escolhido na lista
+        indice_valor_escolhido = opcoes.index(valor_escolhido)
+
+        # Reorganiza a lista colocando o valor escolhido no início
+        opcoes = [valor_escolhido] + opcoes[:indice_valor_escolhido] + opcoes[indice_valor_escolhido+1:]
+
+
         mudarTheme = ctk.CTkOptionMenu(Painel_theme, font= self.main_app.FontBody, width=100,
-                                                        values=["blue", "green", "dark-blue", "personalizado"], command= self.main_app.theme)
+                                                        values=opcoes, command= self.main_app.theme)
         mudarTheme.place(x=10, y=50)
 
 class CarregarIMG:
@@ -2769,17 +2829,17 @@ class MenuOpcoes:
         self.main_app.destacar(lista=self.listaBTS, botão=self.BtEstoque, cor=self.cor_destaque)
 
         self.BTEntrada = ctk.CTkButton(self.frame_MenuLateralDir, text="Entrada", image=EntradaIcon, anchor="w", width=155,
-                                     text_color=("black", "white"),
+                                     text_color=("black", "white"), hover_color=self.main_app.chave_customjson("CTkOptionMenu","button_color"),
                                     )
         self.BTEntrada.place(x=10, y=120)
 
         self.BTSaida = ctk.CTkButton(self.frame_MenuLateralDir, text="Saida", image=SaidaIcon, anchor="w", width=155,
-                                     text_color=("black", "white"),
+                                     text_color=("black", "white"), hover_color=self.main_app.chave_customjson("CTkOptionMenu","button_color"),
                                     )
         self.BTSaida.place(x=10, y=160)
 
         self.BTInventario = ctk.CTkButton(self.frame_MenuLateralDir, text="Inventario", image=InventarioIcon, anchor="w",
-                                        width=155,  text_color=("black", "white"),
+                                        width=155,  text_color=("black", "white"), hover_color=self.main_app.chave_customjson("CTkOptionMenu","button_color"),
                                         )
         self.BTInventario.place(x=10, y=200)
 
@@ -2793,26 +2853,26 @@ class MenuOpcoes:
 
         self.BTCadastrarItens = ctk.CTkButton(self.frame_MenuLateralDir, text="Cadastrar Itens", image=EstoqueIcon,
                                               anchor="w", width=155, 
-                                              text_color=("black", "white"),
+                                              text_color=("black", "white"), hover_color=self.main_app.chave_customjson("CTkOptionMenu","button_color"),
                                               command=lambda: self.frame_novoitem())
         self.BTCadastrarItens.place(x=10, y=160)
 
 
         self.BTCadastrarClientes = ctk.CTkButton(self.frame_MenuLateralDir, text="Cadastrar Clientes", image=CadastroIcon,
                                                  anchor="w", width=155, 
-                                                 text_color=("black", "white"),
+                                                 text_color=("black", "white"),hover_color=self.main_app.chave_customjson("CTkOptionMenu","button_color"),
                                                  
                                                  command=lambda: self.frame_novocliente())
         self.BTCadastrarClientes.place(x=10, y=200)
 
         self.BTCriarNovoUsuario = ctk.CTkButton(self.frame_MenuLateralDir, text="Novo Usuario", image=UsuarioIcon,
                                                 anchor="w", width=155, 
-                                                text_color=("black", "white"),
+                                                text_color=("black", "white"),hover_color=self.main_app.chave_customjson("CTkOptionMenu","button_color"),
                                                  command=lambda: self.frame_novo_user())
         self.BTCriarNovoUsuario.place(x=10, y=240)
 
         self.BTGerenciarUsuario = ctk.CTkButton(self.frame_MenuLateralDir, text="Gerenciar Usuarios",
-                                                image=GerenciarUserIcon, anchor="w", width=155,
+                                                image=GerenciarUserIcon, anchor="w", width=155,hover_color=self.main_app.chave_customjson("CTkOptionMenu","button_color"),
                                                  text_color=("black", "white"),
                                                 
                                                 command=lambda: self.frame_gerenciar_user())
@@ -2879,13 +2939,13 @@ class MenuOpcoes:
 
         self.BTRegistrarVenda = ctk.CTkButton(self.frame_MenuLateralDir, text="Registrar Venda", image=VendasIcon,
                                               anchor="w", width=155, 
-                                              text_color=("black", "white"),
+                                              text_color=("black", "white"),hover_color=self.main_app.chave_customjson("CTkOptionMenu","button_color"),
                                               )
         self.BTRegistrarVenda.place(x=10, y=280)
 
         self.BTFaturamento = ctk.CTkButton(self.frame_MenuLateralDir, text="Faturamento", image=FaturamentoIcon,
                                            anchor="w", width=155, 
-                                           text_color=("black", "white"),
+                                           text_color=("black", "white"),hover_color=self.main_app.chave_customjson("CTkOptionMenu","button_color"),
                                            )
         self.BTFaturamento.place(x=10, y=320)
 
@@ -2901,13 +2961,13 @@ class MenuOpcoes:
 
         self.BTRegistrarDespesas = ctk.CTkButton(self.frame_MenuLateralDir, text="Registrar Despesas", image=DespesaIcon,
                                                  anchor="w", width=155, 
-                                                 text_color=("black", "white"),
+                                                 text_color=("black", "white"),hover_color=self.main_app.chave_customjson("CTkOptionMenu","button_color"),
                                                  )
         self.BTRegistrarDespesas.place(x=10, y=320)
 
         self.BTOutrasRendas = ctk.CTkButton(self.frame_MenuLateralDir, text="Outras Rendas +", image=ReceitaIcon,
                                             anchor="w", width=155, 
-                                            text_color=("black", "white"),
+                                            text_color=("black", "white"),hover_color=self.main_app.chave_customjson("CTkOptionMenu","button_color"),
                                             )
         self.BTOutrasRendas.place(x=10, y=360)
         self.desativar_submodulos(modulo='Finanças')
@@ -3204,7 +3264,7 @@ class MainApp:
         self.screen_height = self.root.winfo_screenheight()
         self.screen_wedth = self.root.winfo_screenwidth()
 
-        self.themeAtual = 'blue'
+        self.themeAtual = load_config(False, localfile=False)
 
         self.ModulosDoUsuario = None
 
@@ -3223,6 +3283,9 @@ class MainApp:
 
     def login_sucesso(self):
         self.clear_screen()
+
+        self.root.configure(fg_color=self.chave_customjson("CTk","fg_color"))
+
         self.menu_lateral = MenuOpcoes(self.root, self)
         # self.root.resizable(True, True)
         
@@ -3246,7 +3309,6 @@ class MainApp:
 
     def exibir_novoitem(self, frame_resposta):
         self.interface_Novoitem = InterfaceNovoItem(self, frame_resp=frame_resposta)
-
 
     def exibir_novocliente(self, frame_resposta):
         self.interface_NovoUsuario = InterfaceNovoCliente(self, frame_resp=frame_resposta)
@@ -3310,6 +3372,7 @@ class MainApp:
             ctk.set_default_color_theme(new_appearance_mode)
 
         self.themeAtual = str(new_appearance_mode)
+        change_and_save_theme(new_appearance_mode)     
         self.login_sucesso()
 
     def change_scaling_event(self, new_scaling: str):
@@ -3347,8 +3410,12 @@ class MainApp:
             return P == "" or (isinstance(P, str) and P.isalpha() and len(P) <= int(max_length))
 
 
-
 if __name__ == "__main__":
+    try:
+        ctk.set_default_color_theme(load_config(False, localfile=False))
+    except FileNotFoundError:
+        ctk.set_default_color_theme(load_config(False, True))
+
     root = ctk.CTk()
 
     app = MainApp(root)
