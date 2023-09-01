@@ -30,7 +30,7 @@ EntradaIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "entr
 
 
 SeuLogo2 = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "logo2.png")),
-                    dark_image=Image.open(os.path.join(image_path, "logo2.png")), size=(170, 170))
+                    dark_image=Image.open(os.path.join(image_path, "logo2.png")), size=(130, 130))
 
 
 EstoqueIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "estoque_black.png")),
@@ -155,3 +155,5 @@ perfilIcon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "perfi
 
 fundoLogin = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "fundologin.jpg")),
             dark_image=Image.open(os.path.join(image_path, "fundologin.jpg")),  size=(400, 450))
+
+

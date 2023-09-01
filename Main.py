@@ -2327,12 +2327,18 @@ class InterfaceUsuario:
     def interface(self):
 
 
-        Painel_FtPerfil = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth)-270, height=90, border_width=1,
+        Painel_FtPerfil = ctk.CTkButton(self.frame_resp, text="", width=1200, height=90, border_width=1,
                                         fg_color="transparent",hover=False)
-        Painel_FtPerfil.place(relx=0.02, rely=0.1, anchor="w")
+        
+        Painel_FtPerfil.grid(row=0, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
+
+        Painel_FtPerfil.grid_columnconfigure(0, weight=1)
+        Painel_FtPerfil.grid_rowconfigure( 4, weight=1)
+
 
         Label_FtPerfil = ctk.CTkLabel(Painel_FtPerfil, text="Foto de perfil", font=self.main_app.FontTitle, fg_color="transparent")
         Label_FtPerfil.place(x=10, y=5)
+
         bt = ctk.CTkButton(Painel_FtPerfil, image=ImagemIcon, text="Alterar", command=self.Trocar_img,
                            text_color=("black", "white"),
                            width=80, )
@@ -2714,27 +2720,37 @@ class MenuOpcoes:
   
         self.cor_destaque =self.main_app.chave_customjson("CTkButton","hover_color")
 
-        self.frame_MenuLateralEsq = ctk.CTkFrame(self.rootHome, width=176, height=self.screen_height, corner_radius=0)
-        self.frame_MenuLateralEsq.grid(row=0, column=0)
+
+        # Configure a expansão horizontal (caso necessário)
+        self.rootHome.grid_columnconfigure(0, weight=0)  # Coluna 0 não se expandirá
+        self.rootHome.grid_columnconfigure(1, weight=0)  # Coluna 1 não se expandirá
+        self.rootHome.grid_columnconfigure(2, weight=1)  # Coluna 2 se expandirá
+
+        self.rootHome.grid_rowconfigure((0, 1, 2), weight=1)
 
 
-        self.frame_MenuLateralDir = ctk.CTkFrame(self.rootHome,width=37, height=self.screen_height, corner_radius=0, fg_color=self.cor_destaque)
-        self.frame_MenuLateralDir.grid(row=0, column=1)
+
+        self.frame_MenuLateralEsq = ctk.CTkFrame(self.rootHome, width=176, corner_radius=0)
+        self.frame_MenuLateralEsq.grid(row=0, column=0, rowspan=4, sticky="nsew")
+        self.frame_MenuLateralEsq.grid_rowconfigure(10, weight=1)
 
 
-        self.frame_resposta = ctk.CTkFrame(self.rootHome, fg_color="transparent", width=self.screen_wedth, height=self.screen_height, corner_radius=0)
-        self.frame_resposta.grid(row=0, column=2)
+        self.frame_MenuLateralDir = ctk.CTkFrame(self.rootHome, width=37, corner_radius=0, fg_color=self.cor_destaque)
+        self.frame_MenuLateralDir.grid(row=0, column=1, rowspan=4, sticky="nsew")
+
+
+        self.frame_resposta = ctk.CTkFrame(self.rootHome, fg_color="transparent", corner_radius=0)
+        self.frame_resposta.grid(row=0, column=2, rowspan=4, sticky="nsew")
+  
+
+        # Configure a expansão vertical
+        
 
         self.BtOcultar = ctk.CTkButton(self.frame_MenuLateralDir, text="", image=MenuIcon, anchor="w", width=23, height=23,
                             fg_color="transparent", text_color=("black", "white"),
                             command=lambda:self.main_app.ocultar_Janela(self.frame_MenuLateralEsq))
-
-
-
-
-        
-
         self.bt_opcoes()
+        self.scaling_optionemenu.set("100%")
 
     def limpar_frames(self, laterial_direito, resposta, pos = 0, excluir = False):
        
@@ -2753,48 +2769,50 @@ class MenuOpcoes:
         
     def bt_opcoes(self):
 
+
+        self.Btfoto_perfil = ctk.CTkButton(self.frame_MenuLateralEsq, text="", image=perfilIcon, fg_color="transparent", command=self.frame_usuario)
+        self.Btfoto_perfil.grid(row=0, column=0,  pady=5)
+
+
         self.BtHome = ctk.CTkButton(self.frame_MenuLateralEsq, text="Home", image=HomeIcon, anchor="w",
                                     width=176, corner_radius=0, fg_color="transparent", text_color=("black", "white"),command=self.frame_home)
-        self.BtHome.place(x=0, y=120)
+        self.BtHome.grid(row=1, column=0,  padx=0, pady=5)
 
         self.BtEstoque = ctk.CTkButton(self.frame_MenuLateralEsq, text="Estoque ", image=EstoqueIcon, anchor="w",
                                     width=176, corner_radius=0, fg_color="transparent",
                                     text_color=("black", "white"),command=self.frame_estoque)
-        self.BtEstoque.place(x=0, y=160)
+        self.BtEstoque.grid(row=2, column=0,  pady=5)
 
         self.BtCadastros = ctk.CTkButton(self.frame_MenuLateralEsq, text="Cadastro", image=CadastroIcon, anchor="w",
                                         width=176, corner_radius=0, fg_color="transparent",
                                         text_color=("black", "white"), command=self.frame_cadastro)
-        self.BtCadastros.place(x=0, y=200)
+        self.BtCadastros.grid(row=3, column=0,  pady=5)
 
         self.BtAgenda = ctk.CTkButton(self.frame_MenuLateralEsq, text="Agenda", image=AgendaIcon, anchor="w",
                                     width=176, corner_radius=0, fg_color="transparent", text_color=("black", "white"),
                                     command=self.frame_agenda)
-        self.BtAgenda.place(x=0, y=240)
+        self.BtAgenda.grid(row=4, column=0,  pady=5)
 
         self.Btcarteira = ctk.CTkButton(self.frame_MenuLateralEsq, text="Carteira", image=carteiraIcon, anchor="w",
                                         width=176, corner_radius=0, fg_color="transparent",
                                         text_color=("black", "white"), command=self.frame_carteira)
-        self.Btcarteira.place(x=0, y=280)
+        self.Btcarteira.grid(row=5, column=0,  pady=5)
 
         self.BtFinancas = ctk.CTkButton(self.frame_MenuLateralEsq, text="Finanças", image=FinancasIcon, anchor="w",
                                         width=176, corner_radius=0, fg_color="transparent",
                                         text_color=("black", "white"), command=self.frame_financas)
-        self.BtFinancas.place(x=0, y=320)
+        self.BtFinancas.grid(row=6, column=0,  pady=5)
 
         self.BtUsuario = ctk.CTkButton(self.frame_MenuLateralEsq, text="Usuario", image=UsuarioIcon, anchor="w",
                                     width=176, corner_radius=0, fg_color="transparent",
                                     text_color=("black", "white"), command=self.frame_usuario)
-        self.BtUsuario.place(x=0, y=360)
+        self.BtUsuario.grid(row=7, column=0,  pady=5)
 
         self.BtConfiguracoes = ctk.CTkButton(self.frame_MenuLateralEsq, text="Configuracoes", image=ConfiguracoesIcon,
                                             anchor="w",
                                             width=176, corner_radius=0, text_color=("black", "white"),
                                             fg_color="transparent",command=self.frame_configuracoes)
-        self.BtConfiguracoes.place(x=0, y=400)
-
-        self.Btfoto_perfil = ctk.CTkButton(self.frame_MenuLateralEsq, text="", image=perfilIcon, fg_color="transparent", command=self.frame_usuario)
-        self.Btfoto_perfil.place(relx=0.5, rely=0.07, anchor="center")
+        self.BtConfiguracoes.grid(row=8, column=0,  pady=5)
 
 
 
@@ -2802,15 +2820,21 @@ class MenuOpcoes:
                             self.BtFinancas, self.BtUsuario, self.BtConfiguracoes]
         
 
-        self.LabelLogo = ctk.CTkLabel(self.frame_MenuLateralEsq, text="", image=SeuLogo2)
-        self.LabelLogo.place(x=0, y=(self.screen_height - 300))
+        self.LabelLogo = ctk.CTkLabel(self.frame_MenuLateralEsq, text="", image=SeuLogo2, anchor="w")
+        self.LabelLogo.grid(row=9, column=0, pady=5)
 
 
+        self.scaling_optionemenu = ctk.CTkOptionMenu(self.frame_MenuLateralEsq, font=self.main_app.FontBody, width=150, 
+                                                     values=["80%", "90%", "100%", "110%", "120%"],command=self.main_app.change_scaling_event)
+        self.scaling_optionemenu.grid(row=11, column=0,  pady=5)
         
-        appearance_mode_optionemenu = ctk.CTkOptionMenu(self.frame_MenuLateralEsq, font=self.main_app.FontBody, width=150,
-                                                        height=30, values=["system", "light", "Dark"], command=self.main_app.aparencia)
-        appearance_mode_optionemenu.place(x=10, y=(self.screen_height - 100))
-        
+
+
+        self.appearance_mode_optionemenu = ctk.CTkOptionMenu(self.frame_MenuLateralEsq, font=self.main_app.FontBody, width=150,
+                                                        values=["system", "light", "Dark"], command=self.main_app.aparencia)
+        self.appearance_mode_optionemenu.grid(row=12, column=0,   pady=5)
+
+
         self.desativar_modulos()
         CarregarIMG(main_app=self.main_app).verificar_foto(self.Btfoto_perfil, self.main_app.usuario_logado)
         self.frame_home()
@@ -3379,6 +3403,19 @@ class MainApp:
         try:
             new_scaling_float = int(new_scaling.replace("%", "")) / 100
             ctk.set_widget_scaling(new_scaling_float)
+
+            scale_factor = new_scaling_float  # Pode ajustar o fator de escala conforme necessário
+
+            tupla_size = (170,170)
+
+    
+            if new_scaling in ["110%"]:
+                SeuLogo2.configure(size=(100, 100))
+            elif  new_scaling in ["120%"]:
+                SeuLogo2.configure(size=(80, 80))
+            else:
+                SeuLogo2.configure(size=(130, 130))
+
         except:
             pass
 
@@ -3417,6 +3454,9 @@ if __name__ == "__main__":
         ctk.set_default_color_theme(load_config(False, True))
 
     root = ctk.CTk()
+    # root.grid_columnconfigure(1, weight=1)
+    # root.grid_columnconfigure((2, 3), weight=0)
+    # root.grid_rowconfigure((0, 1), weight=1)
 
     app = MainApp(root)
 
