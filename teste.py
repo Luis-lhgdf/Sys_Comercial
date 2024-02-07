@@ -1,6 +1,5 @@
 import customtkinter as ctk
 
-ctk.set_default_color_theme(r'C:\Users\luisg\OneDrive\Documentos\GitHub\Sys_Comercial\temas\personalizado.JSON')
 
 root = ctk.CTk()
 root.geometry("500x500")

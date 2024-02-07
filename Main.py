@@ -3229,12 +3229,6 @@ class TelaLogin:
         self.BtEntrar.place(relx=0.5, rely=0.6, anchor="center")
         self.BtEntrar.bind("<Return>", ativar_enter)
 
-
-
-
-
-
-
     def fazer_login(self):
         self.usuario_logado = self.LoginDigitado.get()
         self.senha_logado = self.SenhaDigitado.get()
