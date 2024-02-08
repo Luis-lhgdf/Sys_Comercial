@@ -1,5 +1,6 @@
 from tkinter import filedialog
 import mysql.connector
+import sqlite3
 from PIL import ImageDraw
 import base64
 import pkg_resources
@@ -348,7 +349,7 @@ class InterfaceGerenciarUsuarios:
 
 
         def cancelar():
-            self.cursor.execute(f"SELECT acesso FROM Usuarios  WHERE BINARY  usuario = '{self.main_app.usuario_logado}' ")
+            self.cursor.execute(f"SELECT acesso FROM Usuarios  where  usuario = '{self.main_app.usuario_logado}' ")
             self.acesso_usuario = str(self.cursor.fetchall()[0][0])
 
                 
@@ -387,10 +388,10 @@ class InterfaceGerenciarUsuarios:
         NovoStatus =  status_menu.get()
 
         if NovoUser != self.usuarios[i]:
-            self.cursor.execute(f"SELECT usuario FROM Usuarios WHERE BINARY usuario = '{usuario_entry.get()}'")
+            self.cursor.execute(f"SELECT usuario FROM Usuarios where usuario = '{usuario_entry.get()}'")
             resp = self.cursor.fetchall()
             if not resp:
-                self.cursor.execute(f"UPDATE Usuarios SET usuario = '{usuario_entry.get()}' WHERE BINARY usuario = '{self.usuarios[i]}'")
+                self.cursor.execute(f"UPDATE Usuarios SET usuario = '{usuario_entry.get()}' where usuario = '{self.usuarios[i]}'")
                 self.main_app.usuario_logado = usuario_entry.get()
                 self.usuarios[i] = usuario_entry.get()
                 self.main_app.ConexaoPrincipal.commit()
@@ -398,12 +399,12 @@ class InterfaceGerenciarUsuarios:
                 self.main_app.msgbox("USUARIO", "Ja existe um usuario com este nome!!!", 0)
 
         if NovoAcesso != self.acesso[i] :
-            self.cursor.execute(f"UPDATE Usuarios SET acesso = '{acesso_menu.get()}' WHERE BINARY usuario = '{self.usuarios[i]}'")
+            self.cursor.execute(f"UPDATE Usuarios SET acesso = '{acesso_menu.get()}' where usuario = '{self.usuarios[i]}'")
             self.acesso[i] = acesso_menu.get()
             self.main_app.ConexaoPrincipal.commit()
 
         if NovoStatus != self.status[i]:
-            self.cursor.execute(f"UPDATE Usuarios SET status = '{status_menu.get()}' WHERE BINARY usuario = '{self.usuarios[i]}'")
+            self.cursor.execute(f"UPDATE Usuarios SET status = '{status_menu.get()}' where usuario = '{self.usuarios[i]}'")
             self.status[i] = status_menu.get()
             self.main_app.ConexaoPrincipal.commit()
             
@@ -447,9 +448,9 @@ class InterfaceGerenciarUsuarios:
             # Salva as alterações nas listas
           
 
-            self.cursor.execute(f"delete from Usuarios where binary usuario ='{self.usuarios[i]}' ")
+            self.cursor.execute(f"delete from Usuarios where usuario ='{self.usuarios[i]}' ")
 
-            self.cursor.execute(f"delete from Modulos where binary usuario ='{self.usuarios[i]}' ")
+            self.cursor.execute(f"delete from Modulos where usuario ='{self.usuarios[i]}' ")
 
             self.main_app.ConexaoPrincipal.commit()
             self.usuarios.pop(i)
@@ -1489,7 +1490,7 @@ class InterfaceNovoUsuario:
                 else:
 
                     cursor =  self.main_app.ConexaoPrincipal.cursor()
-                    cursor.execute(f"SELECT usuario FROM Usuarios where binary usuario = '{login_digitado}'")
+                    cursor.execute(f"SELECT usuario FROM Usuarios where usuario = '{login_digitado}'")
                     resp = cursor.fetchall()
                     if resp:
                         self.main_app.msgbox("USUARIO", "Ja existe um usuario com este nome, por favor escolha outro", 0)
@@ -1658,6 +1659,8 @@ class InterfaceNovoUsuario:
                         cursor.execute(f"SELECT id FROM Usuarios WHERE usuario ='{login_digitado}'")
                         id_criado = cursor.fetchone()[0]
                         print(id_criado)
+
+                        
                         self.main_app.ConexaoPrincipal.commit()
 
                         # Itera sobre os dados do dicionário e insere no banco de dados
@@ -2326,15 +2329,34 @@ class InterfaceUsuario:
 
     def interface(self):
 
+        self.frame_resp.grid_rowconfigure((0,1,2,3,4), weight=0)
+        self.frame_resp.grid_columnconfigure(0, weight=1)
 
-        Painel_FtPerfil = ctk.CTkButton(self.frame_resp, text="", width=1200, height=90, border_width=1,
-                                        fg_color="transparent",hover=False)
+
+        LabelTitulo = ctk.CTkLabel(self.frame_resp, text=f"USUARIO",fg_color="transparent", text_color=("black", "white"), 
+                                   font=self.main_app.SubTitle, corner_radius=6, anchor="w")
+        LabelTitulo.grid(row=0, column=0, padx=10, pady=(5), sticky="nsew")
+
+
+        Painel_FtPerfil = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth)-270, height=90, border_width=1,
+                                       fg_color="transparent",hover=False)
         
-        Painel_FtPerfil.grid(row=0, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        Painel_FtPerfil.grid(row=1, column=0, padx=10, pady=(45,5), sticky="nsew")
 
-        Painel_FtPerfil.grid_columnconfigure(0, weight=1)
-        Painel_FtPerfil.grid_rowconfigure( 4, weight=1)
 
+        Painel_Usuario = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth)-270, height=90, border_width=1,
+                                       fg_color="transparent",hover=False)
+        Painel_Usuario.grid(row=2, column=0, padx=10, pady=5, sticky="nsew")
+
+
+        Painel_Senha = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth)-270, height=90, border_width=1, fg_color="transparent",
+                                     hover=False)
+        Painel_Senha.grid(row=3, column=0, padx=10, pady=5, sticky="nsew")
+
+        
+        Painel_Excluir = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth)-270, height=90, border_width=1,
+                                       fg_color="transparent", hover=False)
+        Painel_Excluir.grid(row=4, column=0, padx=10, pady=5, sticky="nsew")
 
         Label_FtPerfil = ctk.CTkLabel(Painel_FtPerfil, text="Foto de perfil", font=self.main_app.FontTitle, fg_color="transparent")
         Label_FtPerfil.place(x=10, y=5)
@@ -2344,9 +2366,11 @@ class InterfaceUsuario:
                            width=80, )
         bt.place(x=10, y=50)
 
-        Painel_Usuario = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth)-270, height=90, border_width=1,
-                                       fg_color="transparent",hover=False)
-        Painel_Usuario.place(relx=0.02, rely=0.25, anchor="w")
+
+
+
+
+
 
         TituloUsuario = ctk.CTkLabel(Painel_Usuario, text="Usuario", font=self.main_app.FontTitle, fg_color="transparent")
         TituloUsuario.place(x=10, y=5)
@@ -2367,9 +2391,9 @@ class InterfaceUsuario:
         BtEditarUser.place(x=165, y=28)
 
 
-        Painel_Senha = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth)-270, height=90, border_width=1, fg_color="transparent",
-                                     hover=False)
-        Painel_Senha.place(relx=0.02, rely=0.4, anchor="w")
+
+
+
 
 
         LabelSenha = ctk.CTkLabel(Painel_Senha, text="Senha", font=self.main_app.FontTitle, fg_color="transparent")
@@ -2382,9 +2406,11 @@ class InterfaceUsuario:
         BtTrocarSenha.place(x=10, y=50)
 
 
-        Painel_Excluir = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth)-270, height=90, border_width=1,
-                                       fg_color="transparent", hover=False)
-        Painel_Excluir.place(relx=0.02, rely=0.55, anchor="w")
+
+
+
+
+
 
 
         LabelExcluir = ctk.CTkLabel(Painel_Excluir, text="Conta", font=self.main_app.FontTitle, fg_color="transparent")
@@ -2410,7 +2436,7 @@ class InterfaceUsuario:
             if len(usuarioDigitado) >= 3:
                 
                 cursor = self.main_app.ConexaoPrincipal.cursor()
-                cursor.execute(f"SELECT usuario FROM Usuarios WHERE BINARY usuario = '{usuarioDigitado}'")
+                cursor.execute(f"SELECT usuario FROM Usuarios where usuario = '{usuarioDigitado}'")
                 respostaBD = cursor.fetchall()
                 if not respostaBD:
                     cursor.execute(f"UPDATE Usuarios SET usuario = '{usuarioDigitado}' WHERE usuario = '{self.main_app.usuario_logado}'")
@@ -2559,10 +2585,21 @@ class InterfaceConfiguracoes:
 
     def interface(self):
 
+        self.frame_resp.grid_rowconfigure((0,1), weight=0)
+        self.frame_resp.grid_columnconfigure(0, weight=1)
+
+
+        LabelTitulo = ctk.CTkLabel(self.frame_resp, text=f"CONFIGURAÇÕES",fg_color="transparent", text_color=("black", "white"), 
+                                   font=self.main_app.SubTitle, corner_radius=6, anchor="w")
+        LabelTitulo.grid(row=0, column=0, sticky="nsew", padx=10, pady=5)
+
+
+
 
         Painel_theme = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth)-270, height=90, border_width=1,
                                         fg_color="transparent",hover=False)
-        Painel_theme.place(relx=0.02, rely=0.1, anchor="w")
+        Painel_theme.grid(row=1, column=0, sticky="nsew", padx=10, pady=(45,5))
+
 
         Label_theme = ctk.CTkLabel(Painel_theme, text="Alterar tema", font=self.main_app.FontTitle, fg_color="transparent")
         Label_theme.place(x=10, y=5)
@@ -2592,7 +2629,7 @@ class CarregarIMG:
 
         cursor =  self.conexao.cursor()
         # Buscar a imagem no banco de dados
-        cursor.execute(f"SELECT img FROM Usuarios WHERE BINARY usuario = '{usuario}'")
+        cursor.execute(f"SELECT imagem FROM Usuarios where usuario = '{usuario}'")
         result = cursor.fetchone()
 
         if result[0] is not None:
@@ -2695,7 +2732,7 @@ class CarregarIMG:
 
         if count > 0:
             # Atualizar a imagem existente
-            cursor.execute("UPDATE Usuarios SET img = %s WHERE usuario = %s", (image_binary, usuario))
+            cursor.execute("UPDATE Usuarios SET imagem = ? WHERE usuario = ?", (image_binary, usuario))
         else:
             self.main_app.msgbox("ERRO", "NAO ENCONTRADO USUARIO NO BD PARA INSERIR A NOVA IMAGEM", 0)
 
@@ -2753,15 +2790,21 @@ class MenuOpcoes:
         self.scaling_optionemenu.set("100%")
 
     def limpar_frames(self, laterial_direito, resposta, pos = 0, excluir = False):
-       
+        
         
         # Esconder os widgets em vez de destruí-los
         for widget in laterial_direito.winfo_children():
             widget.place_forget()
+            widget.grid_remove()
 
         if excluir:
             for widget in resposta.winfo_children():
-                widget.place_forget()
+                try:
+                    widget.place_forget()
+                    widget.grid_remove()
+                except:
+                    pass
+
 
 
         self.frame_MenuLateralDir.configure(width=37)
@@ -3001,21 +3044,12 @@ class MenuOpcoes:
 
         self.main_app.destacar(lista=self.listaBTS, botão=self.BtUsuario, cor=self.cor_destaque)
 
-
-        LabelTitulo = ctk.CTkLabel(self.frame_resposta, text=f"USUARIO",fg_color="transparent", text_color=("black", "white"), 
-                                   font=self.main_app.SubTitle, corner_radius=6)
-        LabelTitulo.place(relx=0.001, rely=0.02, anchor="w")
-
         self.main_app.exibir_usuario(self.frame_resposta, self.Btfoto_perfil)
 
     def frame_configuracoes(self):
         self.limpar_frames(self.frame_MenuLateralDir, self.frame_resposta, excluir=True)
 
         self.main_app.destacar(lista=self.listaBTS, botão=self.BtConfiguracoes, cor=self.cor_destaque)
-
-        LabelTitulo = ctk.CTkLabel(self.frame_resposta, text=f"CONFIGURAÇÕES",fg_color="transparent", text_color=("black", "white"), 
-                                   font=self.main_app.SubTitle, corner_radius=6)
-        LabelTitulo.place(relx=0.001, rely=0.02, anchor="w")
 
         self.main_app.exibir_configuracoes(self.frame_resposta)
 
@@ -3189,8 +3223,7 @@ class TelaLogin:
         # self.Root_login.resizable(False, False)
 
 
-        
-
+    
         self.conexao = self.main_app.ConexaoPrincipal
         planodefundo = ctk.CTkLabel(self.Root_login, text="",image=fundoLogin, width=400, height=450)
         planodefundo.place(relx=0.5,rely=0.5, anchor="center")
@@ -3234,37 +3267,44 @@ class TelaLogin:
         self.senha_logado = self.SenhaDigitado.get()
 
         if len(self.usuario_logado) == 0 or len(self.senha_logado) == 0:
-           self.main_app.msgbox("Login", "Preencha todos os campos", 0)
+            self.main_app.msgbox("Login", "Preencha todos os campos", 0)
         else:
-
             cursor = self.conexao.cursor()
+            # Utilize placeholders (?) para evitar injeção de SQL
             cursor.execute(
-                f"SELECT * FROM Usuarios WHERE BINARY usuario = '{self.usuario_logado}' "
-                f"AND senha = '{self.senha_logado}' AND status = '{'ATIVO'}'")
+                "SELECT * FROM Usuarios WHERE usuario = ? AND senha = ? AND status = 'ATIVO'",
+                (self.usuario_logado, self.senha_logado)
+            )
             resultado = cursor.fetchall()
+          
             if resultado:
-                cursor.execute(f"SELECT acesso FROM Usuarios  WHERE BINARY  usuario = '{self.usuario_logado}' ")
-                self.acesso_usuario = str(cursor.fetchall()[0][0])
+                cursor.execute("SELECT acesso FROM Usuarios WHERE  usuario = ?", (self.usuario_logado,))
+                self.acesso_usuario = cursor.fetchone()[0]
 
-                cursor.execute(f"select * from Modulos where usuario = '{self.usuario_logado}'")
+                cursor.execute("SELECT * FROM Modulos WHERE usuario = ?", (self.usuario_logado,))
                 self.main_app.ModulosDoUsuario = cursor.fetchall()
                 self.main_app.usuario_logado = self.usuario_logado
                 self.main_app.acesso_usuario = self.acesso_usuario
                 self.main_app.login_sucesso()
-
             else:
                 self.main_app.msgbox("Login", "Login ou senha incorretos, Tente novamente", 0)
 
 class MainApp:
     
     @staticmethod
-    def _conectaBD(database, host, port, user, password):
+    def _conectaBD(local_bd):
 
-        conexao = mysql.connector.connect(host=host, user=user, password=password, database=database, port=port)
-        # Verifique se a conexão foi estabelecida
-        if conexao.is_connected():
-            print('Conexão bem-sucedida ao banco de dados')
+        try:
+            # Conectar ao banco de dados
+            conexao = sqlite3.connect(local_bd)
+            print("Conexão bem-sucedida ao banco de dados")
             return conexao
+
+        except sqlite3.Error as erro:
+            print("Erro ao conectar-se ao banco de dados:", erro)
+            return None
+
+
 
     def __init__(self, root):
         self.root = root
@@ -3283,15 +3323,16 @@ class MainApp:
         self.screen_wedth = self.root.winfo_screenwidth()
 
         self.themeAtual = load_config(False, localfile=False)
+        self.escala_atual = 1.0
 
         self.ModulosDoUsuario = None
 
         self.usuario_logado = None
 
         self.acesso_usuario = None
+        self.caminho_banco_de_dados = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Banco de dados\db_sys.db")
     
-        self.ConexaoPrincipal = MainApp._conectaBD(database='railway', host='containers-us-west-1.railway.app', 
-                                                   port=5474, user='root', password="JThLpvacyDNwzFLPyLhX")
+        self.ConexaoPrincipal = MainApp._conectaBD(self.caminho_banco_de_dados)
         
         self.login()
 
@@ -3310,6 +3351,8 @@ class MainApp:
     def clear_screen(self):
         for widget in self.root.winfo_children():
             widget.destroy()
+            print(f"destruindo {widget}")
+        print("todos destruidos")
 
     def ocultar_Janela(self, menulateral):
 
@@ -3324,18 +3367,33 @@ class MainApp:
     def exibir_gerenciarusuarios(self, frame_resposta):
         if self.acesso_usuario == "ADM":
             self.gerenciarusuarios = InterfaceGerenciarUsuarios(self, frame_resp=frame_resposta)
+        ctk.set_widget_scaling(self.escala_atual)
 
     def exibir_novoitem(self, frame_resposta):
         self.interface_Novoitem = InterfaceNovoItem(self, frame_resp=frame_resposta)
+       # ctk.set_widget_scaling(self.escala_atual)
 
     def exibir_novocliente(self, frame_resposta):
         self.interface_NovoUsuario = InterfaceNovoCliente(self, frame_resp=frame_resposta)
+       # ctk.set_widget_scaling(self.escala_atual)
 
     def exibir_novousuario(self, frame_resposta):
         self.interface_NovoUsuario = InterfaceNovoUsuario(self, frame_resp=frame_resposta)
+        #ctk.set_widget_scaling(self.escala_atual)
 
     def exibir_usuario(self, frame_resposta, bt_perfil):
         self.Interface_Usuario = InterfaceUsuario(self, frame_resposta, bt_perfil)
+        #ctk.set_widget_scaling(self.escala_atual)
+
+    def exibir_configuracoes(self, frame_resposta):
+        self.Interface_Configuracoes = InterfaceConfiguracoes(self, frame_resposta)
+       # ctk.set_widget_scaling(self.escala_atual)
+        
+
+    def exibir_estoque(self):
+        self.clear_screen()
+        self.interface_estoque = InterfaceEstoque(self.root)
+        #ctk.set_widget_scaling(self.escala_atual)
 
     def chave_customjson(self, chave, valor):
 
@@ -3360,12 +3418,7 @@ class MainApp:
         info = data[f"{chave}"][f"{valor}"]
         return info
 
-    def exibir_configuracoes(self, frame_resposta):
-        self.Interface_Configuracoes = InterfaceConfiguracoes(self, frame_resposta)
 
-    def exibir_estoque(self):
-        self.clear_screen()
-        self.interface_estoque = InterfaceEstoque(self.root)
    
     def msgbox(self, title, text, style):
         #  Styles:
@@ -3397,6 +3450,7 @@ class MainApp:
         try:
             new_scaling_float = int(new_scaling.replace("%", "")) / 100
             ctk.set_widget_scaling(new_scaling_float)
+            self.escala_atual = new_scaling_float
 
             scale_factor = new_scaling_float  # Pode ajustar o fator de escala conforme necessário
 
@@ -3412,6 +3466,8 @@ class MainApp:
 
         except:
             pass
+
+
 
     def destacar(self, lista = list, botão = object, cor = tuple, fg2 = "transparent"):
         
