@@ -609,7 +609,8 @@ class ModeloCadastro:
 
         self.Bt_Pesquisar = ctk.CTkButton(self.frame_resp, image=VisualizarIcon, text_color=("black", "white"),
                                           text="PESQUISAR",
-                                          width=80, command=lambda: self.pesquisar(self.colunas_consulta, self.tabela_bd))
+                                          width=80,
+                                          command=lambda: self.pesquisar(self.colunas_consulta, self.tabela_bd))
         self.Bt_Pesquisar.place(relx=0.612, rely=0.18, anchor="w")
 
         self.Bt_Editar = ctk.CTkButton(self.frame_resp, text="Editar", text_color=("black", "white"), image=EditarIcon,
@@ -648,6 +649,7 @@ class ModeloCadastro:
 
     def sincronizar_tabela(self, attlimite=True):
         self.Bt_Sincronizar.destroy()
+
 
         self.cursor.execute(f"SELECT * FROM {self.tabela_bd} limit 10")
 
@@ -732,13 +734,16 @@ class ModeloCadastro:
             self.reexibir_treeview(self.lista_valores)
 
     def pesquisar(self, colunas_consulta, tabela_name):
+
+        #TODO corrigir futuramente para o modulo de pqsquisar os clientes
+
         info_digitada = self.Entry_Pesquisar.get()
         if info_digitada:
             print(f"Tentou pesquisar por {info_digitada} nas colunas {colunas_consulta}")
 
             # Construir a consulta SQL de forma segura usando placeholders '?' para os parâmetros
             query = f"SELECT {', '.join(colunas_consulta)} FROM {tabela_name} WHERE {' OR '.join([f'{col} LIKE ?' for col in colunas_consulta])}"
-            
+
             # Criar os parâmetros para substituir os placeholders na consulta
             parametros = ['%' + info_digitada + '%' for _ in colunas_consulta]
 
@@ -812,7 +817,7 @@ class InterfaceNovoItem(ModeloCadastro):
         self.frame_resp = frame_resp
         self.cursor = self.main_app.ConexaoPrincipal.cursor()
         self.placehold = 'Pesquise por Id, Descrição, Marca, Categoria ou Fornecedor'
-        self.colunas_bd = ['Id', 'descricao_produto', 'marca', 'categoria','fornecedor']
+        self.colunas_bd = ['Id', 'descricao_produto', 'marca', 'categoria', 'fornecedor']
 
         super().__init__(main_app=self.main_app, frame_resp=self.frame_resp, tabela_bd="Produtos",
                          titulo_janela="ITENS", placeholder_text_pesquisar=self.placehold,
@@ -3234,9 +3239,6 @@ class TelaLogin:
                 self.main_app.msgbox("Login", "Login ou senha incorretos, Tente novamente", 0)
 
 
-
-
-
 class MainApp:
 
     @staticmethod
@@ -3301,7 +3303,8 @@ class MainApp:
         for widget in self.root.winfo_children():
             widget.destroy()
 
-    def destacar(self, lista, botao, cor, fg2="transparent"):
+    @staticmethod
+    def destacar(lista, botao, cor, fg2="transparent"):
         for valor in lista:
             if valor == botao:
                 if cor == "white":
