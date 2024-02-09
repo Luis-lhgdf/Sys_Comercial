@@ -95,42 +95,7 @@ class ArquivoPessoas:
         return pessoas
 
 
-class InterfaceEstoque:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Módulo de Estoque")
-
-        self.label_produto = ctk.CTkLabel(root, text="Produto:")
-        self.label_produto.grid(row=0, column=0)
-
-        self.entry_produto = ctk.CTkEntry(root)
-        self.entry_produto.grid(row=0, column=1)
-
-        self.btn_adicionar = (ctk.CTkButton(root, text="Adicionar Produto", command=self.adicionar_produto))
-        self.btn_adicionar.grid(row=1, column=0, )
-
-        self.btn_listar = ctk.CTkButton(root, text="Listar Produtos", command=self.listar_produtos)
-        self.btn_listar.grid(row=2, column=0, )
-
-    def adicionar_produto(self):
-        produto = self.entry_produto.get()
-        if produto:
-            # Lógica para adicionar o produto no estoque (não implementado neste exemplo)
-            self.limpar_campos()
-            # messagebox.showinfo("Sucesso", "Produto adicionado ao estoque!")
-        else:
-            pass  # messagebox.showwarning("Erro", "Por favor, insira o nome do produto!")
-
-    def listar_produtos(self):
-        # Lógica para listar os produtos do estoque (não implementado neste exemplo)
-        pass  # messagebox.showinfo("Produtos em Estoque", "Lista de produtos será exibida aqui!")
-
-    def limpar_campos(self):
-        self.entry_produto.delete(0, ctk.END)
-
-
 class InterfaceGerenciarUsuarios:
-
     def __init__(self, main_app, frame_resp):
         self.main_app = main_app
         self.frame_resp = frame_resp
@@ -199,7 +164,7 @@ class InterfaceGerenciarUsuarios:
         self.TotalUser.place(relx=0.65, rely=0.3, anchor="w")
 
         self.cabecalho = ctk.CTkLabel(self.frame_resp, text="     Usuario             Acesso             Status",
-                                      width=(self.main_app.screen_wedth) - 270, corner_radius=5,
+                                      width=self.main_app.screen_wedth - 270, corner_radius=5,
                                       fg_color=("white", "gray10"), text_color=("black", "white"), anchor="w",
                                       font=self.main_app.SubTitle)
         self.cabecalho.place(relx=0.01, rely=0.443, anchor="w")
@@ -217,29 +182,31 @@ class InterfaceGerenciarUsuarios:
                                       height=40)
         self.Pesquisar.place(relx=0.2, rely=0.18, anchor="w")
 
-        self.scrol = ctk.CTkScrollableFrame(self.frame_resp, width=(self.main_app.screen_wedth) - 270, height=50)
+        self.scrol = ctk.CTkScrollableFrame(self.frame_resp, width=self.main_app.screen_wedth - 270, height=50)
         self.scrol.place(relx=0.01, rely=0.6, anchor="w")
 
-        # adicionado nas lista os botoes com cada usuario cadastrado no banco de dados
+        # adicionado nas listas os botoes com cada usuario cadastrado no banco de dados
         for id_usuario in range(len(self.usuarios)):
             self.usuario_label.append(
                 ctk.CTkLabel(self.scrol, text=self.usuarios[id_usuario], fg_color="white", anchor="w", width=100,
-                             corner_radius=6, text_color=("black")))
+                             corner_radius=6, text_color="black"))
             self.usuario_label[id_usuario].grid(padx=2, pady=5, row=id_usuario, column=0)
 
             self.acesso_label.append(
-                ctk.CTkLabel(self.scrol, text=self.acesso[id_usuario], fg_color="white", anchor="w", width=100, corner_radius=6,
-                             text_color=("black")))
+                ctk.CTkLabel(self.scrol, text=self.acesso[id_usuario], fg_color="white", anchor="w", width=100,
+                             corner_radius=6,
+                             text_color="black"))
             self.acesso_label[id_usuario].grid(padx=2, pady=5, row=id_usuario, column=1)
 
             self.status_label.append(
-                ctk.CTkLabel(self.scrol, text=self.status[id_usuario], fg_color="white", anchor="w", width=100, corner_radius=6,
-                             text_color=("black")))
+                ctk.CTkLabel(self.scrol, text=self.status[id_usuario], fg_color="white", anchor="w", width=100,
+                             corner_radius=6,
+                             text_color="black"))
             self.status_label[id_usuario].grid(padx=2, pady=5, row=id_usuario, column=2)
 
             self.editar_button.append(
                 ctk.CTkButton(self.scrol, text="Editar", text_color=("black", "white"), image=EditarIcon, width=60,
-                              fg_color=("transparent"), command=lambda i=id_usuario: self.editar_usuario(i)))
+                              fg_color="transparent", command=lambda i=id_usuario: self.editar_usuario(i)))
             self.editar_button[id_usuario].grid(padx=60, pady=5, row=id_usuario, column=3)
 
     def buscar_usuarios(self):
@@ -252,20 +219,20 @@ class InterfaceGerenciarUsuarios:
             self.acesso.append(user[1])
             self.status.append(user[2])
 
-    def totalizador(self, total:str):
+    def totalizador(self, total: str):
         resposta = total.upper()
-        TotaldeAdmin = 0
-        TotaldeUsuarios = 0
+        total_de_adm = 0
+        total_de_usuarios = 0
 
         for acesso in self.acesso:
             if acesso == 'ADM':
-                TotaldeAdmin += 1
+                total_de_adm += 1
             else:
-                TotaldeUsuarios += 1
+                total_de_usuarios += 1
         if resposta == "ADM":
-            return TotaldeAdmin
+            return total_de_adm
         elif resposta == "USUARIOS":
-            return TotaldeUsuarios
+            return total_de_usuarios
         else:
             return None
 
@@ -296,7 +263,8 @@ class InterfaceGerenciarUsuarios:
             self.editar_button[c].grid_remove()
 
         self.cabecalho.configure(
-            text='     Usuario             Modulo             Submodulo             visualizar             Novo             Editar             Remover')
+            text='Usuario             Modulo             Submodulo             visualizar             Novo            '
+                 ' Editar             Remover')
 
         self.usuario_label_modulo = []
 
@@ -310,17 +278,17 @@ class InterfaceGerenciarUsuarios:
         for i, linha in enumerate(self.ModulosDoUsuario):
             self.usuario_label_modulo.append(
                 ctk.CTkLabel(self.scrol, text=linha[1], fg_color="white", anchor="w", width=100, corner_radius=6,
-                             text_color=("black")))
+                             text_color="black"))
             self.usuario_label_modulo[i].grid(padx=2, pady=5, row=i, column=0)
 
             modulo_label_modulo.append(
                 ctk.CTkLabel(self.scrol, text=linha[2], fg_color="white", anchor="w", width=100, corner_radius=6,
-                             text_color=("black")))
+                             text_color="black"))
             modulo_label_modulo[i].grid(padx=2, pady=5, row=i, column=1)
 
             submodulo_label_modulo.append(
                 ctk.CTkLabel(self.scrol, text=linha[3].capitalize(), fg_color="white", anchor="w", width=100,
-                             corner_radius=6, text_color=("black")))
+                             corner_radius=6, text_color="black"))
             submodulo_label_modulo[i].grid(padx=2, pady=5, row=i, column=2)
 
             visualizar_menu_modulo.append(ctk.CTkOptionMenu(self.scrol, values=(
@@ -366,24 +334,24 @@ class InterfaceGerenciarUsuarios:
             self.cursor.execute(f"SELECT acesso FROM Usuarios  where  usuario = '{self.main_app.usuario_logado}' ")
             self.acesso_usuario = str(self.cursor.fetchall()[0][0])
 
-            Bt_Salvar_modulo.destroy()
+            bt_salvar_modulo.destroy()
 
-            Bt_Cancelar_modulo.destroy()
+            bt_cancelar_modulo.destroy()
             self.reiniciar_listas()
             self.buscar_usuarios()
             self.interface()
 
-        Bt_Salvar_modulo = ctk.CTkButton(self.frame_resp, text="Salvar", image=SalvarIcon,
+        bt_salvar_modulo = ctk.CTkButton(self.frame_resp, text="Salvar", image=SalvarIcon,
                                          text_color=("black", "white"),
                                          width=100, command=lambda: salvar())
 
-        Bt_Salvar_modulo.place(relx=0.4, rely=0.8, anchor="w")
+        bt_salvar_modulo.place(relx=0.4, rely=0.8, anchor="w")
 
-        Bt_Cancelar_modulo = ctk.CTkButton(self.frame_resp, text="Voltar", image=
-        VoltarIcon, text_color=("black", "white"),
-                                           width=100, anchor="w", command=lambda: cancelar())
+        bt_cancelar_modulo = ctk.CTkButton(self.frame_resp, text="Voltar", image=VoltarIcon,
+                                           text_color=("black", "white"), width=100,
+                                           anchor="w", command=lambda: cancelar())
 
-        Bt_Cancelar_modulo.place(relx=0.3, rely=0.8, anchor="w")
+        bt_cancelar_modulo.place(relx=0.3, rely=0.8, anchor="w")
 
         self.Pesquisar.configure(state="disabled")
         self.Bt_Todos.configure(state="disabled")
@@ -393,11 +361,11 @@ class InterfaceGerenciarUsuarios:
         self.editar_button[i].configure(state="normal")
         # Salva as alteracões nas listas 
 
-        NovoUser = usuario_entry.get()
-        NovoAcesso = acesso_menu.get()
-        NovoStatus = status_menu.get()
+        novo_user = usuario_entry.get()
+        novo_acesso = acesso_menu.get()
+        novo_status = status_menu.get()
 
-        if NovoUser != self.usuarios[i]:
+        if novo_user != self.usuarios[i]:
             self.cursor.execute(f"SELECT usuario FROM Usuarios where usuario = '{usuario_entry.get()}'")
             resp = self.cursor.fetchall()
             if not resp:
@@ -409,13 +377,13 @@ class InterfaceGerenciarUsuarios:
             else:
                 self.main_app.msgbox("USUARIO", "Ja existe um usuario com este nome!!!", 0)
 
-        if NovoAcesso != self.acesso[i]:
+        if novo_acesso != self.acesso[i]:
             self.cursor.execute(
                 f"UPDATE Usuarios SET acesso = '{acesso_menu.get()}' where usuario = '{self.usuarios[i]}'")
             self.acesso[i] = acesso_menu.get()
             self.main_app.ConexaoPrincipal.commit()
 
-        if NovoStatus != self.status[i]:
+        if novo_status != self.status[i]:
             self.cursor.execute(
                 f"UPDATE Usuarios SET status = '{status_menu.get()}' where usuario = '{self.usuarios[i]}'")
             self.status[i] = status_menu.get()
@@ -514,46 +482,46 @@ class InterfaceGerenciarUsuarios:
         usuario_entry.insert(0, self.usuarios[i])
         usuario_entry.grid(padx=2, pady=5, row=i, column=0)
 
-        Menu1 = ("USUARIO", "ADM")
-        Menu2 = ("ADM", "USUARIO")
+        menu1 = ("USUARIO", "ADM")
+        menu2 = ("ADM", "USUARIO")
 
-        Status1 = ("ATIVO", "DESATIVADO")
-        Status2 = ("DESATIVADO", "ATIVO")
+        status1 = ("ATIVO", "DESATIVADO")
+        status2 = ("DESATIVADO", "ATIVO")
 
-        valores_acesso_menu = Menu1 if self.acesso[i] == "USUARIO" else Menu2
+        valores_acesso_menu = menu1 if self.acesso[i] == "USUARIO" else menu2
         acesso_menu = ctk.CTkOptionMenu(self.scrol, values=list(valores_acesso_menu), width=100, height=26)
         acesso_menu.grid(padx=2, pady=5, row=i, column=1)
 
-        valores_status_menu = Status1 if self.status[i] == "ATIVO" else Status2
+        valores_status_menu = status1 if self.status[i] == "ATIVO" else status2
         status_menu = ctk.CTkOptionMenu(self.scrol, values=list(valores_status_menu), width=100, height=26)
         status_menu.grid(padx=2, pady=5, row=i, column=2)
 
         # Cria os botões Salvar e Cancelar
         self.salvar_button[i] = ctk.CTkButton(self.scrol, text="Salvar", text_color=("black", "white"),
-                                              image=SalvarIcon, width=60, fg_color=("transparent"),
+                                              image=SalvarIcon, width=60, fg_color="transparent",
                                               command=lambda: self.salvar_usuario(i, usuario_entry, status_menu,
                                                                                   acesso_menu))
         self.salvar_button[i].grid(row=i, column=4)
 
         self.cancelar_button[i] = ctk.CTkButton(self.scrol, text="Cancelar", text_color=("black", "white"),
-                                                image=VoltarIcon, width=60, fg_color=("transparent"),
+                                                image=VoltarIcon, width=60, fg_color="transparent",
                                                 command=lambda: self.cancelar_usuario(i, usuario_entry, status_menu,
                                                                                       acesso_menu))
         self.cancelar_button[i].grid(padx=5, row=i, column=5)
 
         self.Editar_Modulos[i] = ctk.CTkButton(self.scrol, text="Modulos", text_color=("black", "white"),
-                                               image=EditarIcon, width=60, fg_color=("transparent"),
+                                               image=EditarIcon, width=60, fg_color="transparent",
                                                command=lambda: self.modulos_usuario(i, usuario_entry, status_menu,
                                                                                     acesso_menu))
         self.Editar_Modulos[i].grid(padx=5, row=i, column=6)
 
         self.excluir_button[i] = ctk.CTkButton(self.scrol, text="Deletar", text_color=("black", "white"),
-                                               image=DeletarIcon, width=60, fg_color=("transparent"),
+                                               image=DeletarIcon, width=60, fg_color="transparent",
                                                command=lambda: self.excluir_usuario(i, usuario_entry, status_menu,
                                                                                     acesso_menu))
         self.excluir_button[i].grid(padx=5, row=i, column=7)
 
-        # Esconde os rótulos e o botão Editar
+        # Esconde os rótulos e o botao Editar
         self.usuario_label[i].grid_remove()
         self.status_label[i].grid_remove()
         self.acesso_label[i].grid_remove()
@@ -573,7 +541,6 @@ class ModeloCadastro:
         self.func_interface = func_interface
         self.func_editar = func_editar
         self.func_create_update = func_create_update
-
 
         self.cursor = self.main_app.ConexaoPrincipal.cursor()
         self.limite_view = 10
@@ -604,7 +571,7 @@ class ModeloCadastro:
 
     def interface_tabela(self):
         frame_treeview = tk.Frame(self.frame_resp)
-        frame_treeview.place(x=25, y=400, width=(self.main_app.screen_wedth), height=305)
+        frame_treeview.place(x=25, y=400, width=self.main_app.screen_wedth, height=305)
 
         self.tree = ttk.Treeview(frame_treeview, show="headings")
         self.tree.place(x=0, y=0, height=305)
@@ -646,16 +613,16 @@ class ModeloCadastro:
         self.Bt_Pesquisar.place(relx=0.612, rely=0.18, anchor="w")
 
         self.Bt_Editar = ctk.CTkButton(self.frame_resp, text="Editar", text_color=("black", "white"), image=EditarIcon,
-                                       width=40, fg_color=("transparent"), state="disabled", command=self.func_editar)
+                                       width=40, fg_color="transparent", state="disabled", command=self.func_editar)
         self.Bt_Editar.place(x=320, y=250)
 
         self.Bt_Excluir = ctk.CTkButton(self.frame_resp, text="Excluir", text_color=("black", "white"),
                                         image=DeletarIcon,
-                                        width=40, fg_color=("transparent"), state="disabled", command=self.excluir)
+                                        width=40, fg_color="transparent", state="disabled", command=self.excluir)
         self.Bt_Excluir.place(x=420, y=250)
 
         self.Bt_Excel = ctk.CTkButton(self.frame_resp, text="Excel", text_color=("black", "white"), image=ExcelIcon,
-                                      width=40, fg_color=("transparent"), command=self.excel)
+                                      width=40, fg_color="transparent", command=self.excel)
         self.Bt_Excel.place(x=1020, y=250)
 
         self.Bt_Novo = ctk.CTkButton(self.frame_resp, text="NOVO", image=AdicionarIcon, text_color=("black", "white"),
@@ -663,14 +630,14 @@ class ModeloCadastro:
         self.Bt_Novo.place(relx=0.36, rely=0.85, anchor="w")
 
         self.Bt_Sincronizar = ctk.CTkButton(self.frame_resp, text="", image=sincronizar, text_color=("black", "white"),
-                                            fg_color=('transparent'),
+                                            fg_color='transparent',
                                             command=self.sincronizar_tabela)
         self.Bt_Sincronizar.place(x=575, y=250)
 
         self.Menu_LimiteView = ctk.CTkOptionMenu(self.frame_resp, height=37, width=80,
                                                  font=(ctk.CTkFont(size=11, weight="bold")),
                                                  values=['10', '100', '1000', '10000'],
-                                                 command=self.Atualizar_limiteView)
+                                                 command=self.atualizar_limiteview)
         self.Menu_LimiteView.place(x=920, y=250)
 
         style = ttk.Style()
@@ -695,34 +662,35 @@ class ModeloCadastro:
         self.tree.configure(columns=([f'coluna{c}' for c in range(1, len(self.column_names) + 1)]))
 
         if attlimite:
-            self.Atualizar_limiteView(10)
+            self.atualizar_limiteview(10)
 
-    def Atualizar_limiteView(self, novo_limite):
+    def atualizar_limiteview(self, novo_limite):
         try:
             self.tree.delete(*self.tree.get_children())  # exclui todos os itens de uma treeview
-        except:
+        except tk.TclError:
             pass
-
         self.cursor.execute(f"SELECT * FROM {self.tabela_bd} limit {int(novo_limite)}")
         self.lista_valores = self.cursor.fetchall()
 
         self.Label_LimiteView.configure(
-            text=f"01 A {novo_limite if int(novo_limite) < self.total_valores else self.total_valores} DE {self.total_valores}")
+            text=f"""01 A {novo_limite if int(novo_limite) < self.total_valores
+            else self.total_valores} "f"DE {self.total_valores}""")
+
         self.limite_view = int(novo_limite)
 
-        self.Reexibir_treeview(self.lista_valores)
+        self.reexibir_treeview(self.lista_valores)
 
-    def Reexibir_treeview(self, lista):
+    def reexibir_treeview(self, lista):
         try:
             self.tree.column("coluna1", width=50)
             self.tree.column("coluna10", width=50)
             self.tree.column("coluna14", width=50)
-        except:
+        except tk.TclError:
             pass
 
         for valor in lista:
             self.tree.insert("", "end", values=valor)
-            self.tree.tag_configure("center", anchor="center")
+            # self.tree.tag_configure("center", anchor="center")
 
         for i, coluna in enumerate(self.tree['columns']):
             nome = str(self.column_names[i]).capitalize()
@@ -742,7 +710,6 @@ class ModeloCadastro:
                 self.Bt_Editar.configure(state="normal")
                 self.Bt_Excluir.configure(state="normal")
 
-
             else:
                 self.Bt_Editar.configure(state="disabled")
                 self.Bt_Excluir.configure(state="normal")
@@ -760,9 +727,9 @@ class ModeloCadastro:
         if info_digitada:
             try:
                 self.tree.delete(*self.tree.get_children())
-            except:
+            except tk.TclError:
                 pass
-            self.Reexibir_treeview(self.lista_valores)
+            self.reexibir_treeview(self.lista_valores)
 
     def pesquisar(self, colunas_consulta):
         info_digitada = self.Entry_Pesquisar.get()
@@ -781,12 +748,12 @@ class ModeloCadastro:
 
         self.acao_widget(acao=opcao)
         self.interface_tabela()
-        self.LabelTitulo.configure(text=(f'{self.titulo_janela}'))
+        self.LabelTitulo.configure(text=f'{self.titulo_janela}')
 
     def excel(self):
         resp = self.main_app.msgbox("Excel", "Deseja exportar todos os registros?", 4)
 
-        def destino(df):
+        def destino(dataframe):
             folder_path = filedialog.asksaveasfilename(defaultextension='.xlsx')
 
             if folder_path:
@@ -797,22 +764,22 @@ class ModeloCadastro:
                 if not file_path.endswith('.xlsx'):
                     file_path += '.xlsx'
 
-                df.to_excel(file_path, index=False)
+                dataframe.to_excel(file_path, index=False)
                 self.main_app.msgbox("Excel", "Arquivo salvo com sucesso", 0)
 
         if resp == 6:
             print("esta vazio, puxando valores no banco de dados")
-            if self.lista_valores == None:
+            if self.lista_valores is None:
                 self.cursor.execute("SELECT * FROM Clientes")
                 self.lista_valores = self.cursor.fetchall()
                 self.column_names = self.column_names = [description[0] for description in self.cursor.description]
                 df = pd.DataFrame(self.lista_valores, columns=self.column_names)
-                destino(df=df)
+                destino(dataframe=df)
 
             else:
                 print("NAO ESTA VAZIA")
                 df = pd.DataFrame(self.lista_valores, columns=self.column_names)
-                destino(df=df)
+                destino(dataframe=df)
 
     def excluir(self):
         resp = self.main_app.msgbox("EXCLUIR", "Tem certeza que deseja excluir este cliente?", 4)
@@ -826,7 +793,7 @@ class ModeloCadastro:
                 self.main_app.ConexaoPrincipal.commit()
             self.main_app.msgbox("EXCLUIR", "Valor excluído com sucesso!", 0)
             self.sincronizar_tabela(attlimite=False)
-            self.Atualizar_limiteView(self.limite_view)
+            self.atualizar_limiteview(self.limite_view)
 
 
 class InterfaceNovoItem(ModeloCadastro):
@@ -835,13 +802,14 @@ class InterfaceNovoItem(ModeloCadastro):
         self.main_app = main_app
         self.frame_resp = frame_resp
         self.cursor = self.main_app.ConexaoPrincipal.cursor()
-        self.placehold = 'Pesquise por Id, Descricão, Marca, Categoria ou Fornecedor'
+        self.placehold = 'Pesquise por Id, Descrição, Marca, Categoria ou Fornecedor'
         self.colunas_bd = ['Id', 'descricao_produto', 'marca', 'categoria' 'fornecedor']
 
         super().__init__(main_app=self.main_app, frame_resp=self.frame_resp, tabela_bd="Produtos",
                          titulo_janela="ITENS", placeholder_text_pesquisar=self.placehold,
                          colunas_consulta=self.colunas_bd,
-                         func_interface=self.interface_create, func_editar=self.editar_produto, func_create_update=lambda: self.interface_create('CREATE'))
+                         func_interface=self.interface_create, func_editar=self.editar_produto,
+                         func_create_update=lambda: self.interface_create('CREATE'))
 
     def editar_produto(self):
         lista = self.valor_unico_selecionado
@@ -858,7 +826,7 @@ class InterfaceNovoItem(ModeloCadastro):
         self.entry_fornecedor.insert(0, f'{lista[7]}')
         self.entry_info_adicionais.insert("1.0", f"{lista[8]}")
 
-    def interface_create(self, tipo=str):
+    def interface_create(self, tipo: str):
         # Esconder os widgets em vez de destruí-los
 
         # descricao_produto, unidade_medida, valor_unitario, marca, categoria, Peso, fornecedor, info_adicionais
@@ -866,8 +834,7 @@ class InterfaceNovoItem(ModeloCadastro):
         self.acao_widget('ocultar')
 
         self.LabelTitulo.configure(text=('CADASTRAR ITEM' if tipo.upper() == "CREATE"
-                                         else 'EDITAR ITEM' if tipo.upper() == "UPDATE"
-        else ''))
+                                         else 'EDITAR ITEM' if tipo.upper() == "UPDATE" else ''))
 
         self.label_descricao_produto = ctk.CTkLabel(self.frame_resp, text='Descricão do Produto:',
                                                     font=(None, 12, "bold"))
@@ -910,20 +877,20 @@ class InterfaceNovoItem(ModeloCadastro):
         self.label_info_adicionais = ctk.CTkLabel(self.frame_resp, text='Informacões Adicionais:',
                                                   font=(None, 12, "bold"))
         self.label_info_adicionais.place(x=50, y=190, anchor="w")
-        self.entry_info_adicionais = ctk.CTkTextbox(self.frame_resp, width=(self.main_app.screen_wedth) - 310,
+        self.entry_info_adicionais = ctk.CTkTextbox(self.frame_resp, width=self.main_app.screen_wedth - 310,
                                                     height=100)
         self.entry_info_adicionais.place(x=50, y=220)
 
-        self.Bt_Voltar = ctk.CTkButton(self.frame_resp, text="Voltar", image=
-        VoltarIcon, text_color=("black", "white"),
+        self.Bt_Voltar = ctk.CTkButton(self.frame_resp, text="Voltar", image=VoltarIcon,
+                                       text_color=("black", "white"),
                                        width=100, anchor="w", command=lambda: self.voltar('ocultar'))
 
         self.Bt_Voltar.place(relx=0.3, rely=0.85, anchor="w")
 
-        self.Bt_NovoCLiente = ctk.CTkButton(self.frame_resp, text="SALVAR", image=SalvarIcon,
-                                            text_color=("black", "white"),
-                                            width=100, command=lambda: self.salvar_produto(tipo))
-        self.Bt_NovoCLiente.place(relx=0.4, rely=0.85, anchor="w")
+        self.Bt_Novo_Cliente = ctk.CTkButton(self.frame_resp, text="SALVAR", image=SalvarIcon,
+                                             text_color=("black", "white"),
+                                             width=100, command=lambda: self.salvar_produto(tipo))
+        self.Bt_Novo_Cliente.place(relx=0.4, rely=0.85, anchor="w")
 
     def salvar_produto(self, tipo):
         resp = self.main_app.msgbox("SALVAR", "Deseja salvar todas as informacões passadas?", 4)
@@ -945,6 +912,9 @@ class InterfaceNovoItem(ModeloCadastro):
             fornecedor = self.entry_fornecedor.get()
             info_adicionais = self.entry_info_adicionais.get("0.0", "end")
 
+            query = ()
+            values = ()
+
             # Verifica se os campos obrigatórios estão preenchidos
 
             if not descricao_produto or not unidade_medida or not valor_unitario:
@@ -960,22 +930,25 @@ class InterfaceNovoItem(ModeloCadastro):
 
             if tipo == 'CREATE':
 
-                # descricao_produto, unidade_medida, valor_unitario, marca, categoria, Peso, fornecedor, info_adicionais"
-
-                query = """INSERT INTO Produtos (descricao_produto, unidade_medida, valor_unitario, marca, categoria, peso, fornecedor, info_adicionais)
+                query = """INSERT INTO Produtos (descricao_produto, unidade_medida, valor_unitario, 
+                        marca, categoria, peso, fornecedor, info_adicionais)
                         VALUES (?, ?, ?, ?,?, ?, ?, ?) """
                 values = (
-                descricao_produto, unidade_medida, valor_unitario, marca, categoria, peso, fornecedor, info_adicionais)
+                    descricao_produto, unidade_medida, valor_unitario, marca, categoria, peso, fornecedor,
+                    info_adicionais)
 
             elif tipo == 'UPDATE':
 
                 lista = self.valor_unico_selecionado
                 id_produto = lista[0]
-                # You need to implement this method to get the selected client's ID
-                query = """UPDATE Produtos SET descricao_produto = ?, unidade_medida = ?, valor_unitario = ?, marca = ?, categoria = ?, peso = ?, fornecedor = ?, info_adicionais = ? WHERE id = ?"""
+
+                query = """UPDATE Produtos SET descricao_produto = ?, unidade_medida = ?, valor_unitario = ?, 
+                marca = ?, categoria = ?, peso = ?, fornecedor = ?, info_adicionais = ? WHERE id = ?"""
+
                 values = (
-                descricao_produto, unidade_medida, valor_unitario, marca, categoria, peso, fornecedor, info_adicionais,
-                id_produto)
+                    descricao_produto, unidade_medida, valor_unitario, marca, categoria, peso, fornecedor,
+                    info_adicionais,
+                    id_produto)
 
                 self.cursor.execute(query, values)
 
@@ -1016,29 +989,25 @@ class InterfaceNovoCliente(ModeloCadastro):
         super().__init__(main_app=self.main_app, frame_resp=self.frame_resp, tabela_bd="Clientes",
                          titulo_janela="CLIENTES", placeholder_text_pesquisar=self.placehold,
                          colunas_consulta=self.colunas_bd,
-                         func_interface=self.interface_create, func_editar=self.editar_Cliente, func_create_update=lambda: self.interface_create('CREATE'))
-        
+                         func_interface=self.interface_create, func_editar=self.editar_cliente,
+                         func_create_update=lambda: self.interface_create('CREATE'))
 
+        self.Bt_Novo = ctk.CTkButton(self.frame_resp, text="NOVO", image=AdicionarIcon, text_color=("black", "white"),
+                                     width=100, command=lambda: self.interface_create('CREATE'))
 
-
-        self.Bt_Novo = ctk.CTkButton(self.frame_resp, text="NOVO",  image=AdicionarIcon, text_color=("black","white"), 
-                                    width=100, command=lambda: self.interface_create('CREATE'))       
-
-
-
-    def editar_Cliente(self):
+    def editar_cliente(self):
         lista = self.valor_unico_selecionado
         tipo_cliente = str(lista[1])
 
-        ('id', 'tipo_de_cliente', 'cpf', 'cnpj', 'email',
-         'razao_social', 'nome', 'cep', 'endereco', 'numero',
-         'complemento', 'bairro', 'cidade', 'uf', 'fone',
-         'celular', 'questionario', 'observacoes')
+        # ('id', 'tipo_de_cliente', 'cpf', 'cnpj', 'email',
+        #  'razao_social', 'nome', 'cep', 'endereco', 'numero',
+        #  'complemento', 'bairro', 'cidade', 'uf', 'fone',
+        #  'celular', 'questionario', 'observacoes')
 
-        ('143', 'Pessoa Jurídica', 'None', '12.345.678/0001-99', 'empresa1@example.com',
-         'Empresa XYZ Ltda.', 'Empresa XYZ', '54321-876', 'Avenida dos Negócios', '456',
-         'None', 'Bairro Comercial', 'Rio de Janeiro', 'RJ', '(21) 2222-2222',
-         '(21) 98888-8888', 'Respondeu parcialmente ao questionário.', 'Informacões adicionais importantes.')
+        # ('143', 'Pessoa Jurídica', 'None', '12.345.678/0001-99', 'empresa1@example.com',
+        #  'Empresa XYZ Ltda.', 'Empresa XYZ', '54321-876', 'Avenida dos Negócios', '456',
+        #  'None', 'Bairro Comercial', 'Rio de Janeiro', 'RJ', '(21) 2222-2222',
+        #  '(21) 98888-8888', 'Respondeu parcialmente ao questionário.', 'Informacões adicionais importantes.')
 
         self.interface_create('UPDATE')
 
@@ -1063,20 +1032,21 @@ class InterfaceNovoCliente(ModeloCadastro):
         self.entry_bairro.insert(0, f"{str(lista[11])}")
         self.entry_cidade.insert(0, f"{str(lista[12])}")
         self.entry_uf.insert(0, f"{str(lista[13])}")
-        self.entry_fone.insert(0,f"{int(str(lista[14]).replace('(', '').replace(')', '').replace(' ', '').replace('-', ''))}")
-        self.entry_celular.insert(0,f"{int(str(lista[15]).replace('(', '').replace(')', '').replace(' ', '').replace('-', ''))}")
+        self.entry_fone.insert(0,
+                               f"{int(str(lista[14]).replace('(', '').replace(')', '').replace(' ', '').replace('-', ''))}")
+
+        self.entry_celular.insert(0,
+                                  f"{int(str(lista[15]).replace('(', '').replace(')', '').replace(' ', '').replace('-', ''))}")
+
         self.menu_questionario.set(f'{str(lista[16])}')
         self.entry_observacoes.insert('1.0', f"{str(lista[17])}")
 
-
-    def interface_create(self, tipo=str):
+    def interface_create(self, tipo: str):
         # Esconder os widgets em vez de destruí-los
         self.acao_widget('ocultar')
-        
 
         self.LabelTitulo.configure(text=('CADASTRAR CLIENTE' if tipo.upper() == "CREATE"
-                                         else 'EDITAR CLIENTE' if tipo.upper() == "UPDATE"
-        else ''))
+                                         else 'EDITAR CLIENTE' if tipo.upper() == "UPDATE" else ''))
         # Crie o widget para a opcão 'tipo_de_cliente'
 
         self.label_tipo_cliente = ctk.CTkLabel(self.frame_resp, text='Tipo de Cliente:', font=(None, 12, "bold"))
@@ -1103,7 +1073,7 @@ class InterfaceNovoCliente(ModeloCadastro):
                                                validatecommand=(self.main_app.validade_cmd_text, "%P", 500))
         self.entry_razao_social.place(x=800, y=80, anchor="w")
 
-        self.label_nome = ctk.CTkLabel(self.frame_resp,text='Nome:*', font=(None, 12, "bold"))
+        self.label_nome = ctk.CTkLabel(self.frame_resp, text='Nome:*', font=(None, 12, "bold"))
         self.label_nome.place(x=50, y=140, anchor="w")
         self.entry_nome = ctk.CTkEntry(self.frame_resp, width=300, validate="key",
                                        validatecommand=(self.main_app.validade_cmd_text, "%P", 500))
@@ -1176,19 +1146,18 @@ class InterfaceNovoCliente(ModeloCadastro):
 
         self.label_observacoes = ctk.CTkLabel(self.frame_resp, text='Observacões:', font=(None, 12, "bold"))
         self.label_observacoes.place(x=50, y=420, anchor="w")
-        self.entry_observacoes = ctk.CTkTextbox(self.frame_resp, width=(self.main_app.screen_wedth) - 310, height=100)
+        self.entry_observacoes = ctk.CTkTextbox(self.frame_resp, width=self.main_app.screen_wedth - 310, height=100)
         self.entry_observacoes.place(x=50, y=450)
 
-        self.Bt_Voltar = ctk.CTkButton(self.frame_resp, text="Voltar", image=
-        VoltarIcon, text_color=("black", "white"),
+        self.Bt_Voltar = ctk.CTkButton(self.frame_resp, text="Voltar", image=VoltarIcon, text_color=("black", "white"),
                                        width=100, anchor="w", command=lambda: self.voltar('ocultar'))
 
         self.Bt_Voltar.place(relx=0.3, rely=0.85, anchor="w")
 
-        self.Bt_NovoCLiente = ctk.CTkButton(self.frame_resp, text="SALVAR", image=SalvarIcon,
-                                            text_color=("black", "white"),
-                                            width=100, command=lambda: self.salvar_cliente(tipo))
-        self.Bt_NovoCLiente.place(relx=0.4, rely=0.85, anchor="w")
+        self.Bt_Novo_Cliente = ctk.CTkButton(self.frame_resp, text="SALVAR", image=SalvarIcon,
+                                             text_color=("black", "white"),
+                                             width=100, command=lambda: self.salvar_cliente(tipo))
+        self.Bt_Novo_Cliente.place(relx=0.4, rely=0.85, anchor="w")
 
         self.definir_cliente(resposta="PESSOA FISICA")
 
@@ -1224,13 +1193,19 @@ class InterfaceNovoCliente(ModeloCadastro):
                 self.entry_bairro.configure(border_color="red")
                 self.entry_cidade.configure(border_color="red")
                 self.entry_uf.configure(border_color="red")
-                self.entry_cpf_cnpj.configure(border_color="red") 
+                self.entry_cpf_cnpj.configure(border_color="red")
 
                 self.main_app.msgbox("Campos obrigatórios não preenchidos",
                                      "Por favor, preencha todos os campos obrigatórios antes de salvar.", 0)
                 return
 
             if tipo == 'CREATE' or tipo == 'UPDATE':
+                cnpj = None
+                cpf = None
+
+                query = ()
+                values = ()
+
                 if tipo_cliente == 'PESSOA FISICA':
                     cpf = entry_cpf_cnpj
                     cnpj = None
@@ -1242,9 +1217,10 @@ class InterfaceNovoCliente(ModeloCadastro):
                     query = """INSERT INTO Clientes (tipo_de_cliente, cpf, cnpj, email, razao_social, nome, cep, endereco, numero, complemento, bairro, cidade, uf, telefone, celular, questionario, observacoes)
                             VALUES (?, ?, ?, ?,?, ?, ?, ?,?, ?, ?, ?,?, ?, ?, ?, ?) """
                     values = (
-                    tipo_cliente, cpf, cnpj, entry_email, entry_razao_social, entry_nome, entry_cep, entry_endereco,
-                    entry_numero, entry_complemento, entry_bairro, entry_cidade, entry_uf, entry_fone, entry_celular,
-                    menu_questionario, entry_observacoes)
+                        tipo_cliente, cpf, cnpj, entry_email, entry_razao_social, entry_nome, entry_cep, entry_endereco,
+                        entry_numero, entry_complemento, entry_bairro, entry_cidade, entry_uf, entry_fone,
+                        entry_celular,
+                        menu_questionario, entry_observacoes)
 
                 elif tipo == 'UPDATE':
 
@@ -1254,9 +1230,10 @@ class InterfaceNovoCliente(ModeloCadastro):
                     query = """UPDATE Clientes SET tipo_de_cliente = ?, cpf = ?, cnpj = ?, email = ?, razao_social = ?, nome = ?, cep = ?, endereco = ?, numero = ?, complemento = ?, bairro = ?, cidade = ?, uf = ?, telefone = ?, celular = ?, questionario = ?, observacoes = ?
                             WHERE id = ?"""
                     values = (
-                    tipo_cliente, cpf, cnpj, entry_email, entry_razao_social, entry_nome, entry_cep, entry_endereco,
-                    entry_numero, entry_complemento, entry_bairro, entry_cidade, entry_uf, entry_fone, entry_celular,
-                    menu_questionario, entry_observacoes, id_cliente)
+                        tipo_cliente, cpf, cnpj, entry_email, entry_razao_social, entry_nome, entry_cep, entry_endereco,
+                        entry_numero, entry_complemento, entry_bairro, entry_cidade, entry_uf, entry_fone,
+                        entry_celular,
+                        menu_questionario, entry_observacoes, id_cliente)
 
                 self.cursor.execute(query, values)
                 # Commit the changes to the database
@@ -1334,93 +1311,93 @@ class InterfaceNovoUsuario:
                                         corner_radius=6)
         self.LabelTitulo.place(x=1, y=1)
 
-        Painel_NovoUsuario = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth) - 270,
-                                           height=90, border_width=3,
-                                           fg_color="transparent", hover=False)
-        Painel_NovoUsuario.place(relx=0.02, rely=0.1, anchor="w")
+        painel_novo_usuario = ctk.CTkButton(self.frame_resp, text="", width=self.main_app.screen_wedth - 270,
+                                            height=90, border_width=3,
+                                            fg_color="transparent", hover=False)
+        painel_novo_usuario.place(relx=0.02, rely=0.1, anchor="w")
 
-        TituloUsuario = ctk.CTkLabel(Painel_NovoUsuario, text="USUARIO")
-        TituloUsuario.place(x=63, y=15)
+        titulo_usuario = ctk.CTkLabel(painel_novo_usuario, text="USUARIO")
+        titulo_usuario.place(x=63, y=15)
 
-        TituloSenha = ctk.CTkLabel(Painel_NovoUsuario, text="SENHA")
-        TituloSenha.place(x=265, y=15)
+        titulo_senha = ctk.CTkLabel(painel_novo_usuario, text="SENHA")
+        titulo_senha.place(x=265, y=15)
 
-        TituloAcesso = ctk.CTkLabel(Painel_NovoUsuario, text="ACESSO")
-        TituloAcesso.place(x=465, y=15)
+        titulo_acesso = ctk.CTkLabel(painel_novo_usuario, text="ACESSO")
+        titulo_acesso.place(x=465, y=15)
 
-        TituloStatus = ctk.CTkLabel(Painel_NovoUsuario, text="STATUS")
-        TituloStatus.place(x=663, y=15)
+        titulo_status = ctk.CTkLabel(painel_novo_usuario, text="STATUS")
+        titulo_status.place(x=663, y=15)
 
-        self.EntryUsuario = ctk.CTkEntry(Painel_NovoUsuario, placeholder_text="Digite aqui:", width=150)
+        self.EntryUsuario = ctk.CTkEntry(painel_novo_usuario, placeholder_text="Digite aqui:", width=150)
         self.EntryUsuario.place(x=10, y=45)
 
-        self.EntrySenha = ctk.CTkEntry(Painel_NovoUsuario, placeholder_text="Senha temporaria:", width=150)
+        self.EntrySenha = ctk.CTkEntry(painel_novo_usuario, placeholder_text="Senha temporaria:", width=150)
         self.EntrySenha.place(x=210, y=45)
 
-        self.MenuAcesso = ctk.CTkOptionMenu(Painel_NovoUsuario, values=["USUARIO", "ADM"], width=150)
+        self.MenuAcesso = ctk.CTkOptionMenu(painel_novo_usuario, values=["USUARIO", "ADM"], width=150)
         self.MenuAcesso.place(x=410, y=45)
 
-        self.MenuStatus = ctk.CTkOptionMenu(Painel_NovoUsuario, values=["ATIVO", "DESATIVADO"], width=150)
+        self.MenuStatus = ctk.CTkOptionMenu(painel_novo_usuario, values=["ATIVO", "DESATIVADO"], width=150)
         self.MenuStatus.place(x=610, y=45)
 
-        self.Bt_SalvarModulos = ctk.CTkButton(Painel_NovoUsuario, image=SalvarIcon, text_color=("black", "white"),
+        self.Bt_SalvarModulos = ctk.CTkButton(painel_novo_usuario, image=SalvarIcon, text_color=("black", "white"),
                                               text="Salvar Alteracões",
                                               width=80,
-                                              command=self.SalvarGetSwitch)
+                                              command=self.salvar_getswitch)
         self.Bt_SalvarModulos.place(x=900, y=25)
 
-        PainelBotoes = ctk.CTkFrame(self.frame_resp, width=(self.main_app.screen_wedth) - 270, height=50,
-                                    corner_radius=0, fg_color="transparent")
-        PainelBotoes.place(relx=0.02, rely=0.19)
+        painel_botoes = ctk.CTkFrame(self.frame_resp, width=self.main_app.screen_wedth - 270, height=50,
+                                     corner_radius=0, fg_color="transparent")
+        painel_botoes.place(relx=0.02, rely=0.19)
 
         hovercolor = self.cor_destaque
 
-        self.BT_ModuloEstoque = ctk.CTkButton(PainelBotoes, image=EstoqueIcon, text="Estoque",
+        self.BT_ModuloEstoque = ctk.CTkButton(painel_botoes, image=EstoqueIcon, text="Estoque",
                                               text_color=("black", "white"), fg_color="transparent",
                                               hover_color=hovercolor, corner_radius=0, height=40, width=100,
                                               anchor="w",
-                                              command=lambda: self.Modulo_Estoque(frame_resp=self.frame_resp))
+                                              command=lambda: self.modulo_estoque(frame_resp=self.frame_resp))
         self.BT_ModuloEstoque.place(relx=0.0, rely=0.5, anchor="w", )
 
-        self.BT_ModuloCadastro = ctk.CTkButton(PainelBotoes, image=CadastroIcon, text="Cadastro",
+        self.BT_ModuloCadastro = ctk.CTkButton(painel_botoes, image=CadastroIcon, text="Cadastro",
                                                text_color=("black", "white"), fg_color="transparent",
                                                hover_color=hovercolor, corner_radius=0, height=40, width=100,
                                                anchor="w",
-                                               command=lambda: self.Modulo_Cadastro(frame_resp=self.frame_resp))
+                                               command=lambda: self.modulo_cadastro(frame_resp=self.frame_resp))
         self.BT_ModuloCadastro.place(relx=0.1, rely=0.5, anchor="w", )
 
-        self.BT_ModuloAgenda = ctk.CTkButton(PainelBotoes, image=AgendaIcon, text="Agenda",
+        self.BT_ModuloAgenda = ctk.CTkButton(painel_botoes, image=AgendaIcon, text="Agenda",
                                              text_color=("black", "white"), fg_color="transparent",
                                              hover_color=hovercolor, corner_radius=0, height=40, width=100,
-                                             anchor="w", command=lambda: self.Modulo_Agenda(frame_resp=self.frame_resp))
+                                             anchor="w", command=lambda: self.modulo_agenda(frame_resp=self.frame_resp))
         self.BT_ModuloAgenda.place(relx=0.2, rely=0.5, anchor="w", )
 
-        self.BT_ModuloCarteira = ctk.CTkButton(PainelBotoes, image=carteiraIcon, text="Carteira",
+        self.BT_ModuloCarteira = ctk.CTkButton(painel_botoes, image=carteiraIcon, text="Carteira",
                                                text_color=("black", "white"), fg_color="transparent",
                                                hover_color=hovercolor, corner_radius=0, height=40, width=100,
                                                anchor="w",
-                                               command=lambda: self.Modulo_Carteira(frame_resp=self.frame_resp))
+                                               command=lambda: self.modulo_carteira(frame_resp=self.frame_resp))
         self.BT_ModuloCarteira.place(relx=0.3, rely=0.5, anchor="w", )
 
-        self.BT_ModuloFinancas = ctk.CTkButton(PainelBotoes, image=FinancasIcon, text="Financas",
+        self.BT_ModuloFinancas = ctk.CTkButton(painel_botoes, image=FinancasIcon, text="Financas",
                                                text_color=("black", "white"), fg_color="transparent",
                                                hover_color=hovercolor, corner_radius=0, height=40, width=100,
                                                anchor="w",
-                                               command=lambda: self.Modulo_Financas(frame_resp=self.frame_resp))
+                                               command=lambda: self.modulo_financas(frame_resp=self.frame_resp))
         self.BT_ModuloFinancas.place(relx=0.4, rely=0.5, anchor="w", )
 
-        self.BT_ModuloUsuarios = ctk.CTkButton(PainelBotoes, image=UsuarioIcon, text="Usuarios",
+        self.BT_ModuloUsuarios = ctk.CTkButton(painel_botoes, image=UsuarioIcon, text="Usuarios",
                                                text_color=("black", "white"), fg_color="transparent",
                                                hover_color=hovercolor, corner_radius=0, height=40, width=100,
                                                anchor="w",
-                                               command=lambda: self.Modulo_Usuario(frame_resp=self.frame_resp))
+                                               command=lambda: self.modulo_usuario(frame_resp=self.frame_resp))
         self.BT_ModuloUsuarios.place(relx=0.5, rely=0.5, anchor="w", )
 
-        self.BT_ModuloConfiguracoes = ctk.CTkButton(PainelBotoes, image=ConfiguracoesIcon, text="Configuracões",
+        self.BT_ModuloConfiguracoes = ctk.CTkButton(painel_botoes, image=ConfiguracoesIcon, text="Configuracões",
                                                     text_color=("black", "white"), fg_color="transparent",
                                                     hover_color=hovercolor, corner_radius=0, height=40,
                                                     width=100, anchor="w",
-                                                    command=lambda: self.Modulo_Configuracoes(
+                                                    command=lambda: self.modulo_configuracoes(
                                                         frame_resp=self.frame_resp))
         self.BT_ModuloConfiguracoes.place(relx=0.6, rely=0.5, anchor="w", )
 
@@ -1428,11 +1405,12 @@ class InterfaceNovoUsuario:
                          self.BT_ModuloFinancas,
                          self.BT_ModuloUsuarios, self.BT_ModuloConfiguracoes]
 
-        self.FrameModuloResp = ctk.CTkFrame(self.frame_resp, width=(self.main_app.screen_wedth) - 270, height=900,
+        self.FrameModuloResp = ctk.CTkFrame(self.frame_resp, width=self.main_app.screen_wedth - 270, height=900,
                                             corner_radius=0)
         self.FrameModuloResp.place(relx=0.02, rely=0.24)
 
-    def AtivarSwitch(self, principal, visualizar, novo, editar, remover):
+    @staticmethod
+    def ativar_switch(principal, visualizar, novo, editar, remover):
         valor = principal.get()
         try:
             if valor == "liberado":
@@ -1457,7 +1435,7 @@ class InterfaceNovoUsuario:
 
             pass
 
-    def SalvarGetSwitch(self):
+    def salvar_getswitch(self):
         resp = self.main_app.msgbox("SALVAR", "Deseja salvar as alteracões nos módulos?", 4)
         try:
             if resp == 6:
@@ -1664,29 +1642,29 @@ class InterfaceNovoUsuario:
         except Exception as erro:
             print(erro)
 
-    def Modulo_Estoque(self, frame_resp):
+    def modulo_estoque(self, frame_resp):
 
         if self.FrameModuloEstoqueResp is None:
 
-            self.FrameModuloEstoqueResp = ctk.CTkFrame(self.frame_resp, width=(self.main_app.screen_wedth) - 270,
+            self.FrameModuloEstoqueResp = ctk.CTkFrame(frame_resp, width=self.main_app.screen_wedth - 270,
                                                        height=900, corner_radius=0)
             self.FrameModuloEstoqueResp.place(relx=0.02, rely=0.24)
 
-            self.main_app.destacar(self.listaBTS, botão=self.BT_ModuloEstoque, cor=self.cor_destaque)
+            self.main_app.destacar(self.listaBTS, botao=self.BT_ModuloEstoque, cor=self.cor_destaque)
 
             titulo_entrada = ctk.CTkLabel(self.FrameModuloEstoqueResp, font=ctk.CTkFont(weight="bold"), text="ENTRADA",
                                           text_color=("black", "white"), height=38, width=200,
                                           fg_color=("white", "gray10"), corner_radius=10, anchor="w")
             titulo_entrada.place(relx=0.1, rely=0.03, anchor="center")
 
-            Entrada_switch = ctk.CTkSwitch(titulo_entrada, font=ctk.CTkFont(weight="bold"), text="", onvalue="liberado",
+            entrada_switch = ctk.CTkSwitch(titulo_entrada, font=ctk.CTkFont(weight="bold"), text="", onvalue="liberado",
                                            offvalue="bloqueado",
                                            switch_height=25, switch_width=45, progress_color="#3DED9D",
-                                           command=lambda: self.AtivarSwitch(Entrada_switch, self.Entrada_visualizar,
-                                                                             self.Entrada_novo, self.Entrada_editar,
-                                                                             self.Entrada_remover))
+                                           command=lambda: self.ativar_switch(entrada_switch, self.Entrada_visualizar,
+                                                                              self.Entrada_novo, self.Entrada_editar,
+                                                                              self.Entrada_remover))
 
-            Entrada_switch.place(relx=0.94, rely=0.5, anchor="center")
+            entrada_switch.place(relx=0.94, rely=0.5, anchor="center")
 
             self.Entrada_visualizar = ctk.CTkSwitch(self.FrameModuloEstoqueResp, font=ctk.CTkFont(weight="bold"),
                                                     text="Visualizar", onvalue="liberado", offvalue="bloqueado",
@@ -1722,9 +1700,9 @@ class InterfaceNovoUsuario:
             saida_switch = ctk.CTkSwitch(titulo_saida, font=ctk.CTkFont(weight="bold"), text="", onvalue="liberado",
                                          offvalue="bloqueado",
                                          switch_height=25, switch_width=45, progress_color="#3DED9D",
-                                         command=lambda: self.AtivarSwitch(saida_switch, self.saida_visualizar,
-                                                                           self.saida_novo, self.saida_editar,
-                                                                           self.saida_remover))
+                                         command=lambda: self.ativar_switch(saida_switch, self.saida_visualizar,
+                                                                            self.saida_novo, self.saida_editar,
+                                                                            self.saida_remover))
             saida_switch.place(relx=0.94, rely=0.5, anchor="center")
 
             self.saida_visualizar = ctk.CTkSwitch(self.FrameModuloEstoqueResp, font=ctk.CTkFont(weight="bold"),
@@ -1761,11 +1739,11 @@ class InterfaceNovoUsuario:
             inventario_switch = ctk.CTkSwitch(titulo_inventario, font=ctk.CTkFont(weight="bold"), text="",
                                               onvalue="liberado", offvalue="bloqueado",
                                               switch_height=25, switch_width=45, progress_color="#3DED9D",
-                                              command=lambda: self.AtivarSwitch(inventario_switch,
-                                                                                self.inventario_visualizar,
-                                                                                self.inventario_novo,
-                                                                                self.inventario_editar,
-                                                                                self.inventario_remover))
+                                              command=lambda: self.ativar_switch(inventario_switch,
+                                                                                 self.inventario_visualizar,
+                                                                                 self.inventario_novo,
+                                                                                 self.inventario_editar,
+                                                                                 self.inventario_remover))
             inventario_switch.place(relx=0.94, rely=0.5, anchor="center")
 
             self.inventario_visualizar = ctk.CTkSwitch(self.FrameModuloEstoqueResp, font=ctk.CTkFont(weight="bold"),
@@ -1793,17 +1771,17 @@ class InterfaceNovoUsuario:
             self.inventario_remover.place(x=600, y=140)
         else:
             self.FrameModuloEstoqueResp.tkraise()
-            self.main_app.destacar(self.listaBTS, botão=self.BT_ModuloEstoque, cor=self.cor_destaque)
+            self.main_app.destacar(self.listaBTS, botao=self.BT_ModuloEstoque, cor=self.cor_destaque)
 
-    def Modulo_Cadastro(self, frame_resp):
+    def modulo_cadastro(self, frame_resp):
 
         if self.FrameModuloCadastroResp is None:
 
-            self.FrameModuloCadastroResp = ctk.CTkFrame(self.frame_resp, width=(self.main_app.screen_wedth) - 270,
+            self.FrameModuloCadastroResp = ctk.CTkFrame(frame_resp, width=self.main_app.screen_wedth - 270,
                                                         height=900, corner_radius=0)
             self.FrameModuloCadastroResp.place(relx=0.02, rely=0.24)
 
-            self.main_app.destacar(self.listaBTS, botão=self.BT_ModuloCadastro, cor=self.cor_destaque)
+            self.main_app.destacar(self.listaBTS, botao=self.BT_ModuloCadastro, cor=self.cor_destaque)
 
             titulo_item = ctk.CTkLabel(self.FrameModuloCadastroResp, font=ctk.CTkFont(weight="bold"), text="CAD ITENS",
                                        text_color=("black", "white"), height=38, width=200,
@@ -1813,9 +1791,9 @@ class InterfaceNovoUsuario:
             item_switch = ctk.CTkSwitch(titulo_item, font=ctk.CTkFont(weight="bold"), text="", onvalue="liberado",
                                         offvalue="bloqueado",
                                         switch_height=25, switch_width=45, progress_color="#3DED9D",
-                                        command=lambda: self.AtivarSwitch(item_switch, self.item_visualizar,
-                                                                          self.item_novo, self.item_editar,
-                                                                          self.item_remover))
+                                        command=lambda: self.ativar_switch(item_switch, self.item_visualizar,
+                                                                           self.item_novo, self.item_editar,
+                                                                           self.item_remover))
             item_switch.place(relx=0.94, rely=0.5, anchor="center")
 
             self.item_visualizar = ctk.CTkSwitch(self.FrameModuloCadastroResp, font=ctk.CTkFont(weight="bold"),
@@ -1852,9 +1830,9 @@ class InterfaceNovoUsuario:
             cliente_switch = ctk.CTkSwitch(titulo_cliente, font=ctk.CTkFont(weight="bold"), text="", onvalue="liberado",
                                            offvalue="bloqueado",
                                            switch_height=25, switch_width=45, progress_color="#3DED9D",
-                                           command=lambda: self.AtivarSwitch(cliente_switch, self.cliente_visualizar,
-                                                                             self.cliente_novo, self.cliente_editar,
-                                                                             self.cliente_remover))
+                                           command=lambda: self.ativar_switch(cliente_switch, self.cliente_visualizar,
+                                                                              self.cliente_novo, self.cliente_editar,
+                                                                              self.cliente_remover))
             cliente_switch.place(relx=0.94, rely=0.5, anchor="center")
 
             self.cliente_visualizar = ctk.CTkSwitch(self.FrameModuloCadastroResp, font=ctk.CTkFont(weight="bold"),
@@ -1891,11 +1869,11 @@ class InterfaceNovoUsuario:
             criarusuario_switch = ctk.CTkSwitch(titulo_criarusuario, font=ctk.CTkFont(weight="bold"), text="",
                                                 onvalue="liberado", offvalue="bloqueado",
                                                 switch_height=25, switch_width=45, progress_color="#3DED9D",
-                                                command=lambda: self.AtivarSwitch(criarusuario_switch,
-                                                                                  self.criarusuario_visualizar,
-                                                                                  self.criarusuario_novo,
-                                                                                  self.criarusuario_editar,
-                                                                                  self.criarusuario_remover))
+                                                command=lambda: self.ativar_switch(criarusuario_switch,
+                                                                                   self.criarusuario_visualizar,
+                                                                                   self.criarusuario_novo,
+                                                                                   self.criarusuario_editar,
+                                                                                   self.criarusuario_remover))
             criarusuario_switch.place(relx=0.94, rely=0.5, anchor="center")
 
             self.criarusuario_visualizar = ctk.CTkSwitch(self.FrameModuloCadastroResp, font=ctk.CTkFont(weight="bold"),
@@ -1924,20 +1902,20 @@ class InterfaceNovoUsuario:
 
             # ________________________________________________________________________________________________________________________________________-
 
-            titulo_gerenciarUser = ctk.CTkLabel(self.FrameModuloCadastroResp, font=ctk.CTkFont(weight="bold"),
-                                                text="GERENCIAR USER", text_color=("black", "white"), height=38,
-                                                width=200,
-                                                fg_color=("white", "gray10"), corner_radius=6, anchor="w")
-            titulo_gerenciarUser.place(relx=0.1, rely=0.26, anchor="center")
+            titulo_gerenciar_user = ctk.CTkLabel(self.FrameModuloCadastroResp, font=ctk.CTkFont(weight="bold"),
+                                                 text="GERENCIAR USER", text_color=("black", "white"), height=38,
+                                                 width=200,
+                                                 fg_color=("white", "gray10"), corner_radius=6, anchor="w")
+            titulo_gerenciar_user.place(relx=0.1, rely=0.26, anchor="center")
 
-            gerenciar_switch = ctk.CTkSwitch(titulo_gerenciarUser, font=ctk.CTkFont(weight="bold"), text="",
+            gerenciar_switch = ctk.CTkSwitch(titulo_gerenciar_user, font=ctk.CTkFont(weight="bold"), text="",
                                              onvalue="liberado", offvalue="bloqueado",
                                              switch_height=25, switch_width=45, progress_color="#3DED9D",
-                                             command=lambda: self.AtivarSwitch(gerenciar_switch,
-                                                                               self.gerenciar_visualizar,
-                                                                               self.gerenciar_novo,
-                                                                               self.gerenciar_editar,
-                                                                               self.gerenciar_remover))
+                                             command=lambda: self.ativar_switch(gerenciar_switch,
+                                                                                self.gerenciar_visualizar,
+                                                                                self.gerenciar_novo,
+                                                                                self.gerenciar_editar,
+                                                                                self.gerenciar_remover))
             gerenciar_switch.place(relx=0.94, rely=0.5, anchor="center")
 
             self.gerenciar_visualizar = ctk.CTkSwitch(self.FrameModuloCadastroResp, font=ctk.CTkFont(weight="bold"),
@@ -1965,17 +1943,17 @@ class InterfaceNovoUsuario:
             self.gerenciar_remover.place(x=10, y=350)
         else:
             self.FrameModuloCadastroResp.tkraise()
-            self.main_app.destacar(self.listaBTS, botão=self.BT_ModuloCadastro, cor=self.cor_destaque)
+            self.main_app.destacar(self.listaBTS, botao=self.BT_ModuloCadastro, cor=self.cor_destaque)
 
-    def Modulo_Agenda(self, frame_resp):
+    def modulo_agenda(self, frame_resp):
 
         if self.FrameModuloAgendaResp is None:
 
-            self.FrameModuloAgendaResp = ctk.CTkFrame(self.frame_resp, width=(self.main_app.screen_wedth) - 270,
+            self.FrameModuloAgendaResp = ctk.CTkFrame(frame_resp, width=self.main_app.screen_wedth - 270,
                                                       height=900, corner_radius=0)
             self.FrameModuloAgendaResp.place(relx=0.02, rely=0.24)
 
-            self.main_app.destacar(self.listaBTS, botão=self.BT_ModuloAgenda, cor=self.cor_destaque)
+            self.main_app.destacar(self.listaBTS, botao=self.BT_ModuloAgenda, cor=self.cor_destaque)
 
             titulo_agenda = ctk.CTkLabel(self.FrameModuloAgendaResp, font=ctk.CTkFont(weight="bold"), text="AGENDA",
                                          text_color=("black", "white"), height=38, width=200,
@@ -1985,9 +1963,9 @@ class InterfaceNovoUsuario:
             agenda_switch = ctk.CTkSwitch(titulo_agenda, font=ctk.CTkFont(weight="bold"), text="", onvalue="liberado",
                                           offvalue="bloqueado",
                                           switch_height=25, switch_width=45, progress_color="#3DED9D",
-                                          command=lambda: self.AtivarSwitch(agenda_switch, self.agenda_visualizar,
-                                                                            self.agenda_novo, self.agenda_editar,
-                                                                            self.agenda_remover))
+                                          command=lambda: self.ativar_switch(agenda_switch, self.agenda_visualizar,
+                                                                             self.agenda_novo, self.agenda_editar,
+                                                                             self.agenda_remover))
             agenda_switch.place(relx=0.94, rely=0.5, anchor="center")
 
             self.agenda_visualizar = ctk.CTkSwitch(self.FrameModuloAgendaResp, font=ctk.CTkFont(weight="bold"),
@@ -2015,17 +1993,17 @@ class InterfaceNovoUsuario:
             self.agenda_remover.place(x=10, y=140)
         else:
             self.FrameModuloAgendaResp.tkraise()
-            self.main_app.destacar(self.listaBTS, botão=self.BT_ModuloAgenda, cor=self.cor_destaque)
+            self.main_app.destacar(self.listaBTS, botao=self.BT_ModuloAgenda, cor=self.cor_destaque)
 
-    def Modulo_Carteira(self, frame_resp):
+    def modulo_carteira(self, frame_resp):
 
         if self.FrameModuloCarteiraResp is None:
 
-            self.FrameModuloCarteiraResp = ctk.CTkFrame(self.frame_resp, width=(self.main_app.screen_wedth) - 270,
+            self.FrameModuloCarteiraResp = ctk.CTkFrame(frame_resp, width=self.main_app.screen_wedth - 270,
                                                         height=900, corner_radius=0)
             self.FrameModuloCarteiraResp.place(relx=0.02, rely=0.24)
 
-            self.main_app.destacar(self.listaBTS, botão=self.BT_ModuloCarteira, cor=self.cor_destaque)
+            self.main_app.destacar(self.listaBTS, botao=self.BT_ModuloCarteira, cor=self.cor_destaque)
 
             titulo_vendas = ctk.CTkLabel(self.FrameModuloCarteiraResp, font=ctk.CTkFont(weight="bold"), text="VENDAS",
                                          text_color=("black", "white"), height=38, width=200,
@@ -2035,9 +2013,9 @@ class InterfaceNovoUsuario:
             vendas_switch = ctk.CTkSwitch(titulo_vendas, font=ctk.CTkFont(weight="bold"), text="", onvalue="liberado",
                                           offvalue="bloqueado",
                                           switch_height=25, switch_width=45, progress_color="#3DED9D",
-                                          command=lambda: self.AtivarSwitch(vendas_switch, self.vendas_visualizar,
-                                                                            self.vendas_novo, self.vendas_editar,
-                                                                            self.vendas_remover))
+                                          command=lambda: self.ativar_switch(vendas_switch, self.vendas_visualizar,
+                                                                             self.vendas_novo, self.vendas_editar,
+                                                                             self.vendas_remover))
             vendas_switch.place(relx=0.94, rely=0.5, anchor="center")
 
             self.vendas_visualizar = ctk.CTkSwitch(self.FrameModuloCarteiraResp, font=ctk.CTkFont(weight="bold"),
@@ -2074,11 +2052,11 @@ class InterfaceNovoUsuario:
             faturamento_switch = ctk.CTkSwitch(titulo_faturamento, font=ctk.CTkFont(weight="bold"), text="",
                                                onvalue="liberado", offvalue="bloqueado",
                                                switch_height=25, switch_width=45, progress_color="#3DED9D",
-                                               command=lambda: self.AtivarSwitch(faturamento_switch,
-                                                                                 self.faturamento_visualizar,
-                                                                                 self.faturamento_novo,
-                                                                                 self.faturamento_editar,
-                                                                                 self.faturamento_remover))
+                                               command=lambda: self.ativar_switch(faturamento_switch,
+                                                                                  self.faturamento_visualizar,
+                                                                                  self.faturamento_novo,
+                                                                                  self.faturamento_editar,
+                                                                                  self.faturamento_remover))
             faturamento_switch.place(relx=0.94, rely=0.5, anchor="center")
 
             self.faturamento_visualizar = ctk.CTkSwitch(self.FrameModuloCarteiraResp, font=ctk.CTkFont(weight="bold"),
@@ -2106,17 +2084,17 @@ class InterfaceNovoUsuario:
             self.faturamento_remover.place(x=300, y=140)
         else:
             self.FrameModuloCarteiraResp.tkraise()
-            self.main_app.destacar(self.listaBTS, botão=self.BT_ModuloCarteira, cor=self.cor_destaque)
+            self.main_app.destacar(self.listaBTS, botao=self.BT_ModuloCarteira, cor=self.cor_destaque)
 
-    def Modulo_Financas(self, frame_resp):
+    def modulo_financas(self, frame_resp):
 
         if self.FrameModuloFinancasResp is None:
 
-            self.FrameModuloFinancasResp = ctk.CTkFrame(self.frame_resp, width=(self.main_app.screen_wedth) - 270,
+            self.FrameModuloFinancasResp = ctk.CTkFrame(frame_resp, width=self.main_app.screen_wedth - 270,
                                                         height=900, corner_radius=0)
             self.FrameModuloFinancasResp.place(relx=0.02, rely=0.24)
 
-            self.main_app.destacar(self.listaBTS, botão=self.BT_ModuloFinancas, cor=self.cor_destaque)
+            self.main_app.destacar(self.listaBTS, botao=self.BT_ModuloFinancas, cor=self.cor_destaque)
 
             titulo_despesas = ctk.CTkLabel(self.FrameModuloFinancasResp, font=ctk.CTkFont(weight="bold"),
                                            text="DESPESAS", text_color=("black", "white"), height=38, width=200,
@@ -2126,9 +2104,10 @@ class InterfaceNovoUsuario:
             despesas_switch = ctk.CTkSwitch(titulo_despesas, font=ctk.CTkFont(weight="bold"), text="",
                                             onvalue="liberado", offvalue="bloqueado",
                                             switch_height=25, switch_width=45, progress_color="#3DED9D",
-                                            command=lambda: self.AtivarSwitch(despesas_switch, self.despesas_visualizar,
-                                                                              self.despesas_novo, self.despesas_editar,
-                                                                              self.despesas_remover))
+                                            command=lambda: self.ativar_switch(despesas_switch,
+                                                                               self.despesas_visualizar,
+                                                                               self.despesas_novo, self.despesas_editar,
+                                                                               self.despesas_remover))
             despesas_switch.place(relx=0.94, rely=0.5, anchor="center")
 
             self.despesas_visualizar = ctk.CTkSwitch(self.FrameModuloFinancasResp, font=ctk.CTkFont(weight="bold"),
@@ -2165,9 +2144,9 @@ class InterfaceNovoUsuario:
             rendas_switch = ctk.CTkSwitch(titulo_rendas, font=ctk.CTkFont(weight="bold"), text="", onvalue="liberado",
                                           offvalue="bloqueado",
                                           switch_height=25, switch_width=45, progress_color="#3DED9D",
-                                          command=lambda: self.AtivarSwitch(rendas_switch, self.rendas_visualizar,
-                                                                            self.rendas_novo, self.rendas_editar,
-                                                                            self.rendas_remover))
+                                          command=lambda: self.ativar_switch(rendas_switch, self.rendas_visualizar,
+                                                                             self.rendas_novo, self.rendas_editar,
+                                                                             self.rendas_remover))
             rendas_switch.place(relx=0.94, rely=0.5, anchor="center")
 
             self.rendas_visualizar = ctk.CTkSwitch(self.FrameModuloFinancasResp, font=ctk.CTkFont(weight="bold"),
@@ -2196,16 +2175,16 @@ class InterfaceNovoUsuario:
 
         else:
             self.FrameModuloFinancasResp.tkraise()
-            self.main_app.destacar(self.listaBTS, botão=self.BT_ModuloFinancas, cor=self.cor_destaque)
+            self.main_app.destacar(self.listaBTS, botao=self.BT_ModuloFinancas, cor=self.cor_destaque)
 
-    def Modulo_Usuario(self, frame_resp):
+    def modulo_usuario(self, frame_resp):
 
         if self.FrameModuloUsuarioResp is None:
-            self.FrameModuloUsuarioResp = ctk.CTkFrame(self.frame_resp, width=(self.main_app.screen_wedth) - 270,
+            self.FrameModuloUsuarioResp = ctk.CTkFrame(frame_resp, width=self.main_app.screen_wedth - 270,
                                                        height=900, corner_radius=0)
             self.FrameModuloUsuarioResp.place(relx=0.02, rely=0.24)
 
-            self.main_app.destacar(self.listaBTS, botão=self.BT_ModuloUsuarios, cor=self.cor_destaque)
+            self.main_app.destacar(self.listaBTS, botao=self.BT_ModuloUsuarios, cor=self.cor_destaque)
 
             titulo_usuario = ctk.CTkLabel(self.FrameModuloUsuarioResp, font=ctk.CTkFont(weight="bold"), text="USUARIO",
                                           text_color=("black", "white"), height=38, width=200,
@@ -2215,9 +2194,9 @@ class InterfaceNovoUsuario:
             usuario_switch = ctk.CTkSwitch(titulo_usuario, font=ctk.CTkFont(weight="bold"), text="", onvalue="liberado",
                                            offvalue="bloqueado",
                                            switch_height=25, switch_width=45, progress_color="#3DED9D",
-                                           command=lambda: self.AtivarSwitch(usuario_switch, self.usuario_visualizar,
-                                                                             self.usuario_novo, self.usuario_editar,
-                                                                             self.usuario_remover))
+                                           command=lambda: self.ativar_switch(usuario_switch, self.usuario_visualizar,
+                                                                              self.usuario_novo, self.usuario_editar,
+                                                                              self.usuario_remover))
             usuario_switch.place(relx=0.94, rely=0.5, anchor="center")
 
             self.usuario_visualizar = ctk.CTkSwitch(self.FrameModuloUsuarioResp, font=ctk.CTkFont(weight="bold"),
@@ -2245,17 +2224,17 @@ class InterfaceNovoUsuario:
             self.usuario_remover.place(x=10, y=140)
         else:
             self.FrameModuloUsuarioResp.tkraise()
-            self.main_app.destacar(self.listaBTS, botão=self.BT_ModuloUsuarios, cor=self.cor_destaque)
+            self.main_app.destacar(self.listaBTS, botao=self.BT_ModuloUsuarios, cor=self.cor_destaque)
 
-    def Modulo_Configuracoes(self, frame_resp):
+    def modulo_configuracoes(self, frame_resp):
 
         if self.FrameModuloConfiguracoesResp is None:
 
-            self.FrameModuloConfiguracoesResp = ctk.CTkFrame(self.frame_resp, width=(self.main_app.screen_wedth) - 270,
+            self.FrameModuloConfiguracoesResp = ctk.CTkFrame(frame_resp, width=self.main_app.screen_wedth - 270,
                                                              height=900, corner_radius=0)
             self.FrameModuloConfiguracoesResp.place(relx=0.02, rely=0.24)
 
-            self.main_app.destacar(self.listaBTS, botão=self.BT_ModuloConfiguracoes, cor=self.cor_destaque)
+            self.main_app.destacar(self.listaBTS, botao=self.BT_ModuloConfiguracoes, cor=self.cor_destaque)
 
             titulo_configuracoes = ctk.CTkLabel(self.FrameModuloConfiguracoesResp, font=ctk.CTkFont(weight="bold"),
                                                 text="CONFIGURAcÕES", text_color=("black", "white"), height=38,
@@ -2266,11 +2245,11 @@ class InterfaceNovoUsuario:
             configuracoes_switch = ctk.CTkSwitch(titulo_configuracoes, font=ctk.CTkFont(weight="bold"), text="",
                                                  onvalue="liberado", offvalue="bloqueado",
                                                  switch_height=25, switch_width=45, progress_color="#3DED9D",
-                                                 command=lambda: self.AtivarSwitch(configuracoes_switch,
-                                                                                   self.configuracoes_visualizar,
-                                                                                   self.configuracoes_novo,
-                                                                                   self.configuracoes_editar,
-                                                                                   self.configuracoes_remover))
+                                                 command=lambda: self.ativar_switch(configuracoes_switch,
+                                                                                    self.configuracoes_visualizar,
+                                                                                    self.configuracoes_novo,
+                                                                                    self.configuracoes_editar,
+                                                                                    self.configuracoes_remover))
             configuracoes_switch.place(relx=0.94, rely=0.5, anchor="center")
 
             self.configuracoes_visualizar = ctk.CTkSwitch(self.FrameModuloConfiguracoesResp,
@@ -2302,7 +2281,7 @@ class InterfaceNovoUsuario:
 
         else:
             self.FrameModuloConfiguracoesResp.tkraise()
-            self.main_app.destacar(self.listaBTS, botão=self.BT_ModuloConfiguracoes, cor=self.cor_destaque)
+            self.main_app.destacar(self.listaBTS, botao=self.BT_ModuloConfiguracoes, cor=self.cor_destaque)
 
 
 class InterfaceUsuario:
@@ -2321,113 +2300,113 @@ class InterfaceUsuario:
         self.frame_resp.grid_rowconfigure((0, 1, 2, 3, 4), weight=0)
         self.frame_resp.grid_columnconfigure(0, weight=1)
 
-        LabelTitulo = ctk.CTkLabel(self.frame_resp, text=f"USUARIO", fg_color="transparent",
-                                   text_color=("black", "white"),
-                                   font=self.main_app.SubTitle, corner_radius=6, anchor="w")
-        LabelTitulo.grid(row=0, column=0, padx=10, pady=(5), sticky="nsew")
+        label_titulo = ctk.CTkLabel(self.frame_resp, text=f"USUARIO", fg_color="transparent",
+                                    text_color=("black", "white"),
+                                    font=self.main_app.SubTitle, corner_radius=6, anchor="w")
+        label_titulo.grid(row=0, column=0, padx=10, pady=5, sticky="nsew")
 
-        Painel_FtPerfil = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth) - 270, height=90,
-                                        border_width=1,
-                                        fg_color="transparent", hover=False)
+        painel_ft_perfil = ctk.CTkButton(self.frame_resp, text="", width=self.main_app.screen_wedth - 270, height=90,
+                                         border_width=1,
+                                         fg_color="transparent", hover=False)
 
-        Painel_FtPerfil.grid(row=1, column=0, padx=10, pady=(45, 5), sticky="nsew")
+        painel_ft_perfil.grid(row=1, column=0, padx=10, pady=(45, 5), sticky="nsew")
 
-        Painel_Usuario = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth) - 270, height=90,
+        painel_usuario = ctk.CTkButton(self.frame_resp, text="", width=self.main_app.screen_wedth - 270, height=90,
                                        border_width=1,
                                        fg_color="transparent", hover=False)
-        Painel_Usuario.grid(row=2, column=0, padx=10, pady=5, sticky="nsew")
+        painel_usuario.grid(row=2, column=0, padx=10, pady=5, sticky="nsew")
 
-        Painel_Senha = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth) - 270, height=90,
+        painel_senha = ctk.CTkButton(self.frame_resp, text="", width=self.main_app.screen_wedth - 270, height=90,
                                      border_width=1, fg_color="transparent",
                                      hover=False)
-        Painel_Senha.grid(row=3, column=0, padx=10, pady=5, sticky="nsew")
+        painel_senha.grid(row=3, column=0, padx=10, pady=5, sticky="nsew")
 
-        Painel_Excluir = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth) - 270, height=90,
+        painel_excluir = ctk.CTkButton(self.frame_resp, text="", width=self.main_app.screen_wedth - 270, height=90,
                                        border_width=1,
                                        fg_color="transparent", hover=False)
-        Painel_Excluir.grid(row=4, column=0, padx=10, pady=5, sticky="nsew")
+        painel_excluir.grid(row=4, column=0, padx=10, pady=5, sticky="nsew")
 
-        Label_FtPerfil = ctk.CTkLabel(Painel_FtPerfil, text="Foto de perfil", font=self.main_app.FontTitle,
-                                      fg_color="transparent")
-        Label_FtPerfil.place(x=10, y=5)
+        label_ft_perfil = ctk.CTkLabel(painel_ft_perfil, text="Foto de perfil", font=self.main_app.FontTitle,
+                                       fg_color="transparent")
+        label_ft_perfil.place(x=10, y=5)
 
-        bt = ctk.CTkButton(Painel_FtPerfil, image=ImagemIcon, text="Alterar", command=self.Trocar_img,
+        bt = ctk.CTkButton(painel_ft_perfil, image=ImagemIcon, text="Alterar", command=self.trocar_img,
                            text_color=("black", "white"),
                            width=80, )
         bt.place(x=10, y=50)
 
-        TituloUsuario = ctk.CTkLabel(Painel_Usuario, text="Usuario", font=self.main_app.FontTitle,
-                                     fg_color="transparent")
-        TituloUsuario.place(x=10, y=5)
+        titulo_usuario = ctk.CTkLabel(painel_usuario, text="Usuario", font=self.main_app.FontTitle,
+                                      fg_color="transparent")
+        titulo_usuario.place(x=10, y=5)
 
-        self.LabelUsuario = ctk.CTkLabel(Painel_Usuario, text=f"{self.main_app.usuario_logado}",
+        self.LabelUsuario = ctk.CTkLabel(painel_usuario, text=f"{self.main_app.usuario_logado}",
                                          font=self.main_app.FontBody, fg_color="transparent")
         self.LabelUsuario.place(x=10, y=50)
 
-        TituloAcesso = ctk.CTkLabel(Painel_Usuario, text="Acesso", font=self.main_app.FontTitle, fg_color="transparent")
-        TituloAcesso.place(x=100, y=5)
+        titulo_acesso = ctk.CTkLabel(painel_usuario, text="Acesso", font=self.main_app.FontTitle,
+                                     fg_color="transparent")
+        titulo_acesso.place(x=100, y=5)
 
-        LabelAcesso = ctk.CTkLabel(Painel_Usuario, text=f"{self.main_app.acesso_usuario.upper()}",
-                                   font=self.main_app.FontBody,
-                                   fg_color="transparent")
-        LabelAcesso.place(x=100, y=50)
+        label_acesso = ctk.CTkLabel(painel_usuario, text=f"{self.main_app.acesso_usuario.upper()}",
+                                    font=self.main_app.FontBody,
+                                    fg_color="transparent")
+        label_acesso.place(x=100, y=50)
 
-        BtEditarUser = ctk.CTkButton(Painel_Usuario, image=EditarIcon2, text="Editar", text_color=("black", "white"),
-                                     width=80,
-                                     command=self.Editar_Usuario)
-        BtEditarUser.place(x=165, y=28)
+        bt_editar_user = ctk.CTkButton(painel_usuario, image=EditarIcon2, text="Editar", text_color=("black", "white"),
+                                       width=80,
+                                       command=self.editar_usuario)
+        bt_editar_user.place(x=165, y=28)
 
-        LabelSenha = ctk.CTkLabel(Painel_Senha, text="Senha", font=self.main_app.FontTitle, fg_color="transparent")
-        LabelSenha.place(x=10, y=5)
+        label_senha = ctk.CTkLabel(painel_senha, text="Senha", font=self.main_app.FontTitle, fg_color="transparent")
+        label_senha.place(x=10, y=5)
 
-        BtTrocarSenha = ctk.CTkButton(Painel_Senha, image=SenhaIcon, text="Alterar", text_color=("black", "white"),
-                                      width=80,
-                                      command=self.Trocar_senha)
-        BtTrocarSenha.place(x=10, y=50)
+        bt_trocar_senha = ctk.CTkButton(painel_senha, image=SenhaIcon, text="Alterar", text_color=("black", "white"),
+                                        width=80,
+                                        command=self.trocar_senha)
+        bt_trocar_senha.place(x=10, y=50)
 
-        LabelExcluir = ctk.CTkLabel(Painel_Excluir, text="Conta", font=self.main_app.FontTitle, fg_color="transparent")
-        LabelExcluir.place(x=10, y=5)
+        label_excluir = ctk.CTkLabel(painel_excluir, text="Conta", font=self.main_app.FontTitle, fg_color="transparent")
+        label_excluir.place(x=10, y=5)
 
-        BtExcluir = ctk.CTkButton(Painel_Excluir, image=DeletarIcon2, text="Excluir Conta",
-                                  text_color=("black", "white"),
-                                  width=80,
-                                  command=self.Excluir_conta)
-        BtExcluir.place(x=10, y=50)
+        bt_excluir = ctk.CTkButton(painel_excluir, image=DeletarIcon2, text="Excluir Conta",
+                                   text_color=("black", "white"),
+                                   width=80,
+                                   command=self.excluir_conta)
+        bt_excluir.place(x=10, y=50)
 
-    def Trocar_img(self):
+    def trocar_img(self):
         imagem = self.bt_perfil
 
         CarregarIMG(main_app=self.main_app).select_image(imagem, usuario=self.main_app.usuario_logado)
 
-    def Editar_Usuario(self):
+    def editar_usuario(self):
         dialog = ctk.CTkInputDialog(text="DIGITE SEU NOVO NOME DE USUARIO:", title="Editar")
-        usuarioDigitado = dialog.get_input()
+        usuario_digitado = dialog.get_input()
 
-        if usuarioDigitado != None:
+        if usuario_digitado is not None:
 
-            if len(usuarioDigitado) >= 3:
+            if len(usuario_digitado) >= 3:
 
                 cursor = self.main_app.ConexaoPrincipal.cursor()
-                cursor.execute(f"SELECT usuario FROM Usuarios where usuario = '{usuarioDigitado}'")
-                respostaBD = cursor.fetchall()
-                if not respostaBD:
+                cursor.execute(f"SELECT usuario FROM Usuarios where usuario = '{usuario_digitado}'")
+                resposta_bd = cursor.fetchall()
+                if not resposta_bd:
                     cursor.execute(
-                        f"UPDATE Usuarios SET usuario = '{usuarioDigitado}' WHERE usuario = '{self.main_app.usuario_logado}'")
-                    self.main_app.usuario_logado = str(usuarioDigitado)
+                        f"UPDATE Usuarios SET usuario = '{usuario_digitado}' WHERE usuario = '{self.main_app.usuario_logado}'")
+                    self.main_app.usuario_logado = str(usuario_digitado)
                     self.main_app.ConexaoPrincipal.commit()
-                    self.LabelUsuario.configure(text=usuarioDigitado)
+                    self.LabelUsuario.configure(text=usuario_digitado)
 
-                elif usuarioDigitado == self.main_app.usuario_logado:
+                elif usuario_digitado == self.main_app.usuario_logado:
                     self.main_app.msgbox("USUARIO", "Este ja é o seu nome de usuario\n Informe um nome diferente.", 0)
 
                 else:
                     self.main_app.msgbox("USUARIO", "Ja existe um usuario com este nome!!!", 0)
 
-
-            elif 1 <= len(usuarioDigitado) <= 2:
+            elif 1 <= len(usuario_digitado) <= 2:
                 self.main_app.msgbox("USUARIO", "Seu novo nome de usuario deve conter pelo menos 3 caracteres", 0)
 
-    def Trocar_senha(self):
+    def trocar_senha(self):
 
         dialog = ctk.CTkToplevel()
         dialog.title("SENHA")
@@ -2436,42 +2415,42 @@ class InterfaceUsuario:
         dialog.grab_set()
 
         def requisitos_atual(event):
-            msgatual = ctk.CTkLabel(dialog, text="Senha atual", height=3)
-            msgatual.place(relx=0.15, rely=0.2, anchor="center")
+            msg_atual = ctk.CTkLabel(dialog, text="Senha atual", height=3)
+            msg_atual.place(relx=0.15, rely=0.2, anchor="center")
 
         def requisitos_senha1(event):
-            nova = str(NovaSenha.get())
+            nova = str(nova_senha.get())
             if len(nova) <= 5:
-                msgnova = ctk.CTkLabel(dialog, text="Nova senha", height=3)
-                msgnova.place(relx=0.15, rely=0.4, anchor="center")
+                msg_nova = ctk.CTkLabel(dialog, text="Nova senha", height=3)
+                msg_nova.place(relx=0.15, rely=0.4, anchor="center")
                 resposta.configure(text="Sua senha deve ter no minimo 6 caracteres.", text_color="red")
-                Okbt.configure(state="disabled")
+                botao_salvar_registro.configure(state="disabled")
             else:
                 resposta.configure(text="", text_color="green")
 
-                if len(str(ConfirmacaoSenha.get())) > 5:
-                    Okbt.configure(state="normal")
+                if len(str(confirmacao_senha.get())) > 5:
+                    botao_salvar_registro.configure(state="normal")
 
         def requisitos_senha2(event):
-            nova = str(NovaSenha.get())
-            confir = str(ConfirmacaoSenha.get())
+            nova_senha_digitada = str(confirmacao_senha.get())
+            nova_senha_confirmada = str(confirmacao_senha.get())
 
-            msgconfir = ctk.CTkLabel(dialog, text="Redigite a nova senha", height=3)
-            msgconfir.place(relx=0.23, rely=0.6, anchor="center")
+            msg_confirmacao = ctk.CTkLabel(dialog, text="Redigite a nova senha", height=3)
+            msg_confirmacao.place(relx=0.23, rely=0.6, anchor="center")
 
-            if confir == nova and len(confir) > 5:
+            if nova_senha_confirmada == nova_senha_digitada and len(nova_senha_confirmada) > 5:
                 resposta.configure(text="", text_color="Green")
-                Okbt.configure(state="normal")
-                if len(nova) > 5:
-                    Okbt.configure(state="normal")
+                botao_salvar_registro.configure(state="normal")
+                if len(nova_senha_digitada) > 5:
+                    botao_salvar_registro.configure(state="normal")
 
             else:
                 resposta.configure(text="A nova senha não é igual à redigitada.", text_color="red")
-                Okbt.configure(state="disabled")
+                botao_salvar_registro.configure(state="disabled")
 
         def salvar():
-            atual = str(SenhaAtual.get())
-            nova = str(NovaSenha.get())
+            atual = str(senha_atual.get())
+            nova = str(nova_senha.get())
 
             cursor = self.main_app.ConexaoPrincipal.cursor()
             cursor.execute(
@@ -2482,7 +2461,7 @@ class InterfaceUsuario:
                 cursor.execute(f"UPDATE Usuarios SET senha = '{nova}' WHERE usuario = '{self.main_app.usuario_logado}'")
                 self.main_app.ConexaoPrincipal.commit()
                 resposta.configure(text="Senha atualizada com sucesso!", text_color="green")
-                Okbt.configure(state="disabled")
+                botao_salvar_registro.configure(state="disabled")
             else:
                 resposta.configure(text="Senha atual esta incorreta", text_color="red")
 
@@ -2492,30 +2471,30 @@ class InterfaceUsuario:
         msg = ctk.CTkLabel(dialog, text="TROCAR SENHA", font=self.main_app.FontTitle)
         msg.place(relx=0.5, rely=0.1, anchor="center")
 
-        SenhaAtual = ctk.CTkEntry(dialog, placeholder_text="Digite sua senha atual", width=320)
-        SenhaAtual.place(relx=0.5, rely=0.3, anchor="center")
-        SenhaAtual.bind('<KeyRelease>', requisitos_atual)
+        senha_atual = ctk.CTkEntry(dialog, placeholder_text="Digite sua senha atual", width=320)
+        senha_atual.place(relx=0.5, rely=0.3, anchor="center")
+        senha_atual.bind('<KeyRelease>', requisitos_atual)
 
-        NovaSenha = ctk.CTkEntry(dialog, placeholder_text="Digite sua nova senha", width=320, show="*")
-        NovaSenha.place(relx=0.5, rely=0.5, anchor="center")
-        NovaSenha.bind('<KeyRelease>', requisitos_senha1)
+        nova_senha = ctk.CTkEntry(dialog, placeholder_text="Digite sua nova senha", width=320, show="*")
+        nova_senha.place(relx=0.5, rely=0.5, anchor="center")
+        nova_senha.bind('<KeyRelease>', requisitos_senha1)
 
-        ConfirmacaoSenha = ctk.CTkEntry(dialog, placeholder_text="Confirmar nova senha", width=320, show="*")
-        ConfirmacaoSenha.place(relx=0.5, rely=0.7, anchor="center"),
-        ConfirmacaoSenha.bind('<KeyRelease>', requisitos_senha2)
+        confirmacao_senha = ctk.CTkEntry(dialog, placeholder_text="Confirmar nova senha", width=320, show="*")
+        confirmacao_senha.place(relx=0.5, rely=0.7, anchor="center"),
+        confirmacao_senha.bind('<KeyRelease>', requisitos_senha2)
 
         resposta = ctk.CTkLabel(dialog, text="", height=2)
         resposta.place(relx=0.5, rely=0.81, anchor="center")
 
-        Okbt = ctk.CTkButton(dialog, text="SALVAR", command=salvar,
-                             state='disabled')
-        Okbt.place(relx=0.25, rely=0.92, anchor="center")
+        botao_salvar_registro = ctk.CTkButton(dialog, text="SALVAR", command=salvar,
+                                              state='disabled')
+        botao_salvar_registro.place(relx=0.25, rely=0.92, anchor="center")
 
-        CancelarBT = ctk.CTkButton(dialog, text="Fechar",
-                                   command=fechar)
-        CancelarBT.place(relx=0.75, rely=0.92, anchor="center")
+        botao_cancelar_registro = ctk.CTkButton(dialog, text="Fechar",
+                                                command=fechar)
+        botao_cancelar_registro.place(relx=0.75, rely=0.92, anchor="center")
 
-    def Excluir_conta(self):
+    def excluir_conta(self):
 
         dialog = ctk.CTkToplevel()
         dialog.title("EXCLUIR")
@@ -2538,13 +2517,13 @@ class InterfaceUsuario:
         msg = ctk.CTkLabel(dialog, text="DESEJA REALMENTE EXCLUIR SUA CONTA?", font=self.main_app.SubTitle)
         msg.place(relx=0.5, rely=0.1, anchor="center")
 
-        Okbt = ctk.CTkButton(dialog, text="EXCLUIR",
-                             command=conta_delete)
-        Okbt.place(relx=0.25, rely=0.79, anchor="center")
+        botao_excluir = ctk.CTkButton(dialog, text="EXCLUIR",
+                                      command=conta_delete)
+        botao_excluir.place(relx=0.25, rely=0.79, anchor="center")
 
-        CancelarBT = ctk.CTkButton(dialog, text="Fechar",
-                                   command=fechar)
-        CancelarBT.place(relx=0.75, rely=0.79, anchor="center")
+        botao_fechar = ctk.CTkButton(dialog, text="Fechar",
+                                     command=fechar)
+        botao_fechar.place(relx=0.75, rely=0.79, anchor="center")
 
 
 class InterfaceConfiguracoes:
@@ -2560,19 +2539,19 @@ class InterfaceConfiguracoes:
         self.frame_resp.grid_rowconfigure((0, 1), weight=0)
         self.frame_resp.grid_columnconfigure(0, weight=1)
 
-        LabelTitulo = ctk.CTkLabel(self.frame_resp, text=f"CONFIGURAcÕES", fg_color="transparent",
-                                   text_color=("black", "white"),
-                                   font=self.main_app.SubTitle, corner_radius=6, anchor="w")
-        LabelTitulo.grid(row=0, column=0, sticky="nsew", padx=10, pady=5)
+        label_titulo = ctk.CTkLabel(self.frame_resp, text=f"CONFIGURAcÕES", fg_color="transparent",
+                                    text_color=("black", "white"),
+                                    font=self.main_app.SubTitle, corner_radius=6, anchor="w")
+        label_titulo.grid(row=0, column=0, sticky="nsew", padx=10, pady=5)
 
-        Painel_theme = ctk.CTkButton(self.frame_resp, text="", width=(self.main_app.screen_wedth) - 270, height=90,
+        painel_theme = ctk.CTkButton(self.frame_resp, text="", width=self.main_app.screen_wedth - 270, height=90,
                                      border_width=1,
                                      fg_color="transparent", hover=False)
-        Painel_theme.grid(row=1, column=0, sticky="nsew", padx=10, pady=(45, 5))
+        painel_theme.grid(row=1, column=0, sticky="nsew", padx=10, pady=(45, 5))
 
-        Label_theme = ctk.CTkLabel(Painel_theme, text="Alterar tema", font=self.main_app.FontTitle,
+        label_theme = ctk.CTkLabel(painel_theme, text="Alterar tema", font=self.main_app.FontTitle,
                                    fg_color="transparent")
-        Label_theme.place(x=10, y=5)
+        label_theme.place(x=10, y=5)
 
         opcoes = ["blue", "green", "dark-blue", "personalizado"]
         valor_escolhido = self.main_app.themeAtual
@@ -2583,9 +2562,9 @@ class InterfaceConfiguracoes:
         # Reorganiza a lista colocando o valor escolhido no início
         opcoes = [valor_escolhido] + opcoes[:indice_valor_escolhido] + opcoes[indice_valor_escolhido + 1:]
 
-        mudarTheme = ctk.CTkOptionMenu(Painel_theme, font=self.main_app.FontBody, width=100,
-                                       values=opcoes, command=self.main_app.theme)
-        mudarTheme.place(x=10, y=50)
+        mudar_theme = ctk.CTkOptionMenu(painel_theme, font=self.main_app.FontBody, width=100,
+                                        values=opcoes, command=self.main_app.theme)
+        mudar_theme.place(x=10, y=50)
 
 
 class CarregarIMG:
@@ -2657,7 +2636,8 @@ class CarregarIMG:
             # Inserir ou atualizar a imagem no banco de dados
             self.insert_image(image_base64, usuario)
 
-    def load_image(self, file_path, label_img):  # Funcão para carregar a imagem
+    @staticmethod
+    def load_image(file_path, label_img):  # Funcão para carregar a imagem
         # Carregar a imagem
         image = Image.open(file_path)
 
@@ -2710,8 +2690,8 @@ class CarregarIMG:
 
 class MenuOpcoes:
 
-    def __init__(self, root, main_app):
-        self.rootHome = root
+    def __init__(self, root_opcoes, main_app):
+        self.rootHome = root_opcoes
         self.main_app = main_app
 
         self.conexao = self.main_app.ConexaoPrincipal
@@ -2748,7 +2728,7 @@ class MenuOpcoes:
         self.BtOcultar = ctk.CTkButton(self.frame_MenuLateralDir, text="", image=MenuIcon, anchor="w", width=23,
                                        height=23,
                                        fg_color="transparent", text_color=("black", "white"),
-                                       command=lambda: self.main_app.ocultar_Janela(self.frame_MenuLateralEsq))
+                                       command=lambda: self.main_app.esconder_Janela(self.frame_MenuLateralEsq))
         self.bt_opcoes()
         self.scaling_optionemenu.set("100%")
 
@@ -2764,8 +2744,8 @@ class MenuOpcoes:
                 try:
                     widget.place_forget()
                     widget.grid_remove()
-                except:
-                    pass
+                except Exception as e:
+                    print(f"Ocorreu uma exceção ao tentar esconder o widget: {e}")
 
         self.frame_MenuLateralDir.configure(width=37)
         self.BtOcultar.place(x=pos, y=1)
@@ -2842,14 +2822,14 @@ class MenuOpcoes:
 
         self.limpar_frames(self.frame_MenuLateralDir, self.frame_resposta, excluir=True)
 
-        self.main_app.destacar(lista=self.listaBTS, botão=self.BtHome, cor=self.cor_destaque)
+        self.main_app.destacar(lista=self.listaBTS, botao=self.BtHome, cor=self.cor_destaque)
 
     def frame_estoque(self):
 
         self.limpar_frames(self.frame_MenuLateralDir, self.frame_resposta, pos=138)
         self.frame_MenuLateralDir.configure(width=176)
 
-        self.main_app.destacar(lista=self.listaBTS, botão=self.BtEstoque, cor=self.cor_destaque)
+        self.main_app.destacar(lista=self.listaBTS, botao=self.BtEstoque, cor=self.cor_destaque)
 
         self.BTEntrada = ctk.CTkButton(self.frame_MenuLateralDir, text="Entrada", image=EntradaIcon, anchor="w",
                                        width=155,
@@ -2877,7 +2857,7 @@ class MenuOpcoes:
         self.limpar_frames(self.frame_MenuLateralDir, self.frame_resposta, pos=138)
         self.frame_MenuLateralDir.configure(width=176)
 
-        self.main_app.destacar(lista=self.listaBTS, botão=self.BtCadastros, cor=self.cor_destaque)
+        self.main_app.destacar(lista=self.listaBTS, botao=self.BtCadastros, cor=self.cor_destaque)
 
         self.BTCadastrarItens = ctk.CTkButton(self.frame_MenuLateralDir, text="Cadastrar Itens", image=EstoqueIcon,
                                               anchor="w", width=155,
@@ -2921,7 +2901,7 @@ class MenuOpcoes:
 
         self.limpar_frames(self.frame_MenuLateralDir, self.frame_resposta, pos=0, excluir=True)
 
-        self.main_app.destacar(lista=self.listaBTS, botão=self.BtCadastros, cor=self.cor_destaque)
+        self.main_app.destacar(lista=self.listaBTS, botao=self.BtCadastros, cor=self.cor_destaque)
 
         self.main_app.exibir_novoitem(self.frame_resposta)
 
@@ -2929,7 +2909,7 @@ class MenuOpcoes:
 
         self.limpar_frames(self.frame_MenuLateralDir, self.frame_resposta, pos=0, excluir=True)
 
-        self.main_app.destacar(lista=self.listaBTS, botão=self.BtCadastros, cor=self.cor_destaque)
+        self.main_app.destacar(lista=self.listaBTS, botao=self.BtCadastros, cor=self.cor_destaque)
 
         self.main_app.exibir_novocliente(self.frame_resposta)
 
@@ -2937,7 +2917,7 @@ class MenuOpcoes:
 
         self.limpar_frames(self.frame_MenuLateralDir, self.frame_resposta, pos=0, excluir=True)
 
-        self.main_app.destacar(lista=self.listaBTS, botão=self.BtCadastros, cor=self.cor_destaque)
+        self.main_app.destacar(lista=self.listaBTS, botao=self.BtCadastros, cor=self.cor_destaque)
 
         # LabelTitulo = ctk.CTkLabel(self.frame_resposta, text=f"NOVO USUARIO",fg_color="transparent", text_color=("black", "white"), 
         #                            font=self.main_app.SubTitle, corner_radius=6)
@@ -2949,30 +2929,30 @@ class MenuOpcoes:
 
         self.limpar_frames(self.frame_MenuLateralDir, self.frame_resposta, pos=0, excluir=True)
 
-        self.main_app.destacar(lista=self.listaBTS, botão=self.BtCadastros, cor=self.cor_destaque)
+        self.main_app.destacar(lista=self.listaBTS, botao=self.BtCadastros, cor=self.cor_destaque)
 
-        LabelTitulo = ctk.CTkLabel(self.frame_resposta, text=f"GERENCIAR USUARIOS", fg_color="transparent",
-                                   text_color=("black", "white"),
-                                   font=self.main_app.SubTitle, corner_radius=6)
-        LabelTitulo.place(relx=0.001, rely=0.02, anchor="w")
+        label_titulo = ctk.CTkLabel(self.frame_resposta, text=f"GERENCIAR USUARIOS", fg_color="transparent",
+                                    text_color=("black", "white"),
+                                    font=self.main_app.SubTitle, corner_radius=6)
+        label_titulo.place(relx=0.001, rely=0.02, anchor="w")
         self.main_app.exibir_gerenciarusuarios(self.frame_resposta)
 
     def frame_agenda(self):
         self.limpar_frames(self.frame_MenuLateralDir, self.frame_resposta, excluir=True)
 
-        self.main_app.destacar(lista=self.listaBTS, botão=self.BtAgenda, cor=self.cor_destaque)
+        self.main_app.destacar(lista=self.listaBTS, botao=self.BtAgenda, cor=self.cor_destaque)
 
-        LabelTitulo = ctk.CTkLabel(self.frame_resposta, text=f"AGENDA", fg_color="transparent",
-                                   text_color=("black", "white"),
-                                   font=self.main_app.SubTitle, corner_radius=6)
-        LabelTitulo.place(relx=0.001, rely=0.02, anchor="w")
+        label_titulo = ctk.CTkLabel(self.frame_resposta, text=f"AGENDA", fg_color="transparent",
+                                    text_color=("black", "white"),
+                                    font=self.main_app.SubTitle, corner_radius=6)
+        label_titulo.place(relx=0.001, rely=0.02, anchor="w")
 
     def frame_carteira(self):
 
         self.limpar_frames(self.frame_MenuLateralDir, self.frame_resposta, pos=138)
         self.frame_MenuLateralDir.configure(width=176)
 
-        self.main_app.destacar(lista=self.listaBTS, botão=self.Btcarteira, cor=self.cor_destaque)
+        self.main_app.destacar(lista=self.listaBTS, botao=self.Btcarteira, cor=self.cor_destaque)
 
         self.BTRegistrarVenda = ctk.CTkButton(self.frame_MenuLateralDir, text="Registrar Venda", image=VendasIcon,
                                               anchor="w", width=155,
@@ -2995,7 +2975,7 @@ class MenuOpcoes:
         self.limpar_frames(self.frame_MenuLateralDir, self.frame_resposta, pos=138)
         self.frame_MenuLateralDir.configure(width=176)
 
-        self.main_app.destacar(lista=self.listaBTS, botão=self.BtFinancas, cor=self.cor_destaque)
+        self.main_app.destacar(lista=self.listaBTS, botao=self.BtFinancas, cor=self.cor_destaque)
 
         self.BTRegistrarDespesas = ctk.CTkButton(self.frame_MenuLateralDir, text="Registrar Despesas",
                                                  image=DespesaIcon,
@@ -3017,14 +2997,14 @@ class MenuOpcoes:
     def frame_usuario(self):
         self.limpar_frames(self.frame_MenuLateralDir, self.frame_resposta, excluir=True)
 
-        self.main_app.destacar(lista=self.listaBTS, botão=self.BtUsuario, cor=self.cor_destaque)
+        self.main_app.destacar(lista=self.listaBTS, botao=self.BtUsuario, cor=self.cor_destaque)
 
         self.main_app.exibir_usuario(self.frame_resposta, self.Btfoto_perfil)
 
     def frame_configuracoes(self):
         self.limpar_frames(self.frame_MenuLateralDir, self.frame_resposta, excluir=True)
 
-        self.main_app.destacar(lista=self.listaBTS, botão=self.BtConfiguracoes, cor=self.cor_destaque)
+        self.main_app.destacar(lista=self.listaBTS, botao=self.BtConfiguracoes, cor=self.cor_destaque)
 
         self.main_app.exibir_configuracoes(self.frame_resposta)
 
@@ -3041,19 +3021,13 @@ class MenuOpcoes:
                 if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
                     self.BtAgenda.configure(state="disabled")
 
-
-
             elif tupla[2] == 'Usuario' and tupla[3] == 'USUARIO':
                 if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
                     self.BtUsuario.configure(state="disabled")
 
-
             elif tupla[2] == 'Configuracões' and tupla[3] == 'CONFIGURACOES':
                 if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
                     self.BtConfiguracoes.configure(state="disabled")
-
-
-
 
             elif tupla[2] == 'Estoque' and tupla[3] == 'ENTRADA':
                 if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
@@ -3066,9 +3040,6 @@ class MenuOpcoes:
             elif tupla[2] == 'Estoque' and tupla[3] == 'INVENTARIO':
                 if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
                     estoque += 1
-
-
-
 
             elif tupla[2] == 'Cadastro' and tupla[3] == 'CAD ITEM':
                 if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
@@ -3086,26 +3057,17 @@ class MenuOpcoes:
                 if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
                     cadastro += 1
 
-
-
-
-
             elif tupla[2] == 'Carteira' and tupla[3] == 'VENDAS':
                 if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
                     carteira += 1
-
 
             elif tupla[2] == 'Carteira' and tupla[3] == 'FATURAMENTO':
                 if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
                     carteira += 1
 
-
-
-
             elif tupla[2] == 'Financas' and tupla[3] == 'DESPESAS':
                 if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
                     financas += 1
-
 
             elif tupla[2] == 'Financas' and tupla[3] == 'OUTRAS RENDAS':
                 if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
@@ -3147,16 +3109,13 @@ class MenuOpcoes:
                         if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
                             self.BTCadastrarItens.configure(state="disabled")
 
-
                     elif tupla[2] == 'Cadastro' and tupla[3] == 'CAD CLIENTE':
                         if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
                             self.BTCadastrarClientes.configure(state="disabled")
 
-
                     elif tupla[2] == 'Cadastro' and tupla[3] == 'CAD USUARIO':
                         if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
                             self.BTCriarNovoUsuario.configure(state="disabled")
-
 
                     elif tupla[2] == 'Cadastro' and tupla[3] == 'GERENCIAR USER':
                         if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
@@ -3169,7 +3128,6 @@ class MenuOpcoes:
                         if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
                             self.BTRegistrarVenda.configure(state="disabled")
 
-
                     elif tupla[2] == 'Carteira' and tupla[3] == 'FATURAMENTO':
                         if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
                             self.BTFaturamento.configure(state="disabled")
@@ -3181,7 +3139,6 @@ class MenuOpcoes:
                         if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
                             self.BTRegistrarDespesas.configure(state="disabled")
 
-
                     elif tupla[2] == 'Financas' and tupla[3] == 'OUTRAS RENDAS':
                         if tupla[4] == 'bloqueado' and tupla[5] == 'bloqueado' and tupla[6] == 'bloqueado':
                             self.BTOutrasRendas.configure(state="disabled")
@@ -3191,16 +3148,16 @@ class MenuOpcoes:
 
 
 class TelaLogin:
-    def __init__(self, root, main_app):
-        self.Root_login = root
+    def __init__(self, root_login, main_app):
+        self.Root_login = root_login
         self.main_app = main_app
         self.Root_login.title("Login")
         self.Root_login.geometry(f"400x430")
         # self.Root_login.resizable(False, False)
 
         self.conexao = self.main_app.ConexaoPrincipal
-        planodefundo = ctk.CTkLabel(self.Root_login, text="", image=fundoLogin, width=400, height=450)
-        planodefundo.place(relx=0.5, rely=0.5, anchor="center")
+        background_login = ctk.CTkLabel(self.Root_login, text="", image=fundoLogin, width=400, height=450)
+        background_login.place(relx=0.5, rely=0.5, anchor="center")
 
         def mostrar_senha():
             if self.MostrarSenha.get():
@@ -3215,13 +3172,13 @@ class TelaLogin:
                                bg_color="#242A5F", hover=False)
         painel.place(relx=0.5, rely=0.5, anchor="center")
 
-        LabelTxt = ctk.CTkLabel(painel, text="", image=UsuarioIcon2, font=self.main_app.FontTitle,
-                                fg_color="transparent", bg_color="transparent")
-        LabelTxt.place(relx=0.5, rely=0.1, anchor="center")
+        label_txt = ctk.CTkLabel(painel, text="", image=UsuarioIcon2, font=self.main_app.FontTitle,
+                                 fg_color="transparent", bg_color="transparent")
+        label_txt.place(relx=0.5, rely=0.1, anchor="center")
 
-        LabelTxt = ctk.CTkLabel(painel, text="Bem Vindo", font=self.main_app.FontTitle, fg_color="transparent",
-                                bg_color="transparent", text_color="white")
-        LabelTxt.place(relx=0.5, rely=0.17, anchor="center")
+        label_txt = ctk.CTkLabel(painel, text="Bem Vindo", font=self.main_app.FontTitle, fg_color="transparent",
+                                 bg_color="transparent", text_color="white")
+        label_txt.place(relx=0.5, rely=0.17, anchor="center")
 
         self.LoginDigitado = ctk.CTkEntry(painel, placeholder_text="Digite seu login", text_color="black",
                                           fg_color="white", width=200, border_color="white")
@@ -3236,7 +3193,7 @@ class TelaLogin:
         self.MostrarSenha.place(relx=0.5, rely=0.5, anchor="center")
 
         self.BtEntrar = ctk.CTkButton(painel, text="Entrar", command=self.fazer_login, text_color="black",
-                                      fg_color="white", hover_color=("gray90"))
+                                      fg_color="white", hover_color="gray90")
         self.BtEntrar.place(relx=0.5, rely=0.6, anchor="center")
         self.BtEntrar.bind("<Return>", ativar_enter)
 
@@ -3268,10 +3225,21 @@ class TelaLogin:
                 self.main_app.msgbox("Login", "Login ou senha incorretos, Tente novamente", 0)
 
 
+def destacar(lista, botao, cor, fg2="transparent"):
+    for valor in lista:
+        if valor == botao:
+            if cor == "white":
+                botao.configure(fg_color=cor)
+            else:
+                botao.configure(fg_color=cor)
+        else:
+            valor.configure(fg_color=fg2)
+
+
 class MainApp:
 
     @staticmethod
-    def _conectaBD(local_bd):
+    def _conecta_bd(local_bd):
 
         try:
             # Conectar ao banco de dados
@@ -3283,8 +3251,8 @@ class MainApp:
             print("Erro ao conectar-se ao banco de dados:", erro)
             return None
 
-    def __init__(self, root):
-        self.root = root
+    def __init__(self, root_main):
+        self.root = root_main
         self.root.title("SYS Comercial")
         self.root.geometry(f"400x430")
         self.root.protocol("WM_DELETE_WINDOW", self.sair)
@@ -3293,8 +3261,8 @@ class MainApp:
         self.SubTitle = ctk.CTkFont(size=14, weight="bold")
         self.FontBody = ctk.CTkFont(size=12)
 
-        self.validate_cmd_numeric = root.register(self.validate_numeric_input)
-        self.validade_cmd_text = root.register(self.validate_text_input)
+        self.validate_cmd_numeric = root_main.register(self.validate_numeric_input)
+        self.validade_cmd_text = root_main.register(self.validate_text_input)
 
         self.screen_height = self.root.winfo_screenheight()
         self.screen_wedth = self.root.winfo_screenwidth()
@@ -3307,10 +3275,12 @@ class MainApp:
         self.usuario_logado = None
 
         self.acesso_usuario = None
-        self.caminho_banco_de_dados = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                                   "Banco de dados\db_sys.db")
 
-        self.ConexaoPrincipal = MainApp._conectaBD(self.caminho_banco_de_dados)
+        self.paste_file = "Banco de dados\db_sys.db"
+
+        self.caminho_banco_de_dados = os.path.join(os.path.dirname(os.path.realpath(__file__)), self.paste_file)
+
+        self.ConexaoPrincipal = MainApp._conecta_bd(self.caminho_banco_de_dados)
 
         self.login()
 
@@ -3329,18 +3299,17 @@ class MainApp:
     def clear_screen(self):
         for widget in self.root.winfo_children():
             widget.destroy()
-            print(f"destruindo {widget}")
-        print("todos destruidos")
 
-    def ocultar_Janela(self, menulateral):
+    @staticmethod
+    def esconder_Janela(menu_lateral):
 
-        larguraJanelaAtual = menulateral.winfo_width()
+        largura_janela_atual = menu_lateral.winfo_width()
 
-        if larguraJanelaAtual > 35:
-            menulateral.configure(width=28)
+        if largura_janela_atual > 35:
+            menu_lateral.configure(width=28)
 
         else:
-            menulateral.configure(width=176)
+            menu_lateral.configure(width=176)
 
     def exibir_gerenciarusuarios(self, frame_resposta):
         if self.acesso_usuario == "ADM":
@@ -3370,11 +3339,6 @@ class MainApp:
 
     # ctk.set_widget_scaling(self.escala_atual)
 
-    def exibir_estoque(self):
-        self.clear_screen()
-        self.interface_estoque = InterfaceEstoque(self.root)
-        # ctk.set_widget_scaling(self.escala_atual)
-
     def chave_customjson(self, chave, valor):
 
         nome_do_pacote = "customtkinter"
@@ -3385,18 +3349,18 @@ class MainApp:
         caminho_temas = os.path.join(os.path.dirname(os.path.realpath(__file__)), "temas/personalizado.JSON")
 
         try:
-
             with open(caminho_custom) as arquivo_json:
                 data = json.load(arquivo_json)  # Carregue o conteúdo do arquivo JSON
-        except:
-
+        except Exception as erro:
+            print(f"trocando para outro tema, erro json {erro}")
             with open(caminho_temas) as arquivo_json:
                 data = json.load(arquivo_json)
 
         info = data[f"{chave}"][f"{valor}"]
         return info
 
-    def msgbox(self, title, text, style):
+    @staticmethod
+    def msgbox(title, text, style):
         #  Styles:
         #  0 : OK
         #  1 : OK | Cancel
@@ -3407,12 +3371,13 @@ class MainApp:
         #  6 : Cancel | Try Again | Continue
         return ctypes.windll.user32.MessageBoxW(0, text, title, style)
 
-    def aparencia(self, new_appearance_mode: str):
-        # funcão que altera o modo de aparencia da janela entre ligth e dark
+    @staticmethod
+    def aparencia(new_appearance_mode: str):
+        # funcão que altera o modo de aparencia da janela entre light e dark
         ctk.set_appearance_mode(new_appearance_mode)
 
     def theme(self, new_appearance_mode: str):
-        # funcão que altera o modo de aparencia da janela entre ligth e dark
+        # funcão que altera o modo de aparencia da janela entre light e dark
         if new_appearance_mode.lower() == "personalizado":
             ctk.set_default_color_theme(
                 os.path.join(os.path.dirname(os.path.realpath(__file__)), "temas/personalizado.JSON"))
@@ -3429,30 +3394,15 @@ class MainApp:
             ctk.set_widget_scaling(new_scaling_float)
             self.escala_atual = new_scaling_float
 
-            scale_factor = new_scaling_float  # Pode ajustar o fator de escala conforme necessário
-
-            tupla_size = (170, 170)
-
             if new_scaling in ["110%"]:
                 SeuLogo2.configure(size=(100, 100))
             elif new_scaling in ["120%"]:
                 SeuLogo2.configure(size=(80, 80))
             else:
                 SeuLogo2.configure(size=(130, 130))
-
-        except:
+        except ExcelIcon as erro:
+            print(f"houve um erro ao mudar a escala {erro}")
             pass
-
-    def destacar(self, lista=list, botão=object, cor=tuple, fg2="transparent"):
-
-        for valor in lista:
-            if valor == botão:
-                if cor == "white":
-                    botão.configure(fg_color=cor)
-                else:
-                    botão.configure(fg_color=cor)
-            else:
-                valor.configure(fg_color=fg2)
 
     def sair(self):
         resp = self.msgbox("SAIR", "Deseja realmente encerrar o sistema?", 4)
@@ -3460,11 +3410,13 @@ class MainApp:
             self.ConexaoPrincipal.close()
             self.root.destroy()
 
-    def validate_numeric_input(self, P, max_length):
+    @staticmethod
+    def validate_numeric_input(P, max_length):
         # Verifica se P é vazio ou um número decimal válido
         return P == "" or P.replace(".", "", 1).isdigit() and len(P) <= int(max_length)
 
-    def validate_text_input(self, P, max_length, allow_spaces=True):
+    @staticmethod
+    def validate_text_input(P, max_length, allow_spaces=True):
         if allow_spaces:
             return P == "" or (isinstance(P, str) and P.replace(" ", "").isalpha() and len(P) <= int(max_length))
         else:

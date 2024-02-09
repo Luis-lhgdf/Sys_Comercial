@@ -1,10 +1,6 @@
 import sqlite3
 
-conexao =  sqlite3.connect('banco de dados\db_sys.db')
-cursor = conexao.cursor()
+tipo = 'luis'
 
-cursor.execute("DELETE FROM Clientes")
-conexao.commit()
-resultado = cursor.fetchall()
-print(resultado)
+print(tipo.upper())
                
