@@ -609,7 +609,7 @@ class ModeloCadastro:
 
         self.Bt_Pesquisar = ctk.CTkButton(self.frame_resp, image=VisualizarIcon, text_color=("black", "white"),
                                           text="PESQUISAR",
-                                          width=80, command=lambda: self.pesquisar(self.tabela_bd))
+                                          width=80, command=lambda: self.pesquisar(self.colunas_consulta, self.tabela_bd))
         self.Bt_Pesquisar.place(relx=0.612, rely=0.18, anchor="w")
 
         self.Bt_Editar = ctk.CTkButton(self.frame_resp, text="Editar", text_color=("black", "white"), image=EditarIcon,
@@ -731,18 +731,27 @@ class ModeloCadastro:
                 pass
             self.reexibir_treeview(self.lista_valores)
 
-    def pesquisar(self, colunas_consulta):
+    def pesquisar(self, colunas_consulta, tabela_name):
         info_digitada = self.Entry_Pesquisar.get()
         if info_digitada:
-            query = "SELECT " + ", ".join(colunas_consulta) + f" FROM {self.tabela_bd} WHERE " + " OR ".join(
-                [f"{col} LIKE ?" for col in colunas_consulta])
+            print(f"Tentou pesquisar por {info_digitada} nas colunas {colunas_consulta}")
+
+            # Construir a consulta SQL de forma segura usando placeholders '?' para os parâmetros
+            query = f"SELECT {', '.join(colunas_consulta)} FROM {tabela_name} WHERE {' OR '.join([f'{col} LIKE ?' for col in colunas_consulta])}"
+            
+            # Criar os parâmetros para substituir os placeholders na consulta
             parametros = ['%' + info_digitada + '%' for _ in colunas_consulta]
 
-            self.cursor.execute(query, parametros)
-            lista = self.cursor.fetchall()
-
-            self.tree.delete(*self.tree.get_children())
-            self.reexibir_treeview(lista=lista)
+            try:
+                # Executar a consulta SQL
+                self.cursor.execute(query, parametros)
+                lista = self.cursor.fetchall()
+                # Atualizar a visualização
+                self.tree.delete(*self.tree.get_children())
+                self.reexibir_treeview(lista=lista)
+            except sqlite3.Error as e:
+                # Lidar com erros de SQLite
+                print("Erro ao executar a consulta SQL:", e)
 
     def voltar(self, opcao):
 
@@ -803,7 +812,7 @@ class InterfaceNovoItem(ModeloCadastro):
         self.frame_resp = frame_resp
         self.cursor = self.main_app.ConexaoPrincipal.cursor()
         self.placehold = 'Pesquise por Id, Descrição, Marca, Categoria ou Fornecedor'
-        self.colunas_bd = ['Id', 'descricao_produto', 'marca', 'categoria' 'fornecedor']
+        self.colunas_bd = ['Id', 'descricao_produto', 'marca', 'categoria','fornecedor']
 
         super().__init__(main_app=self.main_app, frame_resp=self.frame_resp, tabela_bd="Produtos",
                          titulo_janela="ITENS", placeholder_text_pesquisar=self.placehold,
@@ -984,7 +993,7 @@ class InterfaceNovoCliente(ModeloCadastro):
         self.frame_resp = frame_resp
         self.cursor = self.main_app.ConexaoPrincipal.cursor()
         self.placehold = 'Pesquise por ID, CNPJ, CPF, nome ou razão social'
-        self.colunas_bd = ['razao_social', 'cpf', 'cnpj', 'id' 'nome']
+        self.colunas_bd = ['razao_social', 'cpf', 'cnpj', 'id', 'nome']
 
         super().__init__(main_app=self.main_app, frame_resp=self.frame_resp, tabela_bd="Clientes",
                          titulo_janela="CLIENTES", placeholder_text_pesquisar=self.placehold,
@@ -3225,15 +3234,7 @@ class TelaLogin:
                 self.main_app.msgbox("Login", "Login ou senha incorretos, Tente novamente", 0)
 
 
-def destacar(lista, botao, cor, fg2="transparent"):
-    for valor in lista:
-        if valor == botao:
-            if cor == "white":
-                botao.configure(fg_color=cor)
-            else:
-                botao.configure(fg_color=cor)
-        else:
-            valor.configure(fg_color=fg2)
+
 
 
 class MainApp:
@@ -3299,6 +3300,16 @@ class MainApp:
     def clear_screen(self):
         for widget in self.root.winfo_children():
             widget.destroy()
+
+    def destacar(self, lista, botao, cor, fg2="transparent"):
+        for valor in lista:
+            if valor == botao:
+                if cor == "white":
+                    botao.configure(fg_color=cor)
+                else:
+                    botao.configure(fg_color=cor)
+            else:
+                valor.configure(fg_color=fg2)
 
     @staticmethod
     def esconder_Janela(menu_lateral):
