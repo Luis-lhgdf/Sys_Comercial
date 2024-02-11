@@ -3365,8 +3365,7 @@ class MainApp:
         try:
             with open(caminho_custom) as arquivo_json:
                 data = json.load(arquivo_json)  # Carregue o conteúdo do arquivo JSON
-        except Exception as erro:
-            print(f"trocando para outro tema, erro json {erro}")
+        except FileNotFoundError:
             with open(caminho_temas) as arquivo_json:
                 data = json.load(arquivo_json)
 
