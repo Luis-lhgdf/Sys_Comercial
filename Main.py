@@ -6,7 +6,7 @@ import pkg_resources
 import binascii
 import io
 import ctypes
-from Icones import *
+from src.views.Icones import *
 import tkinter as tk
 from tkinter import ttk
 import pandas as pd
@@ -15,7 +15,7 @@ import json
 
 # Carregar configuracões do arquivo JSON
 def load_config(value: bool, localfile=False):
-    local = os.path.join(os.path.dirname(os.path.realpath(__file__)), "temas/config.json")
+    local = os.path.join(os.path.dirname(os.path.realpath(__file__)), "src/views/temas/config.json")
     try:
         with open(local, "r") as config_file:
             config = json.load(config_file)
@@ -3279,7 +3279,7 @@ class MainApp:
 
         self.acesso_usuario = None
 
-        self.paste_file = "Banco de dados\db_sys.db"
+        self.paste_file = "src\data\db_sys.db"
 
         self.caminho_banco_de_dados = os.path.join(os.path.dirname(os.path.realpath(__file__)), self.paste_file)
 
