@@ -5,13 +5,13 @@ import sqlite3
 import pkg_resources
 
 from src.views import login
-from src.views import cliente
-from src.views import configuracoes
+from views import customer_view
+from views import Settings
 from src.views import gerenciar_usuarios
-from src.views import item
-from src.views import menu
-from src.views import novo_usuario
-from src.views import usuario
+from views import Product_view
+from views import menu_view
+from views import new_user_view
+from src.views import user_view
 from src.views.icones import *
 
 
@@ -57,7 +57,6 @@ class MainApp:
 
     @staticmethod
     def _conecta_bd(local_bd):
-
         try:
             # Conectar ao banco de dados
             conexao = sqlite3.connect(local_bd)
@@ -113,7 +112,7 @@ class MainApp:
 
         self.root.configure(fg_color=self.chave_customjson("CTk", "fg_color"))
 
-        self.menu_lateral = menu.InterfaceMenu(self.root, self)
+        self.menu_lateral = menu_view.InterfaceMenu(self.root, self)
         # self.root.resizable(True, True)
 
     def clear_screen(self):
@@ -148,25 +147,25 @@ class MainApp:
         ctk.set_widget_scaling(self.escala_atual)
 
     def exibir_novoitem(self, frame_resposta):
-        self.interface_Novoitem = item.InterfaceNovoItem(self, frame_resp=frame_resposta)
+        self.interface_Novoitem = Product_view.InterfaceNovoItem(self, frame_resp=frame_resposta)
 
     # ctk.set_widget_scaling(self.escala_atual)
 
     def exibir_novocliente(self, frame_resposta):
-        self.interface_NovoUsuario = cliente.InterfaceNovoCliente(self, frame_resp=frame_resposta)
+        self.interface_NovoUsuario = customer_view.InterfaceNovoCliente(self, frame_resp=frame_resposta)
 
     # ctk.set_widget_scaling(self.escala_atual)
 
     def exibir_novousuario(self, frame_resposta):
-        self.interface_NovoUsuario = novo_usuario.InterfaceNovoUsuario(self, frame_resp=frame_resposta)
+        self.interface_NovoUsuario = new_user_view.InterfaceNovoUsuario(self, frame_resp=frame_resposta)
         # ctk.set_widget_scaling(self.escala_atual)
 
     def exibir_usuario(self, frame_resposta, bt_perfil):
-        self.Interface_Usuario = usuario.InterfaceUsuario(self, frame_resposta, bt_perfil)
+        self.Interface_Usuario = user_view.InterfaceUsuario(self, frame_resposta, bt_perfil)
         # ctk.set_widget_scaling(self.escala_atual)
 
     def exibir_configuracoes(self, frame_resposta):
-        self.Interface_Configuracoes = configuracoes.InterfaceConfiguracoes(self, frame_resposta)
+        self.Interface_Configuracoes = Settings.InterfaceConfiguracoes(self, frame_resposta)
 
     # ctk.set_widget_scaling(self.escala_atual)
 
