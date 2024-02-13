@@ -4,8 +4,6 @@ import sqlite3
 
 import pkg_resources
 
-import sys
-
 from src.views import login
 from src.views import cliente
 from src.views import configuracoes
@@ -48,7 +46,6 @@ def save_config(config):
     with open(local, "w") as config_file:
         json.dump(config, config_file, indent=4)
 
-
 # Funcão para alterar e salvar o tema
 def change_and_save_theme(new_theme):
     config = load_config(True)
@@ -81,8 +78,8 @@ class MainApp:
         self.SubTitle = ctk.CTkFont(size=14, weight="bold")
         self.FontBody = ctk.CTkFont(size=12)
 
-        self.validate_cmd_numeric = root_main.register(self.validate_numeric_input)
-        self.validade_cmd_text = root_main.register(self.validate_text_input)
+        self.validate_cmd_numeric = self.root.register(self.validate_numeric_input)
+        self.validade_cmd_text = self.root.register(self.validate_text_input)
 
         self.screen_height = self.root.winfo_screenheight()
         self.screen_wedth = self.root.winfo_screenwidth()
@@ -215,7 +212,6 @@ class MainApp:
         if new_appearance_mode.lower() == "personalizado":
             ctk.set_default_color_theme(
                 os.path.join(os.path.dirname(os.path.realpath(__file__)), "temas/personalizado.JSON"))
-
 
         else:
             ctk.set_default_color_theme(new_appearance_mode)
