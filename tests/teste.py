@@ -11,22 +11,25 @@
 #     app = MainApp(root)
 #     root.mainloop()
 
-
 import customtkinter as ctk
-from deep_translator import GoogleTranslator
-
-# Defina a variável global para o idioma de tradução padrão
-idioma_padrao = "en"
-
-# Inicialize o tradutor com o idioma padrão
-tradutor = GoogleTranslator(source="pt", target=idioma_padrao)
-
-# Texto a ser traduzido
-texto = "Boa noite, galera!"
 
 root = ctk.CTk()
 
-print(tradutor.translate(texto))
+root.geometry("500x500")
+def nova_janela():
+    dialog = ctk.CTkToplevel()
+
+    dialog.title("SENHA")
+    dialog.geometry("340x250")
+    dialog.resizable(0, 0)
+    dialog.grab_set()
+
+
+
+b1 = ctk.CTkButton(root, text="nova janela", command=nova_janela)
+b1.pack()
+
+root.mainloop()
 
 
 
