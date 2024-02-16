@@ -2,12 +2,12 @@ import sqlite3
 import os
 from src.utils.utils import Utilities
 
+
 class MainModel:
     def __init__(self):
 
         self.file_name_db = os.path.join(os.path.dirname(os.path.realpath(__file__)), "src/data/database_location.txt")
 
-        
         self.db_path = ''
         self.full_database_path = None
         self.db_connect = None
@@ -30,19 +30,21 @@ class MainModel:
         self.db_path = self.find_database_path()
 
         if not self.db_path:
-            return (False, "Erro, Banco de dados não encontrado. Por favor, crie um novo ou atualize o local do arquivo.")
+            return (
+                False, "Erro, Banco de dados não encontrado. Por favor, crie um novo ou atualize o local do arquivo.")
 
-        self.full_database_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), self.db_path)
+        self.full_database_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
+                                               self.db_path)
 
         try:
             self.db_connect = sqlite3.connect(database=self.full_database_path)
             self.db_cursor = self.db_connect.cursor()
-            
+
             print("Conexão bem-sucedida ao banco de dados")
-            return (True, "Conexão bem-sucedida ao banco de dados!")
+            return True, "Conexão bem-sucedida ao banco de dados!"
         except sqlite3.Error as erro:
-            return (False, str(erro) + ": Erro de conexão com o banco de dados")
-                 
+            return False, str(erro) + ": Erro de conexão com o banco de dados"
+
     def validate_login_db(self, login, password):
 
         if not self.db_connection():
@@ -61,20 +63,25 @@ class MainModel:
         return bool(resultado)
 
     def close_connection(self):
-        self.db_cursor.close()
-        self.db_connect.close()
-        print("Fechando conexão com o banco de dados")
-    
+        try:
+            self.db_cursor.close()
+            self.db_connect.close()
+            print("Fechando conexão com o banco de dados")
+        except AttributeError:
+            print("nao houve conexão com banco de dados, fechando aplicação")
+
     def get_user_info_list(self):
+        pass
 
-        self.db_cursor.execute("SELECT acesso FROM Usuarios WHERE usuario = ?", (self.usuario_logado,))
-        self.acesso_usuario = self.db_cursor.fetchone()[0]
+        # self.db_cursor.execute("SELECT acesso FROM Usuarios WHERE usuario = ?", (self.usuario_logado,))
+        # self.acesso_usuario = self.db_cursor.fetchone()[0]
 
-        self.db_cursor.execute("SELECT * FROM Modulos WHERE usuario = ?", (self.usuario_logado,))
-        self.main_app.ModulosDoUsuario = self.db_cursor.fetchall()
-
-        self.main_app.usuario_logado = self.usuario_logado
-        self.main_app.acesso_usuario = self.acesso_usuario
+        # self.db_cursor.execute("SELECT * FROM Modulos WHERE usuario = ?", (self.usuario_logado,))
+        # self.main_app.ModulosDoUsuario = self.db_cursor.fetchall()
+        #
+        # self.main_app.usuario_logado = self.usuario_logado
+        # self.main_app.acesso_usuario = self.acesso_usuario
 
     def on_login_success(self):
+        pass
         print("bem vindo")
