@@ -1,0 +1,14 @@
+import sqlite3
+
+conexao = sqlite3.connect(r"C:\Users\luisg\Documents\GitHub\Sys_Comercial\tests\exemplobd.db")
+cursor = conexao.cursor()
+
+login_digitado, senha_digitada, acesso, status = 'luis'
+
+cursor.execute("""INSERT INTO Usuarios(usuario, senha, acesso, status)
+                VALUES(?, ?, ?, ? )""", (login_digitado, senha_digitada, acesso, status))
+
+conexao.commit()
+
+cursor.execute("select * from Usuarios")
+print(cursor.fetchall())
