@@ -184,10 +184,12 @@ class MainView(ctk.CTk):
 
         self.database_status.grid(column=0, row=5, padx=(60, 0), pady=(50, 5), columnspan=3, sticky="w")
 
-        self.select_database = ctk.CTkButton(self.frame2, image=view_icon, width=0, anchor="w", text="Procurar",
+        self.search_database = ctk.CTkButton(self.frame2, image=view_icon, width=0, anchor="w", text="Procurar",
                                              height=43, font=self.appearance_manager.get_font_subtitle(True),
-                                             text_color="white", fg_color="#558FAD", hover_color="#D9B46E")
-        self.select_database.grid(column=0, row=5, padx=(0, 20), pady=(50, 5), columnspan=3, sticky="e")
+                                             text_color="white", fg_color="#558FAD", hover_color="#D9B46E", command=self.search_database_dialog)
+        self.search_database.grid(column=0, row=5, padx=(0, 20), pady=(50, 5), columnspan=3, sticky="e")
+
+        
 
     def start_interface(self):
         self.mainloop()
@@ -224,6 +226,9 @@ class MainView(ctk.CTk):
 
     def create_database_dialog(self):
         self.controller.create_database_and_set_path()
+
+    def search_database_dialog(self):
+        self.controller.search_database()
 
     def back(self):
         self.utils.restart_interface(self)

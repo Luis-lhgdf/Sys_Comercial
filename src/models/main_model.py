@@ -42,7 +42,6 @@ class MainModel:
             self.db_connect = sqlite3.connect(database=self.full_database_path)
             self.db_cursor = self.db_connect.cursor()
 
-            print("Conexão bem-sucedida ao banco de dados")
             return True, "Conexão bem-sucedida ao banco de dados!"
         except sqlite3.Error as erro:
             return False, str(erro) + ": Erro de conexão com o banco de dados"

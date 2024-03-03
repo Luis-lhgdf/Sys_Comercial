@@ -40,7 +40,15 @@ class MainController:
             self.view.create_db_button.configure(text=f"Banco de dados criado com Sucesso:\n{db_path}", command=None)
             self.login(self.model.db_connection())
 
-        
+    def search_database(self):
+        db_path = filedialog.askopenfilename(defaultextension=".db", filetypes=[("Banco de Dados SQLite", "*.db")])
+
+        if db_path:
+            self.model.save_database_path(db_path)
+            self.view.database_status.configure(text_color="green")
+            self.view.search_database.destroy()
+            self.login(self.model.db_connection())
+
 
 
 
