@@ -14,7 +14,107 @@ class MainModel:
         self.db_connect = None
         self.db_cursor = None
         self.utils = Utilities()
-
+        self.info_list_user = []
+        self.modules_database = {
+            "Estoque": {
+                "ENTRADA": {
+                    "visualizar": "bloqueado",
+                    "novo": "bloqueado",
+                    "editar": "bloqueado",
+                    "remover": "bloqueado"
+                },
+                "SAIDA": {
+                    "visualizar": "bloqueado",
+                    "novo": "bloqueado",
+                    "editar": "bloqueado",
+                    "remover": "bloqueado"
+                },
+                "INVENTARIO": {
+                    "visualizar": "bloqueado",
+                    "novo": "bloqueado",
+                    "editar": "bloqueado",
+                    "remover": "bloqueado"
+                }
+            },
+            "Cadastro": {
+                "CAD ITEM": {
+                    "visualizar": "bloqueado",
+                    "novo": "bloqueado",
+                    "editar": "bloqueado",
+                    "remover": "bloqueado"
+                },
+                "CAD CLIENTE": {
+                    "visualizar": "bloqueado",
+                    "novo": "bloqueado",
+                    "editar": "bloqueado",
+                    "remover": "bloqueado"
+                },
+                "CAD USUARIO": {
+                    "visualizar": "bloqueado",
+                    "novo": "bloqueado",
+                    "editar": "bloqueado",
+                    "remover": "bloqueado"
+                },
+                "GERENCIAR USER": {
+                    "visualizar": "bloqueado",
+                    "novo": "bloqueado",
+                    "editar": "bloqueado",
+                    "remover": "bloqueado"
+                }
+            },
+            "Agenda": {
+                "AGENDA": {
+                    "visualizar": "bloqueado",
+                    "novo": "bloqueado",
+                    "editar": "bloqueado",
+                    "remover": "bloqueado"
+                }
+            },
+            "Carteira": {
+                "VENDAS": {
+                    "visualizar": "bloqueado",
+                    "novo": "bloqueado",
+                    "editar": "bloqueado",
+                    "remover": "bloqueado"
+                },
+                "FATURAMENTO": {
+                    "visualizar": "bloqueado",
+                    "novo": "bloqueado",
+                    "editar": "bloqueado",
+                    "remover": "bloqueado"
+                }
+            },
+            "Financas": {
+                "DESPESAS": {
+                    "visualizar": "bloqueado",
+                    "novo": "bloqueado",
+                    "editar": "bloqueado",
+                    "remover": "bloqueado"
+                },
+                "OUTRAS RENDAS": {
+                    "visualizar": "bloqueado",
+                    "novo": "bloqueado",
+                    "editar": "bloqueado",
+                    "remover": "bloqueado"
+                }
+            },
+            "Usuario": {
+                "USUARIO": {
+                    "visualizar": "bloqueado",
+                    "novo": "bloqueado",
+                    "editar": "bloqueado",
+                    "remover": "bloqueado"
+                }
+            },
+            "Configuracões": {
+                "CONFIGURACOES": {
+                    "visualizar": "bloqueado",
+                    "novo": "bloqueado",
+                    "editar": "bloqueado",
+                    "remover": "bloqueado"
+                }
+            }
+        }
     def find_database_path(self):
         try:
             with open(self.file_name_db, 'r') as file:
@@ -127,12 +227,12 @@ class MainModel:
             "SELECT * FROM Usuarios WHERE usuario = ? AND senha = ? AND status = 'ATIVO'",
             (login, password)
         )
-        resultado = self.db_cursor.fetchall()
+        query_result = self.db_cursor.fetchall()
 
         self.close_connection()
 
         # Verifique se há algum resultado retornado pela consulta SQL
-        return bool(resultado)
+        return bool(query_result)
 
     def close_connection(self):
         try:
@@ -142,18 +242,52 @@ class MainModel:
         except AttributeError:
             print("nao houve conexão com banco de dados, fechando aplicação")
 
-    def get_user_info_list(self):
-        pass
+    def get_user_info_list(self, usuario):
+        self.db_connection()        
+        self.db_cursor.execute("SELECT acesso FROM Usuarios WHERE usuario = ?", (usuario,))
+        self.info_list_user.append(usuario)
+        self.info_list_user.append(self.db_cursor.fetchone()[0])
 
-        # self.db_cursor.execute("SELECT acesso FROM Usuarios WHERE usuario = ?", (self.usuario_logado,))
-        # self.acesso_usuario = self.db_cursor.fetchone()[0]
+        self.db_cursor.execute("SELECT * FROM Modulos WHERE usuario = ?", (usuario,))
+        self.info_list_user.append(self.db_cursor.fetchall())
+        
 
-        # self.db_cursor.execute("SELECT * FROM Modulos WHERE usuario = ?", (self.usuario_logado,))
-        # self.main_app.ModulosDoUsuario = self.db_cursor.fetchall()
-        #
-        # self.main_app.usuario_logado = self.usuario_logado
-        # self.main_app.acesso_usuario = self.acesso_usuario
+    def on_login_success(self, login):
+        self.get_user_info_list(usuario=login)
+        print("bem vindo", login)
+        print(self.info_list_user)
 
-    def on_login_success(self):
-        pass
-        print("bem vindo")
+    def create_newuser(self, login, password, email=None, acesso='USUARIO', image=None, status='ATIVO'):
+
+        self.db_connection()
+        self.db_cursor.execute('''INSERT INTO Usuarios (usuario, email, senha, acesso, imagem, status)
+                VALUES (?, ?, ?, ?, ?, ?)''', (login, email, password, acesso, image, status))
+        self.db_connect.commit()
+
+        # Obter o ID do usuário recém-inserido
+        self.db_cursor.execute("SELECT last_insert_rowid()")
+        id_usuario = self.db_cursor.fetchone()[0]
+
+        # Iterar sobre os módulos e submódulos e inserir os registros na tabela Modulos
+        for modulo, submodulos in self.modules_database.items():
+            for submodulo, permissoes in submodulos.items():
+                if acesso == 'ADM':
+                    visualizar = novo = editar = remover = 'liberado'
+                else:  # Se o usuário não for ADM, assume-se que é USUARIO
+                    visualizar = novo = editar = remover = 'bloqueado'
+                    # No caso de módulo 'Usuario', liberamos as permissões
+                    if modulo == 'Usuario' and submodulo == 'USUARIO':
+                        visualizar = novo = editar = remover = 'liberado'
+                self.db_cursor.execute("""
+                    INSERT INTO Modulos (usuario, modulo, submodulo, visualizar, novo, editar, remover, id_usuario)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """, (login, modulo, submodulo, visualizar, novo, editar, remover, id_usuario))
+        self.db_connect.commit()
+        self.close_connection()
+
+    def user_count(self):
+        self.db_connection()
+        self.db_cursor.execute("SELECT * FROM Usuarios")  # Certifique-se de adicionar uma vírgula após o login para torná-lo uma tupla de um elemento
+        query_result = self.db_cursor.fetchall()
+        self.close_connection()
+        return len(query_result)

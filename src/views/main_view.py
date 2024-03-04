@@ -1,7 +1,7 @@
 from src.views.icones import *
 from src.utils.utils import Utilities
 from src.views.appearance_manager import AppearanceManager
-
+from src.models.main_model import MainModel
 
 class MainView(ctk.CTk):
     def __init__(self, controller):
@@ -9,6 +9,7 @@ class MainView(ctk.CTk):
         self.controller = controller
         self.appearance_manager = AppearanceManager()
         self.utils = Utilities()
+        self.model = MainModel()
         self.db_status = None
 
         self.linkedin_url = "https://linkedin.com/in/luis-henrique-281b97186"
@@ -70,7 +71,7 @@ class MainView(ctk.CTk):
         self.sign_up_text.grid(column=0, row=0, padx=(10, 10), pady=(5, 0), sticky="e")
 
         self.sign_up = ctk.CTkButton(self.frame2, text="CADASTRE-SE", font=self.appearance_manager.get_font_body(True),
-                                     text_color="white", fg_color="#558FAD", hover_color="#D9B46E")
+                                     text_color="white", fg_color="#558FAD", hover_color="#D9B46E", command=self.create_user_view)
         self.sign_up.grid(column=1, row=0, padx=(10, 10), pady=(5, 0), sticky="w")
 
         self.welcome_label = ctk.CTkLabel(self.frame2, text="BEM-VINDO DE VOLTA",
@@ -189,8 +190,96 @@ class MainView(ctk.CTk):
                                              text_color="white", fg_color="#558FAD", hover_color="#D9B46E", command=self.search_database_dialog)
         self.search_database.grid(column=0, row=5, padx=(0, 20), pady=(50, 5), columnspan=3, sticky="e")
 
+    def create_user_view(self):
+        self.utils.restart_interface(self.frame2)
+
+        # Configuração das colunas e linhas do frame 2
+        self.frame2.grid_columnconfigure(0, weight=1)
+        self.frame2.grid_rowconfigure((1, 10), weight=1)
+
+        self.back_button = ctk.CTkButton(self.frame2, text="", width=0, image=back_icon, fg_color="#558FAD",
+                                         hover_color="#D9B46E", command=self.back)
+        self.back_button.grid(column=0, row=0, padx=(10, 10), pady=(5, 0), sticky="w")
+
+        self.create_user_label = ctk.CTkLabel(self.frame2, text="CRIE SUA CONTA",
+                                          font=self.appearance_manager.get_font_title(), text_color="black")
+        self.create_user_label.grid(column=0, row=2, padx=(60, 0), pady=(0, 0), sticky="w")
+
+        self.create_user_label2 = ctk.CTkLabel(self.frame2, text="O nome de usuário deve conter apenas letras e números.\nSua senha deve conter 6 digitos e com caracteres\nespeciais (!$@%#)",
+                                           font=self.appearance_manager.get_font_subtitle(), text_color="black", justify="left")
+        self.create_user_label2.grid(column=0, row=3, padx=(60, 0), pady=(0, 40), sticky="w")
+
+
+        self.login_text = ctk.CTkLabel(self.frame2, text="Usuario", font=self.appearance_manager.get_font_subtitle(),
+                                       text_color="black")
+        self.login_text.grid(column=0, row=4, padx=(65, 0), pady=(5, 3), sticky="w")
+
+        self.login_entry = ctk.CTkEntry(self.frame2, placeholder_text="Digite seu nome de usuario", fg_color="white",
+                                        text_color="black", placeholder_text_color="gray", height=43, width=300,
+                                        border_color="gray80", font=self.appearance_manager.get_font_body())
+        self.login_entry.grid(column=0, row=5, padx=(60, 0), pady=(0, 5), sticky="w")
+
+
+
+        self.password_text = ctk.CTkLabel(self.frame2, text="Senha", text_color="black",
+                                          font=self.appearance_manager.get_font_subtitle())
+        self.password_text.grid(column=0, row=6, padx=(65, 0), pady=(5, 3), sticky="w")
+
+        self.password_entry = ctk.CTkEntry(self.frame2, placeholder_text="Digite sua senha", fg_color="white",
+                                           text_color="black", placeholder_text_color="gray", height=43, width=300,
+                                           border_color="gray80", show="*",
+                                           font=self.appearance_manager.get_font_body())
+        self.password_entry.grid(column=0, row=7, padx=(60, 0), pady=(0, 3), sticky="w")
         
 
+
+
+        self.password_confirmation_text = ctk.CTkLabel(self.frame2, text="Redigite sua senha", text_color="black",
+                                          font=self.appearance_manager.get_font_subtitle())
+        self.password_confirmation_text.grid(column=0, row=8, padx=(65, 0), pady=(5, 3), sticky="w")
+
+        self.password_confirmation_entry = ctk.CTkEntry(self.frame2, placeholder_text="Digite sua senha", fg_color="white",
+                                           text_color="black", placeholder_text_color="gray", height=43, width=300,
+                                           border_color="gray80", show="*",
+                                           font=self.appearance_manager.get_font_body())
+        self.password_confirmation_entry.grid(column=0, row=9, padx=(60, 0), pady=(0, 3), sticky="w")
+
+        
+
+
+        self.show_password_check = ctk.CTkCheckBox(self.frame2, text="",
+                                                   command=lambda: self.show_password(self.password_confirmation_entry), height=43,
+                                                   fg_color="#D9B46E", hover_color="#D9B46E")
+        self.show_password_check.grid(column=0, row=9, padx=(370, 0), pady=(5, 5), sticky="w")
+
+
+
+        self.create_user_button = ctk.CTkButton(self.frame2, text="Criar", height=43, width=140,
+                                          font=self.appearance_manager.get_font_subtitle(True), text_color="white",
+                                          fg_color="#558FAD", hover_color="#D9B46E", command=self.create_newuser)
+        self.create_user_button.grid(column=0, row=10, padx=(60, 0), pady=(5, 5), sticky="w")
+        self.create_user_button.bind("<Return>", self.login_enter_key)
+
+        self.password_entry.bind('<KeyRelease>', lambda event: self.utils.validate_password(self.password_entry.get(), self.password_confirmation_entry.get(), self.password_text, self.password_confirmation_text, event))
+        self.password_confirmation_entry.bind('<KeyRelease>', lambda event: self.utils.validate_password(self.password_entry.get(), self.password_confirmation_entry.get(), self.password_text, self.password_confirmation_text, event))
+        self.login_entry.bind('<KeyRelease>', lambda event: self.utils.validate_username(self.login_entry.get(), self.login_text, event))
+
+    def create_newuser(self):
+        password_confirmation = self.utils.validate_password(self.password_entry.get(), self.password_confirmation_entry.get(), self.password_text, self.password_confirmation_text)
+        username_confirmation =  self.utils.validate_username(self.login_entry.get(), self.login_text)
+
+        if password_confirmation and username_confirmation:
+            is_valid = self.controller.validade_create_newuser(self.login_entry.get())
+            usercount = self.model.user_count()
+            acesso = 'ADM' if usercount == 0 else 'USUARIO'
+            if is_valid:
+                password = self.utils.encrypt_password(self.password_confirmation_entry.get())
+                self.model.create_newuser(self.login_entry.get(), password, acesso=acesso)
+                self.utils.msgbox("Criar usuario", f"Usuario {self.login_entry.get()} criado com sucesso!!!", 0)
+                self.login_entry.delete(0, 'end')
+                self.password_entry.delete(0, 'end')
+                self.password_confirmation_entry.delete(0, 'end')
+                
     def start_interface(self):
         self.mainloop()
 

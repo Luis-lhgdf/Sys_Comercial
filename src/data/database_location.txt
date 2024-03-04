@@ -1,1 +1,1 @@
-C:/Users/luisg/Desktop/database_syscomercial.db
+C:/Users/luisg/Documents/GitHub/Sys_Comercial/src/data/database_syscomercial.db
