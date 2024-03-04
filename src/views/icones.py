@@ -10,109 +10,106 @@ menu_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "menu_b
 home_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "home_black.png")),
                         dark_image=Image.open(os.path.join(image_path, "home_light.png")), size=(17, 17))
 
-profile_photo = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "perfil.jpg")),
-                          dark_image=Image.open(os.path.join(image_path, "perfil.jpg")), size=(100, 100))
+profile_photo = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "profile.jpg")),
+                          dark_image=Image.open(os.path.join(image_path, "profile.jpg")), size=(100, 100))
 
-presentation_image = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "apresentacao.jpg")),
-                                dark_image=Image.open(os.path.join(image_path, "apresentacao.jpg")), size=(1500, 1125))
+presentation_image = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "presentation.jpg")),
+                                dark_image=Image.open(os.path.join(image_path, "presentation.jpg")), size=(1500, 1125))
 
 excel_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "excel.png")),
                          dark_image=Image.open(os.path.join(image_path, "excel.png")), size=(30, 30))
 
-entry_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "entrada_black.png")),
-                           dark_image=Image.open(os.path.join(image_path, "entrada_light.png")), size=(17, 17))
+entry_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "entry_black.png")),
+                           dark_image=Image.open(os.path.join(image_path, "entry_light.png")), size=(17, 17))
 
 your_logo2 = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "logo2.png")),
                         dark_image=Image.open(os.path.join(image_path, "logo2.png")), size=(130, 130))
 
-stock_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "estoque_black.png")),
-                           dark_image=Image.open(os.path.join(image_path, "estoque_light.png")), size=(17, 17))
+stock_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "stock_black.png")),
+                           dark_image=Image.open(os.path.join(image_path, "stock_light.png")), size=(17, 17))
 
-register_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "cadastro_black.png")),
-                            dark_image=Image.open(os.path.join(image_path, "cadastro_light.png")), size=(17, 17))
+register_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "register_black.png")),
+                            dark_image=Image.open(os.path.join(image_path, "register_light.png")), size=(17, 17))
 
 agenda_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "agenda_black.png")),
                           dark_image=Image.open(os.path.join(image_path, "agenda_light.png")), size=(17, 17))
 
-wallet_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "carteira_black.png")),
-                            dark_image=Image.open(os.path.join(image_path, "carteira_light.png")), size=(17, 17))
+wallet_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "wallet_black.png")),
+                            dark_image=Image.open(os.path.join(image_path, "wallet_light.png")), size=(17, 17))
 
-user_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "usuario_black.png")),
-                           dark_image=Image.open(os.path.join(image_path, "usuario_light.png")), size=(17, 17))
+user_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "user_black.png")),
+                           dark_image=Image.open(os.path.join(image_path, "user_light.png")), size=(17, 17))
 
-user_icon2 = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "usuario_light.png")),
-                            dark_image=Image.open(os.path.join(image_path, "usuario_light.png")), size=(50, 50))
+user_icon2 = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "user_light.png")),
+                            dark_image=Image.open(os.path.join(image_path, "user_light.png")), size=(50, 50))
 
-settings_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "configuracoes_black.png")),
-                                 dark_image=Image.open(os.path.join(image_path, "configuracoes_light.png")),
+settings_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "settings_black.png")),
+                                 dark_image=Image.open(os.path.join(image_path, "settings_light.png")),
                                  size=(17, 17))
 
-entry_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "entrada_black.png")),
-                           dark_image=Image.open(os.path.join(image_path, "entrada_light.png")), size=(17, 17))
+exit_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "exit_black.png")),
+                         dark_image=Image.open(os.path.join(image_path, "exit_light.png")), size=(17, 17))
 
-exit_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "saida_black.png")),
-                         dark_image=Image.open(os.path.join(image_path, "saida_light.png")), size=(17, 17))
+inventory_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "inventory_black.png")),
+                              dark_image=Image.open(os.path.join(image_path, "inventory_light.png")), size=(17, 17))
 
-inventory_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "inventario_black.png")),
-                              dark_image=Image.open(os.path.join(image_path, "inventario_light.png")), size=(17, 17))
+add_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "add_black.png")),
+                             dark_image=Image.open(os.path.join(image_path, "add_light.png")), size=(30, 30))
 
-add_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "adicionar_black.png")),
-                             dark_image=Image.open(os.path.join(image_path, "adicionar_light.png")), size=(30, 30))
+edit_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "edit_black.png")),
+                          dark_image=Image.open(os.path.join(image_path, "edit_light.png")), size=(30, 30))
 
-edit_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "editar_black.png")),
-                          dark_image=Image.open(os.path.join(image_path, "editar_light.png")), size=(30, 30))
+edit_icon2 = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "edit_black.png")),
+                           dark_image=Image.open(os.path.join(image_path, "edit_light.png")), size=(17, 17))
 
-edit_icon2 = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "editar_black.png")),
-                           dark_image=Image.open(os.path.join(image_path, "editar_light.png")), size=(17, 17))
-
-synchronize_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "sincronizar_black.png")),
-                           dark_image=Image.open(os.path.join(image_path, "sincronizar_light.png")), size=(30, 30))
+update_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "update_black.png")),
+                           dark_image=Image.open(os.path.join(image_path, "update_light.png")), size=(30, 30))
 
 item_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "item_black.png")),
                         dark_image=Image.open(os.path.join(image_path, "item_light.png")), size=(17, 17))
 
-view_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "visualizar_black.png")),
-                              dark_image=Image.open(os.path.join(image_path, "visualizar_light.png")), size=(17, 17))
+view_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "view_black.png")),
+                              dark_image=Image.open(os.path.join(image_path, "view_light.png")), size=(17, 17))
 
-back_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "voltar_black.png")),
-                          dark_image=Image.open(os.path.join(image_path, "voltar_light.png")), size=(30, 30))
+back_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "back_black.png")),
+                          dark_image=Image.open(os.path.join(image_path, "back_light.png")), size=(30, 30))
 
-finance_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "financas_black.png")),
-                            dark_image=Image.open(os.path.join(image_path, "financas_light.png")), size=(17, 17))
+finance_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "finance_black.png")),
+                            dark_image=Image.open(os.path.join(image_path, "finance_light.png")), size=(17, 17))
 
-sales_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "vendas_black.png")),
-                          dark_image=Image.open(os.path.join(image_path, "vendas_light.png")), size=(17, 17))
+sales_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "sales_black.png")),
+                          dark_image=Image.open(os.path.join(image_path, "sales_light.png")), size=(17, 17))
 
-expense_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "despesa_black.png")),
-                           dark_image=Image.open(os.path.join(image_path, "despesa_light.png")), size=(17, 17))
+expense_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "expense_black.png")),
+                           dark_image=Image.open(os.path.join(image_path, "expense_light.png")), size=(17, 17))
 
-income_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "receita_black.png")),
-                           dark_image=Image.open(os.path.join(image_path, "receita_light.png")), size=(17, 17))
+income_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "income_black.png")),
+                           dark_image=Image.open(os.path.join(image_path, "income_light.png")), size=(17, 17))
 
-revenue_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "faturamento_black.png")),
-                               dark_image=Image.open(os.path.join(image_path, "faturamento_light.png")), size=(17, 17))
+revenue_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "revenue_black.png")),
+                               dark_image=Image.open(os.path.join(image_path, "revenue_light.png")), size=(17, 17))
 
-manage_user_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "gerenciarUser_black.png")),
-                                 dark_image=Image.open(os.path.join(image_path, "gerenciarUser_light.png")),
+manage_user_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "manageuser_black.png")),
+                                 dark_image=Image.open(os.path.join(image_path, "manageuser_black_light.png")),
                                  size=(17, 17))
 
-delete_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "deletar_black.png")),
-                           dark_image=Image.open(os.path.join(image_path, "deletar_light.png")), size=(30, 30))
+delete_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "delete_black.png")),
+                           dark_image=Image.open(os.path.join(image_path, "delete_light.png")), size=(30, 30))
 
-delete_icon2 = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "deletar_black.png")),
-                            dark_image=Image.open(os.path.join(image_path, "deletar_light.png")), size=(17, 17))
+delete_icon2 = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "delete_black.png")),
+                            dark_image=Image.open(os.path.join(image_path, "delete_light.png")), size=(17, 17))
 
-save_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "salvar_black.png")),
-                          dark_image=Image.open(os.path.join(image_path, "salvar_light.png")), size=(30, 30))
+save_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "save_black.png")),
+                          dark_image=Image.open(os.path.join(image_path, "save_light.png")), size=(30, 30))
 
-image_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "imagem_black.png")),
-                          dark_image=Image.open(os.path.join(image_path, "imagem_light.png")), size=(17, 17))
+image_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "image_black.png")),
+                          dark_image=Image.open(os.path.join(image_path, "image_light.png")), size=(17, 17))
 
-password_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "senha_black.png")),
-                         dark_image=Image.open(os.path.join(image_path, "senha_light.png")), size=(17, 17))
+password_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "password_black.png")),
+                         dark_image=Image.open(os.path.join(image_path, "password_light.png")), size=(17, 17))
 
-profile_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "perfil.png")),
-                          dark_image=Image.open(os.path.join(image_path, "perfil.png")), size=(80, 80))
+profiledefault_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "profiledefault.png")),
+                          dark_image=Image.open(os.path.join(image_path, "profiledefault.png")), size=(80, 80))
 
 illustration_image = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "illustration.png")),
                           dark_image=Image.open(os.path.join(image_path, "illustration.png")), size=(400, 380))
@@ -123,8 +120,8 @@ linkedin_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "li
 github_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "github.png")),
                           dark_image=Image.open(os.path.join(image_path, "github.png")), size=(60, 60))
 
-website_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "site.png")),
-                          dark_image=Image.open(os.path.join(image_path, "site.png")), size=(60, 60))
+website_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "website.png")),
+                          dark_image=Image.open(os.path.join(image_path, "website.png")), size=(60, 60))
 
 
 alert_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "alert.png")),

@@ -10,7 +10,7 @@ class InterfaceMenu:
         # self.conexao = self.main_app.ConexaoPrincipal
 
         self.root.title("SYS COMERCIAL")
-        self.root.state('zoomed')
+        self.root.state('zoomed') 
 
         self.screen_height = self.root.winfo_screenheight()
         self.screen_wedth = self.root.winfo_screenwidth()
