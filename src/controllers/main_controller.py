@@ -11,7 +11,6 @@ class MainController:
 
     def login(self, db_status):
         self.view.update_status(db_status)
-
         self.view.start_interface()
 
     def exit(self):
@@ -34,6 +33,7 @@ class MainController:
 
         if self.model.validate_login_db(login_get, password_get):
             self.model.on_login_success(login_get)
+            return True
         else:
             self.utils.msgbox("Login", "Login ou senha incorretos, Tente novamente", 0)
 

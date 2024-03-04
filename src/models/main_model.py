@@ -254,8 +254,7 @@ class MainModel:
 
     def on_login_success(self, login):
         self.get_user_info_list(usuario=login)
-        print("bem vindo", login)
-        print(self.info_list_user)
+        
 
     def create_newuser(self, login, password, email=None, acesso='USUARIO', image=None, status='ATIVO'):
 

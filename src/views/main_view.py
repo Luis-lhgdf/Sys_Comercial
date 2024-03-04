@@ -2,7 +2,7 @@ from src.views.icones import *
 from src.utils.utils import Utilities
 from src.views.appearance_manager import AppearanceManager
 from src.models.main_model import MainModel
-
+from src.views.menu_view import InterfaceMenu
 class MainView(ctk.CTk):
     def __init__(self, controller):
         super().__init__()
@@ -311,7 +311,9 @@ class MainView(ctk.CTk):
             pass
 
     def login(self):
-        self.controller.validate_login()
+        if self.controller.validate_login():
+            self.utils.restart_interface(self)
+            interfacemenu = InterfaceMenu(self)
 
     def create_database_dialog(self):
         self.controller.create_database_and_set_path()
