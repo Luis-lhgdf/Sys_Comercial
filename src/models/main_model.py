@@ -5,10 +5,8 @@ from src.utils.utils import Utilities
 
 class MainModel:
     def __init__(self):
-
-
+        
         self.file_name_db = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "data/database_location.txt")
-
         self.db_path = ''
         self.full_database_path = None
         self.db_connect = None
@@ -115,6 +113,7 @@ class MainModel:
                 }
             }
         }
+   
     def find_database_path(self):
         try:
             with open(self.file_name_db, 'r') as file:
