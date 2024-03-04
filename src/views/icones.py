@@ -4,6 +4,8 @@ import os
 
 image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "icon")
 
+
+
 menu_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "menu_black.png")),
                         dark_image=Image.open(os.path.join(image_path, "menu_light.png")), size=(20, 20))
 
@@ -90,7 +92,7 @@ revenue_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "rev
                                dark_image=Image.open(os.path.join(image_path, "revenue_light.png")), size=(17, 17))
 
 manage_user_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "manageuser_black.png")),
-                                 dark_image=Image.open(os.path.join(image_path, "manageuser_black_light.png")),
+                                 dark_image=Image.open(os.path.join(image_path, "manageuser_light.png")),
                                  size=(17, 17))
 
 delete_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "delete_black.png")),

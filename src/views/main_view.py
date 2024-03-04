@@ -313,7 +313,7 @@ class MainView(ctk.CTk):
     def login(self):
         if self.controller.validate_login():
             self.utils.restart_interface(self)
-            interfacemenu = InterfaceMenu(self)
+            InterfaceMenu(self)
 
     def create_database_dialog(self):
         self.controller.create_database_and_set_path()
