@@ -11,6 +11,9 @@ class MainView(ctk.CTk):
         self.utils = Utilities()
         self.model = MainModel()
         self.db_status = None
+        
+
+
 
         self.linkedin_url = "https://linkedin.com/in/luis-henrique-281b97186"
         self.github_url = "https://github.com/Luis-lhgdf"

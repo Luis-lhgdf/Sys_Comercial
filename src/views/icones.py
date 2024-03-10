@@ -128,3 +128,6 @@ website_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "web
 
 alert_icon = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "alert.png")),
                           dark_image=Image.open(os.path.join(image_path, "alert.png")), size=(30, 30))
+
+
+
