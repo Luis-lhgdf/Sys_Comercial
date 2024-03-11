@@ -42,5 +42,5 @@ Espero que este sistema possa ser útil para ajudar pequenas empresas a simplifi
 
 ## Imagens dos modulos até o momento:
 
-![alt text](System_Images\login.png)
-![alt text](System_Images\themes.png)
+![alt text](../Sys_Comercial/System_Images/login.png)
+![alt text](../Sys_Comercial/System_Images/themes.png)
