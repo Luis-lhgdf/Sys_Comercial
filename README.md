@@ -40,9 +40,42 @@ Contribuições são bem-vindas! Se você identificar algum problema ou tiver su
 
 Espero que este sistema possa ser útil para ajudar pequenas empresas a simplificar suas operações e alcançar maior sucesso em seus negócios.
 
-## Imagens dos modulos até o momento:
+## Imagens dos modulos que foram atualizados até o momento:
+
+# Login
 
 <img src="System_Images\login.png"/>
+
+# Menu lateral
+
 <img src="System_Images\themes.png"/>
 
+### Imagens dos modulos ANTIGOS (em processo de atualização, em breve finalizados)
 
+# home
+
+<img src="System_Images/antigo_home.png"/>
+
+# Informaçãoes do usuario
+
+<img src="System_Images/antigo_usuario.jpeg"/>
+
+# Cadastro de novo usuario
+
+<img src="System_Images/antigo_cad_usuario.jpeg"/>
+
+# Gerenciar usuarios cadastrados
+
+<img src="System_Images/antigo_gerenciar_usuario.jpeg"/>
+
+# Visualizar clientes ou itens cadastrados no banco de dados
+
+<img src="System_Images/antigo_cadastros.png"/>
+
+# Registrar Clientes
+
+<img src="System_Images/antigo_cadastro_clientes.png"/>
+
+# Registrar itens
+
+<img src="System_Images/antigo_cadastro_itens.png"/>
