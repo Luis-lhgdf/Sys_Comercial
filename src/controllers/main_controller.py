@@ -41,7 +41,7 @@ class MainController:
         db_path = filedialog.asksaveasfilename(defaultextension=".db", filetypes=[("Banco de Dados SQLite", "*.db")], initialfile="database_syscomercial.db")
         if db_path:
             self.model.crate_database(database_path=db_path)
-            self.view.create_db_button.configure(text=f"Banco de dados criado com Sucesso:\n{db_path}", command=None)
+            self.view.create_db_button.configure(text=f"Banco de dados criado com Sucesso", command=None)
             self.login(self.model.db_connection())
 
     def search_database(self):

@@ -109,10 +109,10 @@ class MainView(ctk.CTk):
                                                    fg_color="#D9B46E", hover_color="#D9B46E")
         self.show_password_check.grid(column=0, row=7, padx=(370, 0), pady=(5, 5), sticky="w")
 
-        self.forget_password = ctk.CTkButton(self.frame2, text="Esqueceu sua senha?", text_color="black",
-                                             font=self.appearance_manager.get_font_body(), fg_color="transparent",
-                                             hover_color="#D9B46E")
-        self.forget_password.grid(column=0, row=8, padx=(60, 0), pady=(0, 5), sticky="w")
+        # self.forget_password = ctk.CTkButton(self.frame2, text="Esqueceu sua senha?", text_color="black",
+        #                                      font=self.appearance_manager.get_font_body(), fg_color="transparent",
+        #                                      hover_color="#D9B46E")
+        # self.forget_password.grid(column=0, row=8, padx=(60, 0), pady=(0, 5), sticky="w")
 
         self.login_button = ctk.CTkButton(self.frame2, text="Entrar", height=43, width=140,
                                           font=self.appearance_manager.get_font_subtitle(True), text_color="white",
@@ -302,8 +302,9 @@ class MainView(ctk.CTk):
 
         try:
             # Desativando o botão de login se a conexão com o banco de dados falhar
-            if "Erro" in status[1]:
-                self.forget_password.configure(state="disabled")
+            if status[0] == False:
+                print(status)
+                #self.forget_password.configure(state="disabled")
                 self.sign_up.configure(state="disabled")
                 self.login_button.configure(state="disabled")
                 self.database_status.configure(text_color="red")
