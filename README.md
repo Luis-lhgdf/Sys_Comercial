@@ -56,7 +56,7 @@ Espero que este sistema possa ser útil para ajudar pequenas empresas a simplifi
 
 <img src="System_Images/antigo_home.png"/>
 
-## Informaçãoes do usuario
+## Informações do usuario
 
 <img src="System_Images/antigo_usuario.jpeg"/>
 
