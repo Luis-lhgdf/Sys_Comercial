@@ -1,3 +1,2 @@
-import customtkinter as ctk
+lista = (1,2,3)
 
-root = ctk.CTk()

@@ -100,16 +100,18 @@ class InterfaceMenu:
 
                 if 'submodules' in info:
                     for submodulo in [info["submodules"][0]]:
-                        for key, valor in submodulo.items():
+                        for key, value in submodulo.items():
+                            icon = value[0]
+                            command = value[1]
                             button = ctk.CTkButton(self.menu_navigation_frame,
                                 text=key,
                                 anchor="w",
                                 width=info['width'],
-                                image=valor[0],
+                                image=icon,
                                 corner_radius=info['corner_radius'],
                                 fg_color=["#FFF5DE", "#175776"],
                                 text_color=info['text_color'],
-                                command=valor[1])
+                                command=command)
                             
                             
                             self.buttons_list.append(button)
@@ -139,7 +141,6 @@ class InterfaceMenu:
 
         self.menu_navigation_frame.grid_rowconfigure((len(self.buttons_list)+4, len(self.buttons_list)+5), weight=1)
 
-                
     def show_submenus(self, module):
         
         for info in self.button_info.get(module, []):
@@ -153,13 +154,10 @@ class InterfaceMenu:
                                 else:
                                     button.grid()
 
-
     def hide_menu_navigation(self):
             # Verifica a largura atual do menu_navigation_frame
             
             current_width = self.menu_navigation_frame.winfo_width()
-
-            print("largura atual", current_width)
 
             if current_width in [141, 158, 176, 194, 211]:
             

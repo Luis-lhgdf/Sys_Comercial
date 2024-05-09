@@ -11,15 +11,10 @@ class MainView(ctk.CTk):
         self.utils = Utilities()
         self.model = MainModel()
         self.db_status = None
-        
-
-
-
         self.linkedin_url = "https://linkedin.com/in/luis-henrique-281b97186"
         self.github_url = "https://github.com/Luis-lhgdf"
         self.site_url = "https://luis-lhgdf.github.io/portfolio/"
         self.login_view()
-
         self.protocol("WM_DELETE_WINDOW", self.controller.exit)
 
     def login_view(self):

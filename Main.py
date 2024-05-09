@@ -16,3 +16,7 @@ def main():
 if __name__ == "__main__":
     # Chamando a função main se este arquivo estiver sendo executado diretamente.
     main()
+
+
+
+

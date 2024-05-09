@@ -9,7 +9,6 @@ class Utilities:
     def __init__(self) -> None:
         pass
         
-
     @staticmethod
     def msgbox(title, text, style):
         #  Styles:
@@ -36,7 +35,6 @@ class Utilities:
         for widget in frame.winfo_children():
             widget.destroy()
 
-
     def validate_username_strength(self, username):
         # Verifica se o nome de usuário tem pelo menos 3 e no máximo 20 caracteres
         if not 3 <= len(username) <= 20:
@@ -52,14 +50,11 @@ class Utilities:
 
         return True
 
-
     def format_username_label(self, label, text, is_valid):
         if is_valid:
             label.configure(text=text[0], text_color="green")
         else:
             label.configure(text=text[1], text_color="red")
-
-
 
     def validate_password_strength(self, password):
             if len(password) >= 6 and any(char.isalpha() for char in password) and any(char.isdigit() for char in password) and any(char in "!$@%#" for char in password):
@@ -73,11 +68,9 @@ class Utilities:
         else:
             label.configure(text=text[1], text_color="red")
    
-   
     def validate_password_match(self, password, confirmation):
         if password == confirmation and password!= '' and confirmation != '':
             return bool
-
 
     def validate_password(self, password_entry, confirmation_entry, password_text, confirmation_text, event=None):
 
@@ -90,7 +83,6 @@ class Utilities:
 
         if is_valid_confirmation and is_valid_password:
             return True
-
 
     def validate_username(self, login_entry, login_text, event=None):
 

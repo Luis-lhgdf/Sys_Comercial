@@ -249,12 +249,11 @@ class MainModel:
 
         self.db_cursor.execute("SELECT * FROM Modulos WHERE usuario = ?", (usuario,))
         self.info_list_user.append(self.db_cursor.fetchall())
+        print(self.info_list_user)
         
-
     def on_login_success(self, login):
         self.get_user_info_list(usuario=login)
         
-
     def create_newuser(self, login, password, email=None, acesso='USUARIO', image=None, status='ATIVO'):
 
         self.db_connection()
@@ -285,7 +284,7 @@ class MainModel:
 
     def user_count(self):
         self.db_connection()
-        self.db_cursor.execute("SELECT * FROM Usuarios")  # Certifique-se de adicionar uma vírgula após o login para torná-lo uma tupla de um elemento
+        self.db_cursor.execute("SELECT * FROM Usuarios") 
         query_result = self.db_cursor.fetchall()
         self.close_connection()
         return len(query_result)
