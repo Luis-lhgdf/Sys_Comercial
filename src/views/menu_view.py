@@ -3,6 +3,7 @@ from ..models.carregar_img import CarregarIMG
 from src.views.icones import *
 from src.models.main_model import MainModel
 from src.utils.utils import Utilities
+from src.views.Settings_view import InterfaceSettings
 
 
 class InterfaceMenu:
@@ -41,7 +42,7 @@ class InterfaceMenu:
 
         # Configura a expansão horizontal da janela principal
         self.root.grid_columnconfigure(0, weight=0)  # Coluna 0 não se expandirá
-        self.root.grid_columnconfigure(1, weight=1)  # Coluna 1 não se expandirá
+        self.root.grid_columnconfigure(1, weight=1)  # Coluna 1 se expandirá
 
         # Configura a expansão vertical da janela principal
         self.root.grid_rowconfigure(0, weight=1)
@@ -96,7 +97,7 @@ class InterfaceMenu:
                     "corner_radius": 0,
                     "fg_color": "transparent",
                     "text_color": ("black", "white"),
-                    "command": None,
+                    "command": self.home,
                 }
             ],
             "Estoque": [
@@ -111,9 +112,24 @@ class InterfaceMenu:
                     "command": lambda: self.show_submenus("Estoque"),
                     "submodules": [
                         {
-                            "Entrada": [entry_icon, None],
-                            "Saida": [exit_icon, None],
-                            "Inventario": [inventory_icon, None],
+                            "Entrada": [
+                                entry_icon,
+                                lambda: self.check_permission_and_redirect(
+                                    self.info_list_user, "Estoque", "ENTRADA"
+                                ),
+                            ],
+                            "Saida": [
+                                exit_icon,
+                                lambda: self.check_permission_and_redirect(
+                                    self.info_list_user, "Estoque", "SAIDA"
+                                ),
+                            ],
+                            "Inventario": [
+                                inventory_icon,
+                                lambda: self.check_permission_and_redirect(
+                                    self.info_list_user, "Estoque", "INVENTARIO"
+                                ),
+                            ],
                         }
                     ],
                 }
@@ -130,10 +146,30 @@ class InterfaceMenu:
                     "command": lambda: self.show_submenus("Cadastro"),
                     "submodules": [
                         {
-                            "Cadastrar Itens": [item_icon, None],
-                            "Cadastrar Clientes": [register_icon, None],
-                            "Cadastrar Usuario": [user_icon, None],
-                            "Gerenciar Usuarios": [manage_user_icon, None],
+                            "Cadastrar Itens": [
+                                item_icon,
+                                lambda: self.check_permission_and_redirect(
+                                    self.info_list_user, "Cadastro", "CAD ITEM"
+                                ),
+                            ],
+                            "Cadastrar Clientes": [
+                                register_icon,
+                                lambda: self.check_permission_and_redirect(
+                                    self.info_list_user, "Cadastro", "CAD CLIENTE"
+                                ),
+                            ],
+                            "Cadastrar Usuario": [
+                                user_icon,
+                                lambda: self.check_permission_and_redirect(
+                                    self.info_list_user, "Cadastro", "CAD USUARIO"
+                                ),
+                            ],
+                            "Gerenciar Usuarios": [
+                                manage_user_icon,
+                                lambda: self.check_permission_and_redirect(
+                                    self.info_list_user, "Cadastro", "GERENCIAR USER"
+                                ),
+                            ],
                         }
                     ],
                 }
@@ -147,7 +183,9 @@ class InterfaceMenu:
                     "corner_radius": 0,
                     "fg_color": "transparent",
                     "text_color": ("black", "white"),
-                    "command": None,
+                    "command": lambda: self.check_permission_and_redirect(
+                        self.info_list_user, "Agenda"
+                    ),
                 }
             ],
             "Carteira": [
@@ -162,8 +200,18 @@ class InterfaceMenu:
                     "command": lambda: self.show_submenus("Carteira"),
                     "submodules": [
                         {
-                            "Registrar Vendas": [sales_icon, None],
-                            "Faturamento": [income_icon, None],
+                            "Registrar Vendas": [
+                                sales_icon,
+                                lambda: self.check_permission_and_redirect(
+                                    self.info_list_user, "Carteira", "VENDAS"
+                                ),
+                            ],
+                            "Faturamento": [
+                                income_icon,
+                                lambda: self.check_permission_and_redirect(
+                                    self.info_list_user, "Carteira", "FATURAMENTO"
+                                ),
+                            ],
                         }
                     ],
                 }
@@ -180,8 +228,18 @@ class InterfaceMenu:
                     "command": lambda: self.show_submenus("Financas"),
                     "submodules": [
                         {
-                            "Registrar Despesas": [expense_icon, None],
-                            "Outras Rendas +": [revenue_icon, None],
+                            "Registrar Despesas": [
+                                expense_icon,
+                                lambda: self.check_permission_and_redirect(
+                                    self.info_list_user, "Financas", "DESPESAS"
+                                ),
+                            ],
+                            "Outras Rendas +": [
+                                revenue_icon,
+                                lambda: self.check_permission_and_redirect(
+                                    self.info_list_user, "Financas", "OUTRAS RENDAS"
+                                ),
+                            ],
                         }
                     ],
                 }
@@ -195,7 +253,9 @@ class InterfaceMenu:
                     "corner_radius": 0,
                     "fg_color": "transparent",
                     "text_color": ("black", "white"),
-                    "command": None,
+                    "command": lambda: self.check_permission_and_redirect(
+                        self.info_list_user, "Usuario"
+                    ),
                 }
             ],
             "Configuracoes": [
@@ -344,32 +404,64 @@ class InterfaceMenu:
         # Atualiza a largura do menu_navigation_frame
         self.menu_navigation_frame.configure(width=new_width)
 
-    def check_permission_and_redirect(self, user, selected_module):
- 
-        if self.has_permission(user, selected_module):
-            self.redirect_to_module(selected_module)
+    def check_permission_and_redirect(
+        self, user, selected_module, selected_submodulo=None
+    ):
+
+        tem_acesso, permissions = self.has_permission(
+            user, selected_module, selected_submodulo
+        )
+
+        if tem_acesso:
+            self.redirect_to_module(permissions)
         else:
             self.utils.msgbox(
                 "Permissão", "Você nao tem acesso liberado para este modulo", 0
             )
 
-    def has_permission(self, user, module_name):
-        for module in user[2]:
-
-            if module[2] == module_name:
-                visualizar = module[4]
-                novo = module[5]
-                editar = module[6]
-                remover = module[7]
-
+    def has_permission(self, user_info, module_name, selected_submodulo=None):
+        for module_data in user_info[2]:
+            if selected_submodulo is None:
+                if module_data[2] == module_name:
+                    permissions = module_data[4:8]
+                    if all(perm == "bloqueado" for perm in permissions):
+                        return False, []
+                    else:
+                        return True, module_data
+            else:
                 if (
-                    visualizar != "bloqueado"
-                    and novo != "bloqueado"
-                    and editar != "bloqueado"
-                    and remover != "bloqueado"
+                    module_data[2] == module_name
+                    and module_data[3] == selected_submodulo
                 ):
-                    return bool
+                    permissions = module_data[4:8]
+                    if all(perm == "bloqueado" for perm in permissions):
+                        return False, []
+                    else:
+                        return True, module_data
+        return False, []
 
-    def redirect_to_module(self, module):
+    def redirect_to_module(self, permissions):
+
+        user, module, submodule, visualizar, novo, editar, remover, id_user = (
+            permissions[1:]
+        )
+
+        self.utils.restart_interface(self.main_content)
         # Implemente a lógica para redirecionar o usuário para o módulo selecionado
-        print("acessando modulo de configurações")
+        if module == "Configuracoes":
+            InterfaceSettings(
+                self,
+                user,
+                module,
+                submodule,
+                visualizar,
+                novo,
+                editar,
+                remover,
+                id_user,
+            )
+
+    def home(self):
+        self.utils.restart_interface(self.main_content)
+        text = ctk.CTkLabel(self.main_content, text="Bem vindo")
+        text.grid(row=0, column=0, sticky="nsew")
