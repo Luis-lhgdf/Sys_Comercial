@@ -6,6 +6,7 @@ from src.utils.utils import Utilities
 from src.views.Settings_view import InterfaceSettings
 from src.views.appearance_manager import AppearanceManager
 import customtkinter as ctk
+from src.CTkXYFrame import *
 
 
 class InterfaceMenu:
@@ -15,6 +16,9 @@ class InterfaceMenu:
         self.appearance_manager = AppearanceManager()
         self.info_list_user = self.root.info_list_user
         self.utils = Utilities()
+
+        self.screen_height = self.root.screen_height
+        self.screen_wedth = self.root.screen_wedth
 
         # Configuração inicial da janela principal
         self.root.title("SYS COMERCIAL")  # Define o título da janela
@@ -55,8 +59,12 @@ class InterfaceMenu:
         self.menu_navigation_frame.grid(row=0, column=0, sticky="nsew")
 
         # Frame principal para exibição de conteúdo
-        self.main_content = ctk.CTkFrame(
-            self.root, fg_color="transparent", corner_radius=0
+        self.main_content = CTkXYFrame(
+            self.root,
+            fg_color=self.appearance_manager.json_fgcolor(
+                self.appearance_manager.current_theme, "CTk", "fg_color"
+            ),
+            corner_radius=0,
         )
         self.main_content.grid(row=0, column=1, sticky="nsew")
 

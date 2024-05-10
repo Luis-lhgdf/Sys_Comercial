@@ -16,35 +16,28 @@ class InterfaceSettings:
         self.model = MainModel()
         self.utils = Utilities()
         self.appearance_manager = AppearanceManager()
-
+        self.screen_height = self.root.screen_height
+        self.screen_wedth = self.root.screen_wedth
         self.interface()
 
     def interface(self):
-
-        self.main_content.grid_rowconfigure(
-            (0, 1, 2, 3),
-            weight=0,
-        )
+        # Configuração do layout
+        self.main_content.grid_rowconfigure(0, weight=0)
+        self.main_content.grid_rowconfigure(1, weight=0)
+        self.main_content.grid_rowconfigure(2, weight=0)
+        self.main_content.grid_rowconfigure(3, weight=0)
         self.main_content.grid_columnconfigure(0, weight=1)
 
-        # opções de temas
+        # Opções de temas
         opcoes = ["blue", "green", "dark-blue", "personalizado"]
-
         valor_escolhido = self.appearance_manager.current_theme
-
-        # Encontra a posicão do valor escolhido na lista
         indice_valor_escolhido = opcoes.index(valor_escolhido)
+        opcoes.insert(0, opcoes.pop(indice_valor_escolhido))
 
-        # Reorganiza a lista colocando o valor escolhido no início
-        opcoes = (
-            [valor_escolhido]
-            + opcoes[:indice_valor_escolhido]
-            + opcoes[indice_valor_escolhido + 1 :]
-        )
-
+        # Título
         label_titulo = ctk.CTkLabel(
             self.main_content,
-            text=f"CONFIGURACÕES",
+            text=f"CONFIGURAÇÕES",
             fg_color="transparent",
             font=self.appearance_manager.get_font_title(),
             corner_radius=6,
@@ -52,91 +45,51 @@ class InterfaceSettings:
         )
         label_titulo.grid(row=0, column=0, sticky="nsew", padx=10, pady=5)
 
-        painel_theme = ctk.CTkButton(
+        # Botões para alterar tema, cor do tema e escala
+        self.create_panel_button(
+            "Alterar tema", opcoes, self.appearance_manager.write_color_to_theme, row=1
+        )
+        self.create_panel_button(
+            "Alterar cor do tema",
+            ["system", "light", "dark"],
+            self.appearance_manager.appearance_theme,
+            row=2,
+        )
+        self.create_panel_button(
+            "Alterar escala (zoom)",
+            ["80%", "90%", "100%", "110%", "120%"],
+            self.change_scaling_event,
+            row=3,
+        )
+
+    def create_panel_button(self, text, values, command, row):
+        painel_button = ctk.CTkButton(
             self.main_content,
-            text="Alterar tema",
+            text=text,
             text_color=("black", "white"),
             font=self.appearance_manager.get_font_title(),
+            width=self.screen_wedth - 210,
             height=90,
             border_width=1,
             fg_color="transparent",
             hover=False,
             anchor="nw",
         )
-        painel_theme.grid(row=1, column=0, sticky="nsew", padx=10, pady=(45, 5))
+        painel_button.grid(row=row, column=0, sticky="nsew", padx=10, pady=(45, 5))
 
-        painel_appearance_mode = ctk.CTkButton(
-            self.main_content,
-            text="Alterar cor do tema",
-            text_color=("black", "white"),
-            font=self.appearance_manager.get_font_title(),
-            height=90,
-            border_width=1,
-            fg_color="transparent",
-            hover=False,
-            anchor="nw",
-        )
-        painel_appearance_mode.grid(
-            row=2, column=0, sticky="nsew", padx=10, pady=(45, 5)
-        )
-
-        painel_scaling = ctk.CTkButton(
-            self.main_content,
-            text="Alterar escala (zoom)",
-            text_color=("black", "white"),
-            font=self.appearance_manager.get_font_title(),
-            height=90,
-            border_width=1,
-            fg_color="transparent",
-            hover=False,
-            anchor="nw",
-        )
-        painel_scaling.grid(row=3, column=0, sticky="nsew", padx=10, pady=(45, 5))
-
-        mudar_theme = ctk.CTkOptionMenu(
-            painel_theme,
+        option_menu = ctk.CTkOptionMenu(
+            painel_button,
             font=self.appearance_manager.get_font_body(),
             width=150,
-            values=opcoes,
-            command=self.appearance_manager.write_color_to_theme,
+            values=values,
+            command=command,
         )
-        mudar_theme.place(x=10, y=50)
+        option_menu.place(x=10, y=50)
 
-        bt = ctk.CTkButton(
-            painel_theme, text="Atualizar", command=self.update_interface
+        update_button = ctk.CTkButton(
+            painel_button, text="Atualizar", command=self.update_interface
         )
-        bt.place(x=200, y=50)
-
-        appearance_mode_optionemenu = ctk.CTkOptionMenu(
-            painel_appearance_mode,
-            font=self.appearance_manager.get_font_body(),
-            width=150,
-            values=["system", "light", "Dark"],
-            command=self.appearance_manager.appearance_theme,
-        )
-
-        appearance_mode_optionemenu.place(x=10, y=50)
-
-        bt = ctk.CTkButton(
-            painel_appearance_mode, text="Atualizar", command=self.update_interface
-        )
-
-        scaling_optionemenu = ctk.CTkOptionMenu(
-            painel_scaling,
-            font=self.appearance_manager.get_font_body(),
-            width=150,
-            values=["80%", "90%", "100%", "110%", "120%"],
-            command=self.change_scaling_event,
-        )
-
-        scaling_optionemenu.place(x=10, y=50)
-
-        bt = ctk.CTkButton(
-            painel_scaling, text="Atualizar", command=self.update_interface
-        )
-        bt.place(x=200, y=50)
-
-        bt.place(x=200, y=50)
+        update_button.place(x=200, y=50)
 
     def update_interface(self):
         resp = self.utils.msgbox(

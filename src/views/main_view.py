@@ -20,6 +20,9 @@ class MainView(ctk.CTk):
         self.info_list_user = []
         self.protocol("WM_DELETE_WINDOW", self.controller.exit)
 
+        self.screen_height = self.winfo_screenheight()
+        self.screen_wedth = self.winfo_screenwidth()
+
         self.login_view()
 
     def login_view(self):
