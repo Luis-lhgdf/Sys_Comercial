@@ -17,12 +17,14 @@ class MainView(ctk.CTk):
         self.linkedin_url = "https://linkedin.com/in/luis-henrique-281b97186"
         self.github_url = "https://github.com/Luis-lhgdf"
         self.site_url = "https://luis-lhgdf.github.io/portfolio/"
-        self.login_view()
         self.info_list_user = []
         self.protocol("WM_DELETE_WINDOW", self.controller.exit)
 
+        self.login_view()
+
     def login_view(self):
         self.title("Login")
+        self.state("normal")
         self.geometry("1000x600")
         self.resizable(False, False)
         self.configure(fg_color="#558FAD")
@@ -590,5 +592,5 @@ class MainView(ctk.CTk):
 
     def restart_menu(self):
         self.utils.restart_interface(self)
-        # redefinindo as cores do fg_color para as cores que esta no arquivo de temas json
-        InterfaceMenu(self)
+        self.login_view()
+        self.update_status(self.db_status)

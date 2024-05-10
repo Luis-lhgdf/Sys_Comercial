@@ -5,6 +5,7 @@ from src.models.main_model import MainModel
 from src.utils.utils import Utilities
 from src.views.Settings_view import InterfaceSettings
 from src.views.appearance_manager import AppearanceManager
+import customtkinter as ctk
 
 
 class InterfaceMenu:
@@ -27,9 +28,9 @@ class InterfaceMenu:
             )
         )
 
-        # Obtém as dimensões da tela
-        self.screen_height = self.root.winfo_screenheight()
-        self.screen_width = self.root.winfo_screenwidth()
+        self.CTkOptionMenu_fg_color = self.appearance_manager.json_fgcolor(
+            self.appearance_manager.current_theme, "CTkOptionMenu", "fg_color"
+        )
 
         # Lista para armazenar os botões de navegação finalizados
         self.buttons_list = []
@@ -306,7 +307,10 @@ class InterfaceMenu:
                                 width=info["width"],
                                 image=icon,
                                 corner_radius=info["corner_radius"],
-                                fg_color=["#FFF5DE", "#175776"],
+                                fg_color=[
+                                    self.CTkOptionMenu_fg_color[0],
+                                    self.CTkOptionMenu_fg_color[1],
+                                ],
                                 text_color=info["text_color"],
                                 command=command,
                             )
@@ -323,34 +327,6 @@ class InterfaceMenu:
         )
         self.your_logo.grid(
             row=len(self.buttons_list) + 3, column=0, pady=0, sticky="s"
-        )
-
-        self.scaling_optionemenu = ctk.CTkOptionMenu(
-            self.menu_navigation_frame,
-            font=self.root.appearance_manager.get_font_body(),
-            width=150,
-            values=["80%", "90%", "100%", "110%", "120%"],
-            command=self.root.appearance_manager.change_scaling_event,
-        )
-
-        self.scaling_optionemenu.grid(
-            row=len(self.buttons_list) + 4,
-            column=0,
-            pady=(0, 50),
-            sticky="s",
-            rowspan=2,
-        )
-
-        self.appearance_mode_optionemenu = ctk.CTkOptionMenu(
-            self.menu_navigation_frame,
-            font=self.root.appearance_manager.get_font_body(),
-            width=150,
-            values=["system", "light", "Dark"],
-            command=self.root.appearance_manager.appearance_theme,
-        )
-
-        self.appearance_mode_optionemenu.grid(
-            row=len(self.buttons_list) + 5, column=0, pady=0, sticky="s"
         )
 
         self.menu_navigation_frame.grid_rowconfigure(
@@ -387,8 +363,6 @@ class InterfaceMenu:
 
             self.profile_photo.grid_remove()
             self.your_logo.grid_remove()
-            self.scaling_optionemenu.grid_remove()
-            self.appearance_mode_optionemenu.grid_remove()
 
         else:
             # Expande o menu
@@ -400,8 +374,6 @@ class InterfaceMenu:
             self.hide_button.configure(width=1)
             self.profile_photo.grid()
             self.your_logo.grid()
-            self.scaling_optionemenu.grid()
-            self.appearance_mode_optionemenu.grid()
 
         # Atualiza a largura do menu_navigation_frame
         self.menu_navigation_frame.configure(width=new_width)
