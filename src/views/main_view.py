@@ -8,6 +8,7 @@ from src.views.menu_view import InterfaceMenu
 class MainView(ctk.CTk):
     def __init__(self, controller):
         super().__init__()
+
         self.controller = controller
         self.appearance_manager = AppearanceManager()
         self.utils = Utilities()
@@ -586,3 +587,8 @@ class MainView(ctk.CTk):
         self.utils.restart_interface(self)
         self.login_view()
         self.update_status(self.db_status)
+
+    def restart_menu(self):
+        self.utils.restart_interface(self)
+        # redefinindo as cores do fg_color para as cores que esta no arquivo de temas json
+        InterfaceMenu(self)

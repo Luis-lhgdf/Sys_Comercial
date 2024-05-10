@@ -47,14 +47,6 @@ class InterfaceSettings:
         )
         painel_theme.grid(row=1, column=0, sticky="nsew", padx=10, pady=(45, 5))
 
-        # label_theme = ctk.CTkLabel(
-        #     painel_theme,
-        #     text="Alterar tema",
-        #     font=self.appearance_manager.get_font_title(),
-        #     fg_color="transparent",
-        # )
-        # label_theme.place(x=10, y=5)
-
         opcoes = ["blue", "green", "dark-blue", "personalizado"]
 
         valor_escolhido = self.appearance_manager.current_theme
@@ -74,6 +66,14 @@ class InterfaceSettings:
             font=self.appearance_manager.get_font_body(),
             width=100,
             values=opcoes,
-            command=None,
+            command=self.appearance_manager.write_color_to_theme,
         )
         mudar_theme.place(x=10, y=50)
+
+        bt = ctk.CTkButton(
+            painel_theme, text="Atualizar", command=self.update_interface
+        )
+        bt.place(x=200, y=50)
+
+    def update_interface(self):
+        self.root.update_window_menu()

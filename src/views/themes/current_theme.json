@@ -1,5 +1,7 @@
 {
-  "theme": {
-    "default_theme": ["personalizado"]
-  }
+    "theme": {
+        "default_theme": [
+            "personalizado"
+        ]
+    }
 }

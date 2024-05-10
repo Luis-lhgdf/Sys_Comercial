@@ -4,12 +4,14 @@ from src.views.icones import *
 from src.models.main_model import MainModel
 from src.utils.utils import Utilities
 from src.views.Settings_view import InterfaceSettings
+from src.views.appearance_manager import AppearanceManager
 
 
 class InterfaceMenu:
     def __init__(self, root):
         self.root = root
         self.model = MainModel()
+        self.appearance_manager = AppearanceManager()
         self.info_list_user = self.root.info_list_user
         self.utils = Utilities()
 
@@ -20,8 +22,8 @@ class InterfaceMenu:
 
         # redefinindo as cores do fg_color para as cores que esta no arquivo de temas json
         self.root.configure(
-            fg_color=self.root.appearance_manager.json_fgcolor(
-                self.root.appearance_manager.current_theme, "CTk", "fg_color"
+            fg_color=self.appearance_manager.json_fgcolor(
+                self.appearance_manager.current_theme, "CTk", "fg_color"
             )
         )
 
@@ -465,3 +467,6 @@ class InterfaceMenu:
         self.utils.restart_interface(self.main_content)
         text = ctk.CTkLabel(self.main_content, text="Bem vindo")
         text.grid(row=0, column=0, sticky="nsew")
+
+    def update_window_menu(self):
+        self.root.restart_menu()
