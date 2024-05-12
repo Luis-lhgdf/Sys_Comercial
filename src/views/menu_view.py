@@ -22,6 +22,7 @@ class InterfaceMenu:
         self.screen_wedth = self.root.screen_wedth
 
         self.total_width = self.root.winfo_width()  # Largura total da janela principal
+        self.button_width_menu = (18 / 100) * self.total_width
 
         # Configuração inicial da janela principal
         self.root.title("SYS COMERCIAL")  # Define o título da janela
@@ -59,7 +60,7 @@ class InterfaceMenu:
 
         # Frame para os botões de navegação à esquerda
         self.menu_navigation_frame = ctk.CTkFrame(
-            self.root, width=((10 / 100) * self.total_width), corner_radius=0
+            self.root, width=self.button_width_menu, corner_radius=0
         )
         self.menu_navigation_frame.grid(row=0, column=0, sticky="nsew")
 
@@ -109,7 +110,7 @@ class InterfaceMenu:
                     "text": "Home",
                     "image": home_icon,
                     "anchor": "w",
-                    "width": 176,
+                    "width": self.button_width_menu,
                     "corner_radius": 0,
                     "fg_color": "transparent",
                     "text_color": ("black", "white"),
@@ -121,7 +122,7 @@ class InterfaceMenu:
                     "text": "Estoque",
                     "image": stock_icon,
                     "anchor": "w",
-                    "width": 176,
+                    "width": self.button_width_menu,
                     "corner_radius": 0,
                     "fg_color": "transparent",
                     "text_color": ("black", "white"),
@@ -155,7 +156,7 @@ class InterfaceMenu:
                     "text": "Cadastro",
                     "image": register_icon,
                     "anchor": "w",
-                    "width": 176,
+                    "width": self.button_width_menu,
                     "corner_radius": 0,
                     "fg_color": "transparent",
                     "text_color": ("black", "white"),
@@ -195,7 +196,7 @@ class InterfaceMenu:
                     "text": "Agenda",
                     "image": agenda_icon,
                     "anchor": "w",
-                    "width": 176,
+                    "width": self.button_width_menu,
                     "corner_radius": 0,
                     "fg_color": "transparent",
                     "text_color": ("black", "white"),
@@ -209,7 +210,7 @@ class InterfaceMenu:
                     "text": "Carteira",
                     "image": wallet_icon,
                     "anchor": "w",
-                    "width": 176,
+                    "width": self.button_width_menu,
                     "corner_radius": 0,
                     "fg_color": "transparent",
                     "text_color": ("black", "white"),
@@ -237,7 +238,7 @@ class InterfaceMenu:
                     "text": "Financas",
                     "image": finance_icon,
                     "anchor": "w",
-                    "width": 176,
+                    "width": self.button_width_menu,
                     "corner_radius": 0,
                     "fg_color": "transparent",
                     "text_color": ("black", "white"),
@@ -265,7 +266,7 @@ class InterfaceMenu:
                     "text": "Usuario",
                     "image": user_icon,
                     "anchor": "w",
-                    "width": 176,
+                    "width": self.button_width_menu,
                     "corner_radius": 0,
                     "fg_color": "transparent",
                     "text_color": ("black", "white"),
@@ -279,7 +280,7 @@ class InterfaceMenu:
                     "text": "Configuracoes",
                     "image": settings_icon,
                     "anchor": "w",
-                    "width": 176,
+                    "width": self.button_width_menu,
                     "corner_radius": 0,
                     "fg_color": "transparent",
                     "text_color": ("black", "white"),
