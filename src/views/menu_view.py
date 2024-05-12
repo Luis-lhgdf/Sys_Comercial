@@ -11,6 +11,7 @@ from src.CTkXYFrame import *
 
 class InterfaceMenu:
     def __init__(self, root):
+
         self.root = root
         self.model = MainModel()
         self.appearance_manager = AppearanceManager()
@@ -19,6 +20,8 @@ class InterfaceMenu:
 
         self.screen_height = self.root.screen_height
         self.screen_wedth = self.root.screen_wedth
+
+        self.total_width = self.root.winfo_width()  # Largura total da janela principal
 
         # Configuração inicial da janela principal
         self.root.title("SYS COMERCIAL")  # Define o título da janela
@@ -55,7 +58,9 @@ class InterfaceMenu:
         self.root.grid_rowconfigure(0, weight=1)
 
         # Frame para os botões de navegação à esquerda
-        self.menu_navigation_frame = ctk.CTkFrame(self.root, width=176, corner_radius=0)
+        self.menu_navigation_frame = ctk.CTkFrame(
+            self.root, width=((10 / 100) * self.total_width), corner_radius=0
+        )
         self.menu_navigation_frame.grid(row=0, column=0, sticky="nsew")
 
         # Frame principal para exibição de conteúdo
@@ -356,35 +361,47 @@ class InterfaceMenu:
 
     def hide_menu_navigation(self):
         # Verifica a largura atual do menu_navigation_frame
-
         current_width = self.menu_navigation_frame.winfo_width()
+        self.total_width = self.root.winfo_width()
 
-        if current_width in [141, 158, 176, 194, 211]:
+        # Calcula a porcentagem atual da largura do menu em relação à largura total da janela
+        percentage_width = (current_width / self.total_width) * 100
 
-            # Encolhe o menu
-            new_width = 1
+        try:
 
-            for button in self.buttons_list:
-                button.configure(width=new_width, text="")
+            if (
+                percentage_width > 5
+            ):  # Supondo que 10% seja o limite mínimo antes de ocultar o menu
+                # Encolhe o menu
+                new_width = 0  # Define a nova largura como 0 para ocultar o menu
+                new_button_text = ""
 
-            self.hide_button.configure(width=new_width)
+                # Oculta os botões e remove texto
+                for button in self.buttons_list:
+                    button.configure(width=new_width, text=new_button_text)
 
-            self.profile_photo.grid_remove()
-            self.your_logo.grid_remove()
+                self.hide_button.configure(width=new_width)
 
-        else:
-            # Expande o menu
-            new_width = current_width
+                self.profile_photo.grid_remove()
+                self.your_logo.grid_remove()
+            else:
+                # Expande o menu
+                # Defina a nova largura com base em uma porcentagem desejada da largura total da janela
+                desired_percentage_width = 9.4  # Supondo que você deseje que o menu ocupe 8% da largura da janela
+                new_width = (desired_percentage_width / 100) * self.total_width
 
-            for i, button in enumerate(self.buttons_list):
-                button.configure(width=176, text=self.buttons_list_text[i])
+                # Atualiza os botões com largura e texto adequados
+                for i, button in enumerate(self.buttons_list):
+                    button.configure(width=new_width, text=self.buttons_list_text[i])
 
-            self.hide_button.configure(width=1)
-            self.profile_photo.grid()
-            self.your_logo.grid()
+                self.hide_button.configure(width=1)
+                self.profile_photo.grid()
+                self.your_logo.grid()
 
-        # Atualiza a largura do menu_navigation_frame
-        self.menu_navigation_frame.configure(width=new_width)
+            # Atualiza a largura do menu_navigation_frame
+            self.menu_navigation_frame.configure(width=new_width)
+        except:
+            pass
 
     def check_permission_and_redirect(
         self, user, selected_module, selected_submodulo=None
